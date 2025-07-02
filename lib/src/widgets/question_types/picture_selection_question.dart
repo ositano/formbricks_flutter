@@ -23,6 +23,7 @@ class _PictureSelectionQuestionState extends State<PictureSelectionQuestion> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final images = widget.question.inputConfig?['images'] as List<dynamic>? ?? [];
     final isMulti = widget.question.inputConfig?['allowMulti'] ?? false;
 

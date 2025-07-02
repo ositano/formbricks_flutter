@@ -22,20 +22,21 @@ class _MultiSelectQuestionState extends State<MultiSelectQuestion> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final options = widget.question.inputConfig?['choices'] as List<dynamic>? ?? [];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.question.headline, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(widget.question.headline, style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         if (widget.question.subheader.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Text(widget.question.subheader),
+            child: Text(widget.question.subheader, style: theme.textTheme.bodyMedium,),
           ),
         const SizedBox(height: 16),
         ...options.map((option) => CheckboxListTile(
-          title: Text(option['label']),
+          title: Text(option['label'], style: theme.textTheme.bodyMedium,),
           value: selectedOptions.contains(option['id']),
           onChanged: (value) {
             setState(() {

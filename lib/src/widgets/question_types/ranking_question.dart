@@ -23,6 +23,8 @@ class _RankingQuestionState extends State<RankingQuestion> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     final items = widget.question.inputConfig?['items'] as List<dynamic>? ?? [];
 
     if (rankedItems.isEmpty) {

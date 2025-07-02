@@ -16,6 +16,8 @@ class ScheduleMeetingQuestion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     final calendarUrl = question.inputConfig?['calendarUrl'] ?? '';
 
     return Column(

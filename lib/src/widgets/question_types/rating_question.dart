@@ -16,6 +16,8 @@ class RatingQuestion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     final maxRating = (question.inputConfig?['range'] as int?) ?? 5;
 
     return Column(

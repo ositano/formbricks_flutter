@@ -22,18 +22,19 @@ class _ConsentQuestionState extends State<ConsentQuestion> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.question.headline, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(widget.question.headline, style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         if (widget.question.subheader.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Text(widget.question.subheader),
+            child: Text(widget.question.subheader, style: theme.textTheme.bodyMedium,),
           ),
         const SizedBox(height: 16),
         CheckboxListTile(
-          title: const Text('I agree'),
+          title: Text('I agree', style: theme.textTheme.bodyMedium,),
           value: consented,
           onChanged: (value) {
             setState(() {

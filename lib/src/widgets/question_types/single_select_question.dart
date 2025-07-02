@@ -22,6 +22,8 @@ class _SingleSelectQuestionState extends State<SingleSelectQuestion> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     final options = widget.question.inputConfig?['choices'] as List<dynamic>? ?? [];
 
     return Column(

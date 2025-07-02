@@ -26,43 +26,45 @@ class _AddressQuestionState extends State<AddressQuestion> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.question.headline, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(widget.question.headline, style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         if (widget.question.subheader.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Text(widget.question.subheader),
+            child: Text(widget.question.subheader, style: theme.textTheme.bodyMedium,),
           ),
         const SizedBox(height: 16),
         TextFormField(
           controller: _streetController,
-          decoration: const InputDecoration(labelText: 'Street', border: OutlineInputBorder()),
+          decoration: InputDecoration(labelText: 'Street', border: OutlineInputBorder(), labelStyle: theme.textTheme.bodyMedium),
           onChanged: (value) => _updateResponse(),
         ),
         const SizedBox(height: 8),
         TextFormField(
           controller: _cityController,
-          decoration: const InputDecoration(labelText: 'City', border: OutlineInputBorder()),
+          decoration: InputDecoration(labelText: 'City', border: OutlineInputBorder(), labelStyle: theme.textTheme.bodyMedium),
           onChanged: (value) => _updateResponse(),
         ),
         const SizedBox(height: 8),
         TextFormField(
           controller: _stateController,
-          decoration: const InputDecoration(labelText: 'State', border: OutlineInputBorder()),
+          decoration: InputDecoration(labelText: 'State', border: OutlineInputBorder(), labelStyle: theme.textTheme.bodyMedium),
           onChanged: (value) => _updateResponse(),
         ),
         const SizedBox(height: 8),
         TextFormField(
           controller: _zipController,
-          decoration: const InputDecoration(labelText: 'ZIP Code', border: OutlineInputBorder()),
+          decoration: InputDecoration(labelText: 'ZIP Code', border: OutlineInputBorder(), labelStyle: theme.textTheme.bodyMedium),
           onChanged: (value) => _updateResponse(),
         ),
         const SizedBox(height: 8),
         TextFormField(
           controller: _countryController,
-          decoration: const InputDecoration(labelText: 'Country', border: OutlineInputBorder()),
+          decoration: InputDecoration(labelText: 'Country', border: OutlineInputBorder(), labelStyle: theme.textTheme.bodyMedium),
           onChanged: (value) => _updateResponse(),
         ),
       ],

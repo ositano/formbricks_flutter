@@ -15,6 +15,8 @@ class StatementQuestion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     final buttonText = question.inputConfig?['buttonText'] ?? 'Click here';
 
     return Column(

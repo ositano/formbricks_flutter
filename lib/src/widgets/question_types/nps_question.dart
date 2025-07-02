@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../models/question.dart';
 
 /// 0–10 score with optional comment.
-
 class NPSQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
@@ -24,6 +23,7 @@ class _NPSQuestionState extends State<NPSQuestion> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

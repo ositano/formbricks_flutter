@@ -15,20 +15,23 @@ class FreeTextQuestion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(question.headline, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(question.headline, style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         if (question.subheader.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Text(question.subheader),
+            child: Text(question.subheader, style: theme.textTheme.bodyMedium,),
           ),
         const SizedBox(height: 16),
         TextFormField(
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             labelText: 'Your response',
             border: OutlineInputBorder(),
+            labelStyle: theme.textTheme.bodyMedium
           ),
           maxLines: 4,
           validator: question.required

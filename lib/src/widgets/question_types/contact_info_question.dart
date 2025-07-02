@@ -25,32 +25,33 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.question.headline, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(widget.question.headline, style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         if (widget.question.subheader.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Text(widget.question.subheader),
+            child: Text(widget.question.subheader, style: theme.textTheme.bodyMedium,),
           ),
         const SizedBox(height: 16),
         TextFormField(
           controller: _nameController,
-          decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder()),
+          decoration: InputDecoration(labelText: 'Name', border: OutlineInputBorder(), labelStyle: theme.textTheme.bodyMedium),
           onChanged: (value) => _updateResponse(),
         ),
         const SizedBox(height: 8),
         TextFormField(
           controller: _emailController,
-          decoration: const InputDecoration(labelText: 'Email', border: OutlineInputBorder()),
+          decoration: InputDecoration(labelText: 'Email', border: OutlineInputBorder(), labelStyle: theme.textTheme.bodyMedium),
           keyboardType: TextInputType.emailAddress,
           onChanged: (value) => _updateResponse(),
         ),
         const SizedBox(height: 8),
         TextFormField(
           controller: _phoneController,
-          decoration: const InputDecoration(labelText: 'Phone', border: OutlineInputBorder()),
+          decoration: InputDecoration(labelText: 'Phone', border: OutlineInputBorder(), labelStyle: theme.textTheme.bodyMedium),
           keyboardType: TextInputType.phone,
           onChanged: (value) => _updateResponse(),
         ),
