@@ -7,7 +7,7 @@ import 'widgets/survey_widget.dart';
 
 class FormBricksProvider extends StatefulWidget {
   final Widget child;
-  final FormbricksClient client;
+  final FormBricksClient client;
   final String userId;
   final Map<String, dynamic> userAttributes;
   final ThemeData? customTheme;

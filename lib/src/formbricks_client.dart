@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 /// The core API client for interacting with Formbricks’ Public Client and Management APIs.
-class FormbricksClient {
+class FormBricksClient {
   final String apiHost;
   final String environmentId;
   final String apiKey;
 
-  FormbricksClient({
+  FormBricksClient({
     required this.apiHost,
     required this.environmentId,
     required this.apiKey,
@@ -23,7 +23,7 @@ class FormbricksClient {
     if (response.statusCode == 200) {
       return jsonDecode(response.body)['data'];
     } else {
-      throw Exception('Failed to fetch survey: ${response.body}');
+      throw Exception('Failed to fetch survey: ${response.statusCode} - ${response.body}');
     }
   }
 
@@ -35,9 +35,16 @@ class FormbricksClient {
     );
 
     if (response.statusCode == 200) {
-      return List<Map<String, dynamic>>.from(jsonDecode(response.body)['data']);
+      final data = jsonDecode(response.body)['data'] as List;
+      // Filter surveys by trigger actionClass.name
+      return data.where((survey) {
+        final triggers = survey['triggers'] as List? ?? [];
+        return triggers.any((trigger) =>
+        trigger['actionClass'] != null &&
+            trigger['actionClass']['name'] == event);
+      }).cast<Map<String, dynamic>>().toList();
     } else {
-      throw Exception('Failed to fetch surveys by trigger: ${response.body}');
+      throw Exception('Failed to fetch surveys by trigger: ${response.statusCode} - ${response.body}');
     }
   }
 
@@ -63,7 +70,7 @@ class FormbricksClient {
     if (response.statusCode == 200) {
       return jsonDecode(response.body)['data']['id'];
     } else {
-      throw Exception('Failed to create display: ${response.body}');
+      throw Exception('Failed to create display: ${response.statusCode} - ${response.body}');
     }
   }
 
@@ -89,7 +96,7 @@ class FormbricksClient {
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to submit response: ${response.body}');
+      throw Exception('Failed to submit response: ${response.statusCode} - ${response.body}');
     }
   }
 
@@ -110,7 +117,7 @@ class FormbricksClient {
       final responseBody = await response.stream.bytesToString();
       return jsonDecode(responseBody)['data']['url'];
     } else {
-      throw Exception('Failed to upload file: ${response.reasonPhrase}');
+      throw Exception('Failed to upload file: ${response.statusCode} - ${response.reasonPhrase}');
     }
   }
 }
