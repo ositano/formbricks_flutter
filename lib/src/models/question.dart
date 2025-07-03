@@ -1,7 +1,7 @@
 class Question {
   final String id;
   final String type;
-  final String headline;
+  final Map<String, String> headline;
   final String subheader;
   final bool required;
   final Map<String, dynamic>? inputConfig;
@@ -19,8 +19,8 @@ class Question {
     return Question(
       id: json['id'],
       type: json['type'],
-      headline: json['headline'] ?? '',
-      subheader: json['subheader'] ?? '',
+      headline: Map<String, String>.from(json['headline'] ?? {'default': ''}),
+      subheader: json['subheader']?.toString() ?? '',
       required: json['required'] ?? false,
       inputConfig: json['inputConfig'],
     );

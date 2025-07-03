@@ -12,18 +12,19 @@ dependencies:
     sdk: flutter
   http: ^1.4.0
   flutter_rating_bar: ^4.0.1
-  file_picker: ^10.2.0 # For file uploads
-  intl: ^0.20.2 # For date formatting
+  file_picker: ^10.2.0 #For file uploads
+  intl: ^0.20.2 #For date formatting
   flutter_localizations:
     sdk: flutter
-  cached_network_image: ^3.4.1 # For picture selection
-  reorderables: ^0.6.0 # For ranking questions
+  cached_network_image: ^3.4.1 #For picture selection
+  reorderables: ^0.6.0 #For ranking questions
   url_launcher: any
+  shared_preferences: any
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

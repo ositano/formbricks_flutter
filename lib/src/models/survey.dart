@@ -9,6 +9,9 @@ class Survey {
   final Map<String, dynamic>? styling;
   final Map<String, dynamic>? logic;
   final Map<String, dynamic>? triggers;
+  final String? displayOption;
+  final double? displayPercentage;
+  final Map<String, dynamic>? segment;
 
   Survey({
     required this.id,
@@ -18,6 +21,9 @@ class Survey {
     this.styling,
     this.logic,
     this.triggers,
+    this.displayOption,
+    this.displayPercentage,
+    this.segment,
   });
 
   factory Survey.fromJson(Map<String, dynamic> json) {
@@ -31,6 +37,9 @@ class Survey {
       styling: json['styling'],
       logic: json['logic'],
       triggers: json['triggers'],
+      displayOption: json['displayOption'],
+      displayPercentage: json['displayPercentage']?.toDouble(),
+      segment: json['segment'],
     );
   }
 }
