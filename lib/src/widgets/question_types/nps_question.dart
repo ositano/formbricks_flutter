@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/question.dart';
 
-/// 0–10 score with optional comment.
-class NPSQuestion extends StatefulWidget {
+class NPSQuestion extends StatelessWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
 
@@ -14,74 +13,63 @@ class NPSQuestion extends StatefulWidget {
   });
 
   @override
-  State<NPSQuestion> createState() => _NPSQuestionState();
-}
-
-class _NPSQuestionState extends State<NPSQuestion> {
-  int _score = 5;
-  final _commentController = TextEditingController();
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    int selectedIndex = -1;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(widget.question.headline, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        if (widget.question.subheader.isNotEmpty)
+        Text(
+          question.headline['default'] ?? '',
+          style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        if (question.subheader['default']?.isNotEmpty ?? false)
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Text(widget.question.subheader),
+            child: Text(
+              question.subheader['default'] ?? '',
+              style: theme.textTheme.bodyMedium,
+            ),
           ),
         const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: List.generate(11, (index) => GestureDetector(
-            onTap: () {
-              setState(() {
-                _score = index;
-                widget.onResponse(widget.question.id, {'score': index, 'comment': _commentController.text});
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: _score == index ? Colors.blue : Colors.grey[200],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text('$index', style: TextStyle(
-                color: _score == index ? Colors.white : Colors.black,
-              )),
-            ),
-          )),
-        ),
-        const SizedBox(height: 8),
-        const Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('0\nNot likely'),
-            Text('10\nVery likely'),
+            if (question.lowerLabel != null)
+              Text(
+                question.lowerLabel!['default'] ?? '',
+                style: theme.textTheme.bodySmall,
+              ),
+            const Spacer(),
+            if (question.upperLabel != null)
+              Text(
+                question.upperLabel!['default'] ?? '',
+                style: theme.textTheme.bodySmall,
+              ),
           ],
         ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _commentController,
-          decoration: const InputDecoration(
-            labelText: 'Why did you give this score? (Optional)',
-            border: OutlineInputBorder(),
-          ),
-          maxLines: 4,
-          onChanged: (value) {
-            widget.onResponse(widget.question.id, {'score': _score, 'comment': value});
-          },
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8.0,
+          children: List.generate(11, (index) {
+            return ChoiceChip(
+              label: Text('$index'),
+              selected: false,
+              onSelected: (selected) {
+                if (selected) {
+                  selectedIndex = index;
+                  onResponse(question.id, index);
+                }
+              },
+              selectedColor: theme.primaryColor,
+              labelStyle: TextStyle(
+                color: selectedIndex == index ? Colors.white : theme.textTheme.bodyMedium?.color,
+              ),
+            );
+          }),
         ),
       ],
     );
-  }
-
-  @override
-  void dispose() {
-    _commentController.dispose();
-    super.dispose();
   }
 }

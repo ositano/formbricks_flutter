@@ -17,27 +17,55 @@ class RatingQuestion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    final maxRating = (question.inputConfig?['range'] as int?) ?? 5;
+    final range = question.inputConfig?['range'] ?? 5;
+    final scale = question.inputConfig?['scale'] ?? 'star';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(question.headline, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        if (question.subheader.isNotEmpty)
+        Text(
+          question.headline['default'] ?? '',
+          style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        if (question.subheader['default']?.isNotEmpty ?? false)
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Text(question.subheader),
+            child: Text(
+              question.subheader['default'] ?? '',
+              style: theme.textTheme.bodyMedium,
+            ),
           ),
         const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            if (question.lowerLabel != null)
+              Text(
+                question.lowerLabel!['default'] ?? '',
+                style: theme.textTheme.bodySmall,
+              ),
+            const Spacer(),
+            if (question.upperLabel != null)
+              Text(
+                question.upperLabel!['default'] ?? '',
+                style: theme.textTheme.bodySmall,
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
         RatingBar.builder(
           initialRating: 0,
-          minRating: 0,
+          minRating: 1,
           direction: Axis.horizontal,
           allowHalfRating: false,
-          itemCount: maxRating,
-          itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber),
-          onRatingUpdate: (rating) => onResponse(question.id, rating.toInt()),
+          itemCount: range,
+          itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+          itemBuilder: (context, index) => scale == 'star'
+              ? Icon(Icons.star, color: theme.primaryColor)
+              : Text((index + 1).toString(), style: TextStyle(color: theme.primaryColor),),
+          onRatingUpdate: (rating) {
+            onResponse(question.id, rating.toInt());
+          },
         ),
       ],
     );

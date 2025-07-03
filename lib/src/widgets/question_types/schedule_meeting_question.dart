@@ -23,11 +23,11 @@ class ScheduleMeetingQuestion extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(question.headline, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        if (question.subheader.isNotEmpty)
+        Text(question.headline['default'] ?? '', style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        if (question.subheader['default']?.isNotEmpty ?? false)
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Text(question.subheader),
+            child: Text(question.subheader['default'] ?? '', style: theme.textTheme.bodyMedium,),
           ),
         const SizedBox(height: 16),
         ElevatedButton(

@@ -35,7 +35,7 @@ class SurveyWidget extends StatefulWidget {
   });
 
   @override
-  State<SurveyWidget> createState() => _SurveyWidgetState();
+  _SurveyWidgetState createState() => _SurveyWidgetState();
 }
 
 class _SurveyWidgetState extends State<SurveyWidget> {
@@ -248,15 +248,17 @@ class _SurveyWidgetState extends State<SurveyWidget> {
                   if (currentQuestionIndex > 0)
                     ElevatedButton(
                       onPressed: _previousQuestion,
-                      child: const Text('Previous'),
+                      child: Text(question.buttonLabel?['default'] ?? 'Previous'),
                     ),
                   ElevatedButton(
                     onPressed: question.required && responses[question.id] == null
                         ? null
                         : _nextQuestion,
-                    child: Text(currentQuestionIndex == survey!.questions.length - 1
-                        ? 'Submit'
-                        : 'Next'),
+                    child: Text(
+                      currentQuestionIndex == survey!.questions.length - 1
+                          ? 'Submit'
+                          : (question.buttonLabel?['default'] ?? 'Next'),
+                    ),
                   ),
                 ],
               ),
