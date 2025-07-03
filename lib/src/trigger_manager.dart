@@ -69,11 +69,14 @@ class TriggerManager {
         if (survey.status != 'inProgress' || survey.environmentId != client.environmentId) {
           continue;
         }
+        debugPrint("just passed status");
 
         // Skip completed surveys if displayOption is displayOnce
         if (survey.displayOption == 'displayOnce' && completedSurveys[survey.id] == true) {
           continue;
         }
+
+        debugPrint("just passed display option");
 
         bool shouldTrigger = false;
 
@@ -82,14 +85,14 @@ class TriggerManager {
           for (var trigger in survey.triggers!) {
             final actionClass = trigger['actionClass'];
             if (actionClass != null &&
-                (actionClass['type'] == 'noCode' && actionClass['name'] == event ||
-                    actionClass['type'] == 'code' && actionClass['key'] == event)) {
+                ((actionClass['type'] == 'noCode' && actionClass['name'] == event) ||
+                (actionClass['type'] == 'code' && actionClass['key'] == event))) {
               shouldTrigger = true;
               break;
             }
           }
         }
-
+        debugPrint("should trigger is true");
         if (!shouldTrigger) continue;
 
         // Evaluate segment filters (e.g., deviceType: phone)
