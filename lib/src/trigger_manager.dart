@@ -151,11 +151,13 @@ class TriggerManager {
       if (survey.status != 'inProgress' || survey.environmentId != client.environmentId) {
         return;
       }
+      debugPrint("just passed status");
 
       // Skip completed surveys if displayOption is displayOnce
       if (survey.displayOption == 'displayOnce' && completedSurveys[survey.id] == true) {
         return;
       }
+      debugPrint("just passed display option");
 
       bool shouldTrigger = true;
 
@@ -171,11 +173,14 @@ class TriggerManager {
           }
         }
       }
+      debugPrint("just passed segment filter");
 
       // Check displayPercentage
       if (!_shouldDisplaySurvey(survey.displayPercentage)) {
         shouldTrigger = false;
       }
+
+      debugPrint("just passed display percentage");
 
       if (shouldTrigger) {
         completedSurveys[survey.id] = true;
