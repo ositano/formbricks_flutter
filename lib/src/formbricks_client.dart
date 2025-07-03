@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:pretty_http_logger/pretty_http_logger.dart';
 
 /// The core API client for interacting with Formbricks’ Public Client and Management APIs.
 class FormBricksClient {
@@ -13,38 +14,45 @@ class FormBricksClient {
     required this.apiKey,
   });
 
+  static final HttpWithMiddleware _httpClient = HttpWithMiddleware.build(
+    middlewares: [HttpLogger(logLevel: LogLevel.BODY)],
+  );
+
   Future<Map<String, dynamic>> getSurvey(String surveyId) async {
     final url = Uri.parse('$apiHost/api/v1/management/surveys/$surveyId');
-    final response = await http.get(
-      url,
-      headers: {'x-api-key': apiKey},
-    );
+    final response = await _httpClient.get(url, headers: {'x-api-key': apiKey});
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body)['data'];
     } else {
-      throw Exception('Failed to fetch survey: ${response.statusCode} - ${response.body}');
+      throw Exception(
+        'Failed to fetch survey: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 
   Future<List<Map<String, dynamic>>> getSurveysByTrigger(String event) async {
     final url = Uri.parse('$apiHost/api/v1/management/surveys?trigger=$event');
-    final response = await http.get(
-      url,
-      headers: {'x-api-key': apiKey},
-    );
+    final response = await _httpClient.get(url, headers: {'x-api-key': apiKey});
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['data'] as List;
       // Filter surveys by trigger actionClass.name
-      return data.where((survey) {
-        final triggers = survey['triggers'] as List? ?? [];
-        return triggers.any((trigger) =>
-        trigger['actionClass'] != null &&
-            trigger['actionClass']['name'] == event);
-      }).cast<Map<String, dynamic>>().toList();
+      return data
+          .where((survey) {
+            final triggers = survey['triggers'] as List? ?? [];
+            return triggers.any(
+              (trigger) =>
+                  trigger['actionClass'] != null &&
+                  trigger['actionClass']['name'] == event,
+            );
+          })
+          .cast<Map<String, dynamic>>()
+          .toList();
     } else {
-      throw Exception('Failed to fetch surveys by trigger: ${response.statusCode} - ${response.body}');
+      throw Exception(
+        'Failed to fetch surveys by trigger: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 
@@ -54,12 +62,9 @@ class FormBricksClient {
     String? responseId,
   }) async {
     final url = Uri.parse('$apiHost/api/v1/client/$environmentId/displays');
-    final response = await http.post(
+    final response = await _httpClient.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-      },
+      headers: {'Content-Type': 'application/json', 'x-api-key': apiKey},
       body: jsonEncode({
         'surveyId': surveyId,
         'userId': userId,
@@ -70,7 +75,9 @@ class FormBricksClient {
     if (response.statusCode == 200) {
       return jsonDecode(response.body)['data']['id'];
     } else {
-      throw Exception('Failed to create display: ${response.statusCode} - ${response.body}');
+      throw Exception(
+        'Failed to create display: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 
@@ -81,12 +88,9 @@ class FormBricksClient {
     bool finished = true,
   }) async {
     final url = Uri.parse('$apiHost/api/v1/client/$environmentId/responses');
-    final response = await http.post(
+    final response = await _httpClient.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-      },
+      headers: {'Content-Type': 'application/json', 'x-api-key': apiKey},
       body: jsonEncode({
         'surveyId': surveyId,
         'userId': userId,
@@ -96,7 +100,9 @@ class FormBricksClient {
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to submit response: ${response.statusCode} - ${response.body}');
+      throw Exception(
+        'Failed to submit response: ${response.statusCode} - ${response.body}',
+      );
     }
   }
 
@@ -117,7 +123,9 @@ class FormBricksClient {
       final responseBody = await response.stream.bytesToString();
       return jsonDecode(responseBody)['data']['url'];
     } else {
-      throw Exception('Failed to upload file: ${response.statusCode} - ${response.reasonPhrase}');
+      throw Exception(
+        'Failed to upload file: ${response.statusCode} - ${response.reasonPhrase}',
+      );
     }
   }
 }

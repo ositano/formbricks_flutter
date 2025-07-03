@@ -20,6 +20,7 @@ dependencies:
   reorderables: ^0.6.0 #For ranking questions
   url_launcher: any
   shared_preferences: any
+  pretty_http_logger: ^1.0.5
 
 dev_dependencies:
   flutter_test:
