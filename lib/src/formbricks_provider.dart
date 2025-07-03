@@ -88,3 +88,8 @@ void trackFormBricksEvent(BuildContext context, String event) {
   final formBricksContext = _FormBricksContext.of(context);
   formBricksContext?.triggerManager.trackEvent(event, context);
 }
+
+void showFormBricksSurvey(BuildContext context, String environmentId) {
+  final formBricksContext = _FormBricksContext.of(context);
+  formBricksContext?.triggerManager.showSurvey(environmentId, context);
+}
