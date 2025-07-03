@@ -21,7 +21,7 @@ import 'question_types/statement_question.dart';
 
 
 class SurveyWidget extends StatefulWidget {
-  final FormbricksClient client;
+  final FormBricksClient client;
   final String surveyId;
   final String userId;
   final ThemeData? customTheme;
