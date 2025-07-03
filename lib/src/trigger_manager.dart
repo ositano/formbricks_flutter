@@ -48,7 +48,8 @@ class TriggerManager {
     return Platform.isAndroid || Platform.isIOS && screenWidth < 600; // Phones typically < 600px
   }
 
-  bool _shouldDisplaySurvey(double displayPercentage) {
+  bool _shouldDisplaySurvey(double? displayPercentage) {
+    if (displayPercentage == null) return true;
     final random = Random().nextDouble() * 100;
     return random <= displayPercentage;
   }
@@ -64,12 +65,32 @@ class TriggerManager {
       for (var surveyData in surveys) {
         final survey = Survey.fromJson(surveyData);
 
+        // Skip if survey is not inProgress or environmentId doesn't match
+        if (survey.status != 'inProgress' || survey.environmentId != client.environmentId) {
+          continue;
+        }
+
         // Skip completed surveys if displayOption is displayOnce
         if (survey.displayOption == 'displayOnce' && completedSurveys[survey.id] == true) {
           continue;
         }
 
-        bool shouldTrigger = true;
+        bool shouldTrigger = false;
+
+        // Check triggers
+        if (survey.triggers != null) {
+          for (var trigger in survey.triggers!) {
+            final actionClass = trigger['actionClass'];
+            if (actionClass != null &&
+                (actionClass['type'] == 'noCode' && actionClass['name'] == event ||
+                    actionClass['type'] == 'code' && actionClass['key'] == event)) {
+              shouldTrigger = true;
+              break;
+            }
+          }
+        }
+
+        if (!shouldTrigger) continue;
 
         // Evaluate segment filters (e.g., deviceType: phone)
         if (survey.segment != null && survey.segment!['filters'] != null) {
@@ -89,28 +110,6 @@ class TriggerManager {
           shouldTrigger = false;
         }
 
-        // Evaluate logic conditions (if any)
-        if (survey.logic != null) {
-          if (survey.logic!['event'] != null && survey.logic!['event']['name'] != event) {
-            shouldTrigger = false;
-          }
-
-          if (survey.logic!['attributes'] != null) {
-            for (var attr in survey.logic!['attributes']) {
-              final key = attr['key'];
-              final value = attr['value'];
-              if (userAttributes[key] != value) {
-                shouldTrigger = false;
-                break;
-              }
-            }
-          }
-
-          if (survey.logic!['delay'] != null && eventCounts[event]! < survey.logic!['delay']['count']) {
-            shouldTrigger = false;
-          }
-        }
-
         if (shouldTrigger) {
           completedSurveys[survey.id] = true;
           await _saveCompletedSurveys();
@@ -123,7 +122,7 @@ class TriggerManager {
                 client: client,
                 surveyId: survey.id,
                 userId: userId,
-                customTheme: null, // Handled by SurveyWidget's _buildTheme
+                customTheme: customTheme, // Handled by SurveyWidget's _buildTheme
               ),
             ),
           );
@@ -132,6 +131,68 @@ class TriggerManager {
     } catch (e) {
       debugPrint('Error fetching surveys for event $event: $e');
       // Optionally show a user-friendly error via ScaffoldMessenger
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to load survey: $e')),
+      );
+    }
+  }
+
+  Future<void> showSurvey(String surveyId, BuildContext context) async {
+    if (!_isInitialized) await initialize();
+
+    try {
+      final surveyData = await client.getSurvey(surveyId);
+      final survey = Survey.fromJson(surveyData);
+
+      // Skip if survey is not inProgress or environmentId doesn't match
+      if (survey.status != 'inProgress' || survey.environmentId != client.environmentId) {
+        return;
+      }
+
+      // Skip completed surveys if displayOption is displayOnce
+      if (survey.displayOption == 'displayOnce' && completedSurveys[survey.id] == true) {
+        return;
+      }
+
+      bool shouldTrigger = true;
+
+      // Evaluate segment filters (e.g., deviceType: phone)
+      if (survey.segment != null && survey.segment!['filters'] != null) {
+        for (var filter in survey.segment!['filters']) {
+          final resource = filter['resource'];
+          if (resource['root']['type'] == 'device' && resource['root']['deviceType'] == 'phone') {
+            if (!_isPhoneDevice(context)) {
+              shouldTrigger = false;
+              break;
+            }
+          }
+        }
+      }
+
+      // Check displayPercentage
+      if (!_shouldDisplaySurvey(survey.displayPercentage)) {
+        shouldTrigger = false;
+      }
+
+      if (shouldTrigger) {
+        completedSurveys[survey.id] = true;
+        await _saveCompletedSurveys();
+        onSurveyTriggered?.call(survey.id);
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => Dialog(
+            child: SurveyWidget(
+              client: client,
+              surveyId: survey.id,
+              userId: userId,
+              customTheme: customTheme,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error fetching survey $surveyId: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load survey: $e')),
       );

@@ -24,11 +24,18 @@ class Question {
   factory Question.fromJson(Map<String, dynamic> json) {
     return Question(
       id: json['id'],
-      type: json['type'],
+      type: json['type'] == 'openText' ? 'freeText' : json['type'], // Map openText to freeText
       headline: Map<String, String>.from(json['headline'] ?? {'default': ''}),
       subheader: Map<String, String>.from(json['subheader'] ?? {'default': ''}),
       required: json['required'] ?? false,
-      inputConfig: json['inputConfig'],
+      inputConfig: {
+        if (json['inputType'] != null) 'inputType': json['inputType'],
+        if (json['placeholder'] != null) 'placeholder': json['placeholder'],
+        if (json['choices'] != null) 'choices': json['choices'],
+        if (json['range'] != null) 'range': json['range'],
+        if (json['scale'] != null) 'scale': json['scale'],
+        if (json['shuffleOption'] != null) 'shuffleOption': json['shuffleOption'],
+      },
       lowerLabel: json['lowerLabel'] != null ? Map<String, String>.from(json['lowerLabel']) : null,
       upperLabel: json['upperLabel'] != null ? Map<String, String>.from(json['upperLabel']) : null,
       buttonLabel: json['buttonLabel'] != null ? Map<String, String>.from(json['buttonLabel']) : null,
