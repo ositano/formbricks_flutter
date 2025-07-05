@@ -7,16 +7,39 @@ class FormBricksClient {
   final String apiHost;
   final String environmentId;
   final String apiKey;
+  String? _userId;
+  Map<String, dynamic>? _userAttributes;
+  final bool isDev; // 'dev' or 'prod'
 
   FormBricksClient({
     required this.apiHost,
     required this.environmentId,
     required this.apiKey,
+    this.isDev = true,
   });
+
+  String get baseUrl => isDev ? '$apiHost/dev' : apiHost;
 
   static final HttpWithMiddleware _httpClient = HttpWithMiddleware.build(
     middlewares: [HttpLogger(logLevel: LogLevel.BODY)],
   );
+
+  Future<void> setUser(String userId, {Map<String, dynamic>? attributes}) async {
+    _userId = userId;
+    _userAttributes = attributes ?? {};
+    final url = Uri.parse('$baseUrl/api/v1/management/people/$_userId');
+    final response = await _httpClient.put(
+      url,
+      headers: {
+        'Authorization': 'Bearer $apiKey',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({'attributes': _userAttributes}),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to set user: ${response.body}');
+    }
+  }
 
   Future<Map<String, dynamic>> getSurvey(String surveyId) async {
     final url = Uri.parse('$apiHost/api/v1/management/surveys/$surveyId');
@@ -31,22 +54,22 @@ class FormBricksClient {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getSurveysByTrigger(String event) async {
-    final url = Uri.parse('$apiHost/api/v1/management/surveys?trigger=$event');
+  Future<List<Map<String, dynamic>>> getSurveys() async {
+    final url = Uri.parse('$apiHost/api/v1/management/surveys');
     final response = await _httpClient.get(url, headers: {'x-api-key': apiKey});
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body)['data'] as List;
       // Filter surveys by trigger actionClass.name
       return data
-          .where((survey) {
-            final triggers = survey['triggers'] as List? ?? [];
-            return triggers.any(
-              (trigger) =>
-                  trigger['actionClass'] != null &&
-                  trigger['actionClass']['name'] == event,
-            );
-          })
+          // .where((survey) {
+          //   final triggers = survey['triggers'] as List? ?? [];
+          //   return triggers.any(
+          //     (trigger) =>
+          //         trigger['actionClass'] != null &&
+          //         trigger['actionClass']['name'] == event,
+          //   );
+          // })
           .cast<Map<String, dynamic>>()
           .toList();
     } else {

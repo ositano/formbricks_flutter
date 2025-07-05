@@ -6,11 +6,13 @@ import '../../models/question.dart';
 class MultiSelectQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
+  final dynamic response;
 
   const MultiSelectQuestion({
     super.key,
     required this.question,
     required this.onResponse,
+    this.response
   });
 
   @override
@@ -21,6 +23,12 @@ class _MultiSelectQuestionState extends State<MultiSelectQuestion> {
   List<String> selectedOptions = [];
 
   @override
+  void initState() {
+    super.initState();
+    selectedOptions = widget.response as List<String>? ?? [];
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final options = widget.question.inputConfig?['choices'] as List<dynamic>? ?? [];
@@ -29,10 +37,10 @@ class _MultiSelectQuestionState extends State<MultiSelectQuestion> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(widget.question.headline['default'] ?? '', style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        if (widget.question.subheader['default']?.isNotEmpty ?? false)
+        if (widget.question.subheader?['default']?.isNotEmpty ?? false)
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Text(widget.question.subheader['default'] ?? '', style: theme.textTheme.bodyMedium,),
+            child: Text(widget.question.subheader?['default'] ?? '', style: theme.textTheme.bodyMedium,),
           ),
         const SizedBox(height: 16),
         ...options.map((option) => CheckboxListTile(

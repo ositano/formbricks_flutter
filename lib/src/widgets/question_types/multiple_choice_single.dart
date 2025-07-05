@@ -2,38 +2,40 @@ import 'package:flutter/material.dart';
 
 import '../../models/question.dart';
 
-class ConsentQuestion extends StatefulWidget {
+class MultipleChoiceSingle extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
 
-  const ConsentQuestion({
+  const MultipleChoiceSingle({
     super.key,
     required this.question,
     required this.onResponse,
-    this.response,
+    this.response
   });
 
   @override
-  State<ConsentQuestion> createState() => _ConsentQuestionState();
+  State<MultipleChoiceSingle> createState() => _MultipleChoiceSingleState();
 }
 
-class _ConsentQuestionState extends State<ConsentQuestion> {
-  bool consented = false;
+class _MultipleChoiceSingleState extends State<MultipleChoiceSingle> {
+  String? selectedOption;
 
   @override
   void initState() {
     super.initState();
-    consented = widget.response as bool? ?? false;
+    selectedOption = widget.response as String?;
   }
+
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final options = widget.question.inputConfig?['choices'] as List<dynamic>? ?? [];
     final isRequired = widget.question.required ?? false;
 
     return FormField<bool>(
-      validator: (value) => isRequired && !consented ? 'Please provide consent' : null,
+      validator: (value) => isRequired && selectedOption == null ? 'Please select an option' : null,
       builder: (FormFieldState<bool> field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,17 +47,18 @@ class _ConsentQuestionState extends State<ConsentQuestion> {
                 child: Text(widget.question.subheader?['default'] ?? '', style: theme.textTheme.bodyMedium),
               ),
             const SizedBox(height: 16),
-            CheckboxListTile(
-              title: Text(widget.question.label?['default'] ?? 'I agree', style: theme.textTheme.bodyMedium),
-              value: consented,
+            ...options.map((option) => RadioListTile<String>(
+              title: Text(option['label']['default'] ?? '', style: theme.textTheme.bodyMedium),
+              value: option['id'],
+              groupValue: selectedOption,
               onChanged: (value) {
                 setState(() {
-                  consented = value ?? false;
-                  widget.onResponse(widget.question.id, consented);
+                  selectedOption = value;
+                  widget.onResponse(widget.question.id, value);
                   field.didChange(true); // Validate
                 });
               },
-            ),
+            )),
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),

@@ -1,3 +1,5 @@
+import '../utils/enums.dart';
+
 class Trigger {
   final String event;
   final Map<String, dynamic>? attributes;
@@ -16,4 +18,17 @@ class Trigger {
       delay: json['delay'],
     );
   }
+}
+
+
+class TriggerValue {
+  final TriggerType type;
+  final String? name; // For noCode
+  final String? key;  // For code
+
+  TriggerValue({
+    required this.type,
+    this.name,
+    this.key,
+  });
 }

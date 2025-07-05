@@ -15,6 +15,8 @@ class Survey {
   final Map<String, dynamic>? segment;
   final Map<String, dynamic>? welcomeCard;
   final List<Map<String, dynamic>>? endings;
+  final List<Map<String, dynamic>>? variables;
+  final List<dynamic>? followUps;
 
   Survey({
     required this.id,
@@ -30,6 +32,8 @@ class Survey {
     this.segment,
     this.welcomeCard,
     this.endings,
+    this.variables,
+    this.followUps,
   });
 
   factory Survey.fromJson(Map<String, dynamic> json) {
@@ -49,6 +53,8 @@ class Survey {
       segment: json['segment'],
       welcomeCard: json['welcomeCard'],
       endings: (json['endings'] as List?)?.cast<Map<String, dynamic>>(),
+      variables: (json['variables'] as List?)?.cast<Map<String, dynamic>>(),
+      followUps: json['followUps'],
     );
   }
 }

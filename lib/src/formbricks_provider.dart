@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'formbricks_client.dart';
-import 'trigger_manager.dart';
-import 'widgets/survey_widget.dart';
-
+import '../formbricks_flutter.dart';
+import 'utils/enums.dart';
 
 class FormBricksProvider extends StatefulWidget {
   final Widget child;
@@ -11,6 +9,9 @@ class FormBricksProvider extends StatefulWidget {
   final String userId;
   final Map<String, dynamic> userAttributes;
   final ThemeData? customTheme;
+  final bool? showPoweredBy;
+  final SurveyDisplayMode? surveyDisplayMode;
+  final List<TriggerValue>? triggers;
 
   const FormBricksProvider({
     super.key,
@@ -19,7 +20,14 @@ class FormBricksProvider extends StatefulWidget {
     required this.userId,
     this.userAttributes = const {},
     this.customTheme,
+    this.showPoweredBy,
+    this.surveyDisplayMode = SurveyDisplayMode.bottomSheetModal,
+    this.triggers,
   });
+
+  static _FormBricksProviderState? of(BuildContext context) {
+    return context.findAncestorStateOfType<_FormBricksProviderState>();
+  }
 
   @override
   State<FormBricksProvider> createState() => _FormBricksProviderState();
@@ -32,64 +40,61 @@ class _FormBricksProviderState extends State<FormBricksProvider> {
   void initState() {
     super.initState();
     _triggerManager = TriggerManager(
-      client: widget.client,
-      userId: widget.userId,
-      userAttributes: widget.userAttributes,
-      onSurveyTriggered: (surveyId) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => Dialog(
-            child: SurveyWidget(
-              client: widget.client,
-              surveyId: surveyId,
-              userId: widget.userId,
-              customTheme: widget.customTheme,
-            ),
-          ),
-        );
-      },
+        client: widget.client,
+        userId: widget.userId,
+        userAttributes: widget.userAttributes,
+        surveyDisplayMode: widget.surveyDisplayMode,
+        showPoweredBy: widget.showPoweredBy,
+        context: context,
+        triggers: widget.triggers
     );
     _triggerManager.initialize();
+    WidgetsBinding.instance.addPostFrameCallback((_){
+    });
   }
 
-  void trackEvent(String event) {
-    _triggerManager.trackEvent(event, context);
+  @override
+  void dispose() {
+    _triggerManager.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return _FormBricksContext(
-      triggerManager: _triggerManager,
-      child: widget.child,
+    return Theme(
+      data: widget.customTheme ?? Theme.of(context),
+      child: Builder(
+        builder: (context) {
+          return InheritedFormBricks(
+            triggerManager: _triggerManager,
+            child: widget.child,
+          );
+        },
+      ),
     );
   }
 }
 
-class _FormBricksContext extends InheritedWidget {
+class InheritedFormBricks extends InheritedWidget {
   final TriggerManager triggerManager;
 
-  const _FormBricksContext({
+  const InheritedFormBricks({
+    super.key,
     required this.triggerManager,
     required super.child,
   });
 
-  static _FormBricksContext? of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<_FormBricksContext>();
+  static InheritedFormBricks? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<InheritedFormBricks>();
   }
 
   @override
-  bool updateShouldNotify(_FormBricksContext oldWidget) {
+  bool updateShouldNotify(InheritedFormBricks oldWidget) {
     return triggerManager != oldWidget.triggerManager;
   }
 }
 
-void trackFormBricksEvent(BuildContext context, String event) {
-  final formBricksContext = _FormBricksContext.of(context);
-  formBricksContext?.triggerManager.trackEvent(event, context);
-}
-
-void showFormBricksSurvey(BuildContext context, String environmentId) {
-  final formBricksContext = _FormBricksContext.of(context);
-  formBricksContext?.triggerManager.showSurvey(environmentId, context);
+// Extension for easy access in context
+extension FormbricksContext on BuildContext {
+  TriggerManager? get triggerManager => InheritedFormBricks.of(this)?.triggerManager;
 }

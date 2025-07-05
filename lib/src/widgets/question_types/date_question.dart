@@ -7,11 +7,13 @@ import '../../models/question.dart';
 class DateQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
+  final dynamic response;
 
   const DateQuestion({
     super.key,
     required this.question,
     required this.onResponse,
+    this.response
   });
 
   @override
@@ -20,6 +22,12 @@ class DateQuestion extends StatefulWidget {
 
 class _DateQuestionState extends State<DateQuestion> {
   DateTime? selectedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedDate = widget.response as DateTime?;
+  }
 
   Future<void> _pickDate(BuildContext context) async {
     final picked = await showDatePicker(
@@ -43,10 +51,10 @@ class _DateQuestionState extends State<DateQuestion> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(widget.question.headline['default'] ?? '', style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        if (widget.question.subheader['default']?.isNotEmpty ?? false)
+        if (widget.question.subheader?['default']?.isNotEmpty ?? false)
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Text(widget.question.subheader['default'] ?? '', style: theme.textTheme.bodyMedium,),
+            child: Text(widget.question.subheader?['default'] ?? '', style: theme.textTheme.bodyMedium,),
           ),
         const SizedBox(height: 16),
         ElevatedButton(

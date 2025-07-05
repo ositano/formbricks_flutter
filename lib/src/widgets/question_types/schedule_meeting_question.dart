@@ -17,17 +17,16 @@ class ScheduleMeetingQuestion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     final calendarUrl = question.inputConfig?['calendarUrl'] ?? '';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(question.headline['default'] ?? '', style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        if (question.subheader['default']?.isNotEmpty ?? false)
+        if (question.subheader?['default']?.isNotEmpty ?? false)
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Text(question.subheader['default'] ?? '', style: theme.textTheme.bodyMedium,),
+            child: Text(question.subheader?['default'] ?? '', style: theme.textTheme.bodyMedium,),
           ),
         const SizedBox(height: 16),
         ElevatedButton(

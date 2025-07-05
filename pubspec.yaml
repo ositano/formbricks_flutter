@@ -20,7 +20,12 @@ dependencies:
   reorderables: ^0.6.0 #For ranking questions
   url_launcher: any
   shared_preferences: any
+  card_stack_widget: ^0.1.6
+  flutter_widget_from_html: ^0.16.0
   pretty_http_logger: ^1.0.5
+  chewie: ^1.12.1
+  video_player: ^2.10.0
+
 
 dev_dependencies:
   flutter_test:

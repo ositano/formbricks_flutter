@@ -1,50 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:card_stack_widget/card_stack_widget.dart';
 
 import '../formbricks_client.dart';
-import '../models/question.dart';
 import '../models/survey.dart';
-import 'question_types/address_question.dart';
-import 'question_types/consent_question.dart';
-import 'question_types/contact_info_question.dart';
-import 'question_types/date_question.dart';
-import 'question_types/file_upload_question.dart';
-import 'question_types/free_text_question.dart';
-import 'question_types/matrix_question.dart';
-import 'question_types/multi_select_question.dart';
-import 'question_types/nps_question.dart';
-import 'question_types/picture_selection_question.dart';
-import 'question_types/ranking_question.dart';
-import 'question_types/rating_question.dart';
-import 'question_types/schedule_meeting_question.dart';
-import 'question_types/single_select_question.dart';
-import 'question_types/statement_question.dart';
-
+import 'end_widget.dart';
+import 'question_widget.dart';
+import 'welcome_widget.dart';
 
 class SurveyWidget extends StatefulWidget {
   final FormBricksClient client;
-  final String surveyId;
+  final Survey survey;
   final String userId;
   final ThemeData? customTheme;
+  final bool? showPoweredBy;
 
   const SurveyWidget({
     super.key,
     required this.client,
-    required this.surveyId,
+    required this.survey,
     required this.userId,
     this.customTheme,
+    this.showPoweredBy = true,
   });
 
   @override
-  _SurveyWidgetState createState() => _SurveyWidgetState();
+  State<SurveyWidget> createState() => SurveyWidgetState();
 }
 
-class _SurveyWidgetState extends State<SurveyWidget> {
-  Survey? survey;
-  int currentQuestionIndex = 0;
+class SurveyWidgetState extends State<SurveyWidget> {
+  int _currentStep =
+      0; // 0 = welcome, 1+ = questions, questions.length + 1 = ending
+  late Survey survey;
   Map<String, dynamic> responses = {};
   bool isLoading = true;
   String? error;
   String? displayId;
+  final formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -53,11 +44,15 @@ class _SurveyWidgetState extends State<SurveyWidget> {
     _createDisplay();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   Future<void> _fetchSurvey() async {
     try {
-      final surveyData = await widget.client.getSurvey(widget.surveyId);
       setState(() {
-        survey = Survey.fromJson(surveyData);
+        survey = widget.survey;
         isLoading = false;
       });
     } catch (e) {
@@ -71,7 +66,7 @@ class _SurveyWidgetState extends State<SurveyWidget> {
   Future<void> _createDisplay() async {
     try {
       displayId = await widget.client.createDisplay(
-        surveyId: widget.surveyId,
+        surveyId: widget.survey.id,
         userId: widget.userId,
       );
     } catch (e) {
@@ -88,15 +83,13 @@ class _SurveyWidgetState extends State<SurveyWidget> {
   }
 
   Future<void> _submitSurvey() async {
-    if (survey == null) return;
-
     setState(() {
       error = null;
     });
 
     try {
       await widget.client.submitResponse(
-        surveyId: widget.surveyId,
+        surveyId: widget.survey.id,
         userId: widget.userId,
         data: responses,
       );
@@ -111,160 +104,314 @@ class _SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
-  void _nextQuestion() {
-    if (survey == null || currentQuestionIndex >= survey!.questions.length - 1) {
-      _submitSurvey();
+  void nextStep() {
+    if (_currentStep == 0 && survey.welcomeCard?['enabled'] == true) {
+      setState(() => _currentStep++);
+    } else if (_currentStep < survey.questions.length &&
+        (formKey.currentState?.validate() ?? false)) {
+      setState(() => _currentStep++);
     } else {
-      setState(() {
-        currentQuestionIndex++;
-      });
+      if (_currentStep >= survey.questions.length) {
+        _showEnding();
+        _submitSurvey();
+      }
     }
   }
 
-  void _previousQuestion() {
-    if (currentQuestionIndex > 0) {
-      setState(() {
-        currentQuestionIndex--;
-      });
+  void previousStep() {
+    if (_currentStep > 0) {
+      setState(() => _currentStep--);
     }
+  }
+
+  void _showEnding() {
+    setState(() => _currentStep = survey.questions.length + 1);
   }
 
   ThemeData _buildTheme(BuildContext context) {
     final parentTheme = Theme.of(context);
-    final formbricksStyling = survey?.styling ?? {};
+    final formBricksStyling = survey.styling ?? {};
     final baseTheme = widget.customTheme ?? parentTheme;
 
     return baseTheme.copyWith(
-      primaryColor: Color(int.parse(formbricksStyling['primaryColor']?.replaceFirst('#', '0xFF') ?? '0xFF${baseTheme.primaryColor.value.toRadixString(16).padLeft(8, '0')}')),
+      primaryColor: Color(
+        int.parse(
+          formBricksStyling['primaryColor']?.replaceFirst('#', '0xFF') ??
+              '0xFF${baseTheme.primaryColor.value.toRadixString(16).padLeft(8, '0')}',
+        ),
+      ),
       textTheme: baseTheme.textTheme.merge(
-        formbricksStyling['fontFamily'] != null
+        formBricksStyling['fontFamily'] != null
             ? TextTheme(
-          headlineMedium: TextStyle(
-            fontFamily: formbricksStyling['fontFamily'],
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-          bodyMedium: TextStyle(
-            fontFamily: formbricksStyling['fontFamily'],
-          ),
-        )
+                headlineMedium: TextStyle(
+                  fontFamily: formBricksStyling['fontFamily'],
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+                bodyMedium: TextStyle(
+                  fontFamily: formBricksStyling['fontFamily'],
+                ),
+              )
             : null,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
           backgroundColor: WidgetStateProperty.all(
-            Color(int.parse(formbricksStyling['buttonColor']?.replaceFirst('#', '0xFF') ?? '0xFF${baseTheme.primaryColor.value.toRadixString(16).padLeft(8, '0')}')),
+            Color(
+              int.parse(
+                formBricksStyling['buttonColor']?.replaceFirst('#', '0xFF') ??
+                    '0xFF${baseTheme.primaryColor.value.toRadixString(16).padLeft(8, '0')}',
+              ),
+            ),
           ),
           foregroundColor: WidgetStateProperty.all(
-            Color(int.parse(formbricksStyling['buttonTextColor']?.replaceFirst('#', '0xFF') ?? '0xFFFFFFFF')),
+            Color(
+              int.parse(
+                formBricksStyling['buttonTextColor']?.replaceFirst(
+                      '#',
+                      '0xFF',
+                    ) ??
+                    '0xFFFFFFFF',
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildQuestion(Question question) {
-    switch (question.type) {
-      case 'freeText':
-        return FreeTextQuestion(question: question, onResponse: _onResponse);
-      case 'singleSelect':
-        return SingleSelectQuestion(question: question, onResponse: _onResponse);
-      case 'multiSelect':
-        return MultiSelectQuestion(question: question, onResponse: _onResponse);
-      case 'pictureSelection':
-        return PictureSelectionQuestion(question: question, onResponse: _onResponse);
-      case 'rating':
-        return RatingQuestion(question: question, onResponse: _onResponse);
-      case 'nps':
-        return NPSQuestion(question: question, onResponse: _onResponse);
-      case 'ranking':
-        return RankingQuestion(question: question, onResponse: _onResponse);
-      case 'matrix':
-        return MatrixQuestion(question: question, onResponse: _onResponse);
-      case 'statement':
-        return StatementQuestion(question: question, onResponse: _onResponse);
-      case 'consent':
-        return ConsentQuestion(question: question, onResponse: _onResponse);
-      case 'fileUpload':
-        return FileUploadQuestion(
+  List<CardModel> _buildCardStack(BuildContext context) {
+    final containerWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final twoHeight = screenHeight * (2 / 5); // 2/5 of screen
+    final twoFifthsHeight = screenHeight * (2.5 / 5); // 2.5/5 of screen
+
+    final totalSteps =
+        survey.questions.length +
+        (survey.welcomeCard?['enabled'] == true ? 1 : 0) +
+        1;
+    final List<CardModel> cardList = [];
+
+    if (isLoading) {
+      return [
+        CardModel(
+          backgroundColor: Colors.grey,
+          radius: const Radius.circular(8),
+          shadowColor: Colors.black.withOpacity(0.2),
+          child: SizedBox(
+            height: twoFifthsHeight,
+            width: containerWidth,
+            child: const Center(child: CircularProgressIndicator()),
+          ),
+        ),
+      ];
+    }
+    if (error != null) {
+      return [
+        CardModel(
+          backgroundColor: Colors.red,
+          radius: const Radius.circular(8),
+          shadowColor: Colors.black.withOpacity(0.2),
+          margin: EdgeInsets.only(top: twoFifthsHeight - twoHeight),
+          child: SizedBox(
+            height: twoFifthsHeight,
+            width: containerWidth,
+            child: Center(child: Text('Error: $error')),
+          ),
+        ),
+      ];
+    }
+
+    // Add dummy cards for the stack
+    for (int i = 0; i < 3; i++) {
+      cardList.add(
+        CardModel(
+          backgroundColor: Theme.of(context).cardColor,
+          radius: const Radius.circular(8),
+          margin: EdgeInsets.only(top: twoFifthsHeight - twoHeight),
+          shadowColor: Colors.black.withOpacity(0.2),
+          child: SizedBox(
+            height: twoFifthsHeight,
+            width: containerWidth,
+            child: const Center(child: Text('Dummy Card')),
+          ),
+        ),
+      );
+    }
+
+    // Add the front interactive card
+    Widget content;
+    String? nextLabel;
+    String? previousLabel;
+    if (_currentStep == 0 && survey.welcomeCard?['enabled'] == true) {
+      content = WelcomeWidget(survey: survey);
+      nextLabel = survey.welcomeCard!['buttonLabel']['default'] ?? 'Next';
+    } else if (_currentStep > 0 && _currentStep <= survey.questions.length) {
+      final question = survey.questions[_currentStep - 1];
+      content = Form(
+        key: formKey,
+        child: QuestionWidget(
           question: question,
           onResponse: _onResponse,
           client: widget.client,
-          surveyId: widget.surveyId,
+          surveyId: widget.survey.id,
           userId: widget.userId,
-        );
-      case 'date':
-        return DateQuestion(question: question, onResponse: _onResponse);
-      case 'scheduleMeeting':
-        return ScheduleMeetingQuestion(question: question, onResponse: _onResponse);
-      case 'address':
-        return AddressQuestion(question: question, onResponse: _onResponse);
-      case 'contactInfo':
-        return ContactInfoQuestion(question: question, onResponse: _onResponse);
-      default:
-        return const Text('Unsupported question type');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    if (error != null) {
-      return Center(child: Text('Error: $error'));
-    }
-    if (survey == null) {
-      return const Center(child: Text('No survey data'));
-    }
-
-    final question = survey!.questions[currentQuestionIndex];
-    final progress = (currentQuestionIndex + 1) / survey!.questions.length;
-
-    return Theme(
-      data: _buildTheme(context),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(survey!.name),
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(4.0),
-            child: LinearProgressIndicator(value: progress),
-          ),
+          response: responses[question.id],
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
+      );
+      nextLabel = question.buttonLabel?['default'];
+      previousLabel = question.backButtonLabel?['default'];
+    } else {
+      content = EndWidget(survey: survey);
+      nextLabel = 'Close';
+    }
+
+    cardList.add(
+      CardModel(
+        backgroundColor: Theme.of(context).cardColor,
+        radius: const Radius.circular(8),
+        margin: EdgeInsets.only(top: twoFifthsHeight - twoHeight),
+        shadowColor: Colors.black.withOpacity(0.2),
+        child: SizedBox(
+          width: containerWidth,
+          height: twoFifthsHeight,
+          child: Stack(
+            fit: StackFit.expand,
             children: [
-              _buildQuestion(question),
-              if (error != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Text(error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),
-                ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if (currentQuestionIndex > 0)
-                    ElevatedButton(
-                      onPressed: _previousQuestion,
-                      child: Text(question.buttonLabel?['default'] ?? 'Previous'),
+              Container(
+                width: containerWidth,
+                height: twoFifthsHeight, // Fixed height for the card
+                alignment: Alignment.topCenter, // Align card to bottom
+                child: SingleChildScrollView(
+                  physics: AlwaysScrollableScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight:
+                          0, // Remove fixed minHeight to allow natural overflow
                     ),
-                  ElevatedButton(
-                    onPressed: question.required && responses[question.id] == null
-                        ? null
-                        : _nextQuestion,
-                    child: Text(
-                      currentQuestionIndex == survey!.questions.length - 1
-                          ? 'Submit'
-                          : (question.buttonLabel?['default'] ?? 'Next'),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        24.0,
+                        32.0,
+                        24.0,
+                        50.0,
+                      ), // Extra padding at bottom for stack elements
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Flexible(
+                            child: content,
+                          ), // Allow content to expand and trigger scroll
+                          if (error != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(
+                                error!,
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                              ),
+                            ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                if (_currentStep > 1)
+                                  ElevatedButton(
+                                    onPressed: previousStep,
+                                    child: Text(previousLabel ?? 'Back'),
+                                  ),
+                                if (nextLabel != null)
+                                  if (_currentStep == 0 ||
+                                      (_currentStep > 0 &&
+                                          !['rating', 'nps'].contains(
+                                            survey.questions
+                                                .elementAtOrNull(
+                                                  _currentStep - 1,
+                                                )
+                                                ?.type,
+                                          )))
+                                    ElevatedButton(
+                                      onPressed:
+                                          _currentStep ==
+                                              survey.questions.length + 1
+                                          ? () => Navigator.of(context).pop()
+                                          : nextStep,
+                                      child: Text(nextLabel),
+                                    ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: twoFifthsHeight - twoHeight),
+                        ],
+                      ),
                     ),
                   ),
-                ],
+                ),
+              ),
+              Positioned(
+                bottom: twoFifthsHeight - twoHeight, // Align to the very bottom
+                left: 0,
+                right: 0,
+                child: Container(
+                  color: Theme.of(context).cardColor,
+                  width: containerWidth,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5.0, bottom: 10.0),
+                        child: Text.rich(
+                          textAlign: TextAlign.center,
+                          TextSpan(
+                            text: 'Powered by ',
+                            style: Theme.of(context).textTheme.bodySmall,
+                            children: [
+                              TextSpan(
+                                text: 'Formbricks',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      LinearProgressIndicator(
+                        value: (_currentStep + 1) / totalSteps,
+                        backgroundColor: Colors.grey[300],
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Theme.of(context).primaryColor,
+                        ),
+                        minHeight: 5,
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
         ),
+      ),
+    );
+
+    return cardList;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Theme(
+      data: _buildTheme(context),
+      child: CardStackWidget(
+        opacityChangeOnDrag: true,
+        swipeOrientation: CardOrientation.none,
+        cardDismissOrientation: CardOrientation.none,
+        positionFactor: 1.0,
+        scaleFactor: 1.7,
+        alignment: Alignment.bottomCenter,
+        reverseOrder: false,
+        animateCardScale: true,
+        dismissedCardDuration: const Duration(milliseconds: 150),
+        cardList: _buildCardStack(context),
       ),
     );
   }

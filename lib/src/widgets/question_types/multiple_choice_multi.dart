@@ -2,38 +2,39 @@ import 'package:flutter/material.dart';
 
 import '../../models/question.dart';
 
-class ConsentQuestion extends StatefulWidget {
+class MultipleChoiceMulti extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
 
-  const ConsentQuestion({
+  const MultipleChoiceMulti({
     super.key,
     required this.question,
     required this.onResponse,
-    this.response,
+    this.response
   });
 
   @override
-  State<ConsentQuestion> createState() => _ConsentQuestionState();
+  State<MultipleChoiceMulti> createState() => _MultipleChoiceMultiState();
 }
 
-class _ConsentQuestionState extends State<ConsentQuestion> {
-  bool consented = false;
+class _MultipleChoiceMultiState extends State<MultipleChoiceMulti> {
+  List<String> selectedOptions = [];
 
   @override
   void initState() {
     super.initState();
-    consented = widget.response as bool? ?? false;
+    selectedOptions = widget.response as List<String>? ?? [];
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final options = widget.question.inputConfig?['choices'] as List<dynamic>? ?? [];
     final isRequired = widget.question.required ?? false;
 
     return FormField<bool>(
-      validator: (value) => isRequired && !consented ? 'Please provide consent' : null,
+      validator: (value) => isRequired && selectedOptions.isEmpty ? 'Please select at least one option' : null,
       builder: (FormFieldState<bool> field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,17 +46,21 @@ class _ConsentQuestionState extends State<ConsentQuestion> {
                 child: Text(widget.question.subheader?['default'] ?? '', style: theme.textTheme.bodyMedium),
               ),
             const SizedBox(height: 16),
-            CheckboxListTile(
-              title: Text(widget.question.label?['default'] ?? 'I agree', style: theme.textTheme.bodyMedium),
-              value: consented,
+            ...options.map((option) => CheckboxListTile(
+              title: Text(option['label']['default'] ?? '', style: theme.textTheme.bodyMedium),
+              value: selectedOptions.contains(option['id']),
               onChanged: (value) {
                 setState(() {
-                  consented = value ?? false;
-                  widget.onResponse(widget.question.id, consented);
+                  if (value == true) {
+                    selectedOptions.add(option['id']);
+                  } else {
+                    selectedOptions.remove(option['id']);
+                  }
+                  widget.onResponse(widget.question.id, selectedOptions);
                   field.didChange(true); // Validate
                 });
               },
-            ),
+            )),
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),

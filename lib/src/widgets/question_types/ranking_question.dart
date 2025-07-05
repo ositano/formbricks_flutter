@@ -7,11 +7,13 @@ import '../../models/question.dart';
 class RankingQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
+  final dynamic response;
 
   const RankingQuestion({
     super.key,
     required this.question,
     required this.onResponse,
+    this.response
   });
 
   @override
@@ -20,6 +22,12 @@ class RankingQuestion extends StatefulWidget {
 
 class _RankingQuestionState extends State<RankingQuestion> {
   List<String> rankedItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    rankedItems = widget.response as List<String>? ?? [];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,10 +43,10 @@ class _RankingQuestionState extends State<RankingQuestion> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(widget.question.headline['default'] ?? '', style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        if (widget.question.subheader['default']?.isNotEmpty ?? false)
+        if (widget.question.subheader?['default']?.isNotEmpty ?? false)
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Text(widget.question.subheader['default'] ?? '', style: theme.textTheme.bodyMedium,),
+            child: Text(widget.question.subheader?['default'] ?? '', style: theme.textTheme.bodyMedium,),
           ),
         const SizedBox(height: 16),
         ReorderableWrap(

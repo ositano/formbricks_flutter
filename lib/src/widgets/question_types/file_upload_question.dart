@@ -11,6 +11,7 @@ class FileUploadQuestion extends StatefulWidget {
   final FormBricksClient client;
   final String surveyId;
   final String userId;
+  final dynamic response;
 
   const FileUploadQuestion({
     super.key,
@@ -19,6 +20,7 @@ class FileUploadQuestion extends StatefulWidget {
     required this.client,
     required this.surveyId,
     required this.userId,
+    this.response
   });
 
   @override
@@ -27,6 +29,12 @@ class FileUploadQuestion extends StatefulWidget {
 
 class _FileUploadQuestionState extends State<FileUploadQuestion> {
   String? fileUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    fileUrl = widget.response as String?;
+  }
 
   Future<void> _pickAndUploadFile() async {
     final result = await FilePicker.platform.pickFiles();
@@ -56,10 +64,10 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(widget.question.headline['default'] ?? '', style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        if (widget.question.subheader['default']?.isNotEmpty ?? false)
+        if (widget.question.subheader?['default']?.isNotEmpty ?? false)
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Text(widget.question.subheader['default'] ?? '', style: theme.textTheme.bodyMedium,),
+            child: Text(widget.question.subheader?['default'] ?? '', style: theme.textTheme.bodyMedium,),
           ),
         const SizedBox(height: 16),
         ElevatedButton(
