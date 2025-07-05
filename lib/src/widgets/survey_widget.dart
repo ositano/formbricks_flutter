@@ -278,6 +278,43 @@ class SurveyWidgetState extends State<SurveyWidget> {
           child: Stack(
             fit: StackFit.expand,
             children: [
+              Positioned(
+                bottom: twoFifthsHeight - twoHeight, // Align to the very bottom
+                left: 0,
+                right: 0,
+                child: Container(
+                  color: Theme.of(context).cardColor,
+                  width: containerWidth,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5.0, bottom: 10.0),
+                        child: Text.rich(
+                          textAlign: TextAlign.center,
+                          TextSpan(
+                            text: 'Powered by ',
+                            style: Theme.of(context).textTheme.bodySmall,
+                            children: [
+                              TextSpan(
+                                text: 'Formbricks',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      LinearProgressIndicator(
+                        value: (_currentStep + 1) / totalSteps,
+                        backgroundColor: Colors.grey[300],
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Theme.of(context).primaryColor,
+                        ),
+                        minHeight: 5,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               Container(
                 width: containerWidth,
                 height: twoFifthsHeight, // Fixed height for the card
@@ -286,8 +323,8 @@ class SurveyWidgetState extends State<SurveyWidget> {
                   physics: AlwaysScrollableScrollPhysics(),
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
-                      minHeight:
-                          0, // Remove fixed minHeight to allow natural overflow
+                      minHeight: 0, // Remove fixed minHeight to allow natural overflow
+                      maxHeight: twoFifthsHeight,
                     ),
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(
@@ -301,6 +338,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Flexible(
+                            fit: FlexFit.loose,
                             child: content,
                           ), // Allow content to expand and trigger scroll
                           if (error != null)
@@ -351,43 +389,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
                   ),
                 ),
               ),
-              Positioned(
-                bottom: twoFifthsHeight - twoHeight, // Align to the very bottom
-                left: 0,
-                right: 0,
-                child: Container(
-                  color: Theme.of(context).cardColor,
-                  width: containerWidth,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5.0, bottom: 10.0),
-                        child: Text.rich(
-                          textAlign: TextAlign.center,
-                          TextSpan(
-                            text: 'Powered by ',
-                            style: Theme.of(context).textTheme.bodySmall,
-                            children: [
-                              TextSpan(
-                                text: 'Formbricks',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      LinearProgressIndicator(
-                        value: (_currentStep + 1) / totalSteps,
-                        backgroundColor: Colors.grey[300],
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Theme.of(context).primaryColor,
-                        ),
-                        minHeight: 5,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+
             ],
           ),
         ),
