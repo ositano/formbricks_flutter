@@ -7,3 +7,4 @@ export 'src/models/trigger.dart';
 export 'src/widgets/survey_widget.dart';
 export 'src/utils/error_handler.dart';
 export 'src/utils/enums.dart';
+export 'src/utils/theme_manager.dart';

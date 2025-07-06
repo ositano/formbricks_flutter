@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../formbricks_flutter.dart';
-import 'utils/enums.dart';
 
 class FormBricksProvider extends StatefulWidget {
   final Widget child;
@@ -10,7 +9,8 @@ class FormBricksProvider extends StatefulWidget {
   final Map<String, dynamic> userAttributes;
   final ThemeData? customTheme;
   final bool? showPoweredBy;
-  final SurveyDisplayMode? surveyDisplayMode;
+  final SurveyDisplayMode surveyDisplayMode;
+  final bool useWrapInRankingQuestion;
   final List<TriggerValue>? triggers;
 
   const FormBricksProvider({
@@ -21,7 +21,8 @@ class FormBricksProvider extends StatefulWidget {
     this.userAttributes = const {},
     this.customTheme,
     this.showPoweredBy,
-    this.surveyDisplayMode = SurveyDisplayMode.bottomSheetModal,
+    this.surveyDisplayMode = SurveyDisplayMode.formbricks,
+    this.useWrapInRankingQuestion = true,
     this.triggers,
   });
 
@@ -46,7 +47,8 @@ class _FormBricksProviderState extends State<FormBricksProvider> {
         surveyDisplayMode: widget.surveyDisplayMode,
         showPoweredBy: widget.showPoweredBy,
         context: context,
-        triggers: widget.triggers
+        triggers: widget.triggers,
+      useWrapInRankingQuestion: widget.useWrapInRankingQuestion
     );
     _triggerManager.initialize();
     WidgetsBinding.instance.addPostFrameCallback((_){

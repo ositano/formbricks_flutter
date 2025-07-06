@@ -106,10 +106,9 @@ class _FreeTextQuestionState extends State<FreeTextQuestion> {
     final maxChars = charLimit?['max'];
     final minChars = charLimit?['min'];
 
-    //print('Building FreeText for ${question.id}, Value: $_currentValue');
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         if (question.imageUrl?.isNotEmpty ?? false)
           Padding(
@@ -143,15 +142,14 @@ class _FreeTextQuestionState extends State<FreeTextQuestion> {
         FormField<String>(
           initialValue: _currentValue,
           validator: (value) {
-            //print('Validating ${question.id}: value=$value, isRequired=$isRequired');
             if (isRequired && (value == null || value.isEmpty)) {
               return 'This field is required';
             }
             if (hasCharLimit) {
-              if (value != null && value.length < minChars!) {
+              if (value != null && value.length < int.tryParse(minChars)!) {
                 return 'Minimum $minChars characters required';
               }
-              if (value != null && maxChars != null && value.length > maxChars) {
+              if (value != null && maxChars != null && value.length > int.tryParse(maxChars)!) {
                 return 'Maximum $maxChars characters allowed';
               }
             }
@@ -173,7 +171,13 @@ class _FreeTextQuestionState extends State<FreeTextQuestion> {
                         : null,
                   ),
                   maxLines: question.longAnswer == true ? null : 1,
-                  keyboardType: question.inputType == 'text' ? TextInputType.text : TextInputType.number,
+                  minLines: question.longAnswer == true ? 3 : 1,
+                  maxLength: hasCharLimit ? int.tryParse(maxChars) : null,
+                  keyboardType:  {
+                    'number': TextInputType.number,
+                    'phone': TextInputType.phone,
+                    'email': TextInputType.emailAddress,
+                  }[question.inputType] ?? TextInputType.text,//question.inputType == 'text' ? TextInputType.text : TextInputType.number,
                   onChanged: _updateResponse,
                 ),
               ],

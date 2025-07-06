@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
 import '../../formbricks_flutter.dart';
 import '../models/question.dart';
-import 'question_types/address_question.dart';
-import 'question_types/consent_question.dart';
-import 'question_types/contact_info_question.dart';
-import 'question_types/cta_question.dart';
-import 'question_types/date_question.dart';
-import 'question_types/file_upload_question.dart';
-import 'question_types/free_text_question.dart';
-import 'question_types/matrix_question.dart';
-import 'question_types/multiple_choice_multi.dart';
-import 'question_types/multiple_choice_single.dart';
-import 'question_types/nps_question.dart';
-import 'question_types/picture_selection_question.dart';
-import 'question_types/ranking_question.dart';
-import 'question_types/rating_question.dart';
-import 'question_types/schedule_meeting_question.dart';
-import 'question_types/single_select_question.dart';
-import 'question_types/statement_question.dart';
+import 'question/address_question.dart';
+import 'question/consent_question.dart';
+import 'question/contact_info_question.dart';
+import 'question/cta_question.dart';
+import 'question/date_question.dart';
+import 'question/file_upload_question.dart';
+import 'question/free_text_question.dart';
+import 'question/matrix_question.dart';
+import 'question/multiple_choice_multi.dart';
+import 'question/multiple_choice_single.dart';
+import 'question/nps_question.dart';
+import 'question/picture_selection_question.dart';
+import 'question/ranking_formbricks_question.dart';
+import 'question/ranking_question.dart';
+import 'question/rating_question.dart';
+import 'question/schedule_meeting_question.dart';
+import 'question/single_select_question.dart';
+import 'question/statement_question.dart';
 
 class QuestionWidget extends StatelessWidget {
   final Question question;
@@ -26,6 +27,8 @@ class QuestionWidget extends StatelessWidget {
   final String surveyId;
   final String userId;
   final dynamic response;
+  final SurveyDisplayMode surveyDisplayMode;
+  final bool useWrapInRankingQuestion;
 
   const QuestionWidget({
     super.key,
@@ -35,6 +38,8 @@ class QuestionWidget extends StatelessWidget {
     required this.surveyId,
     required this.userId,
     this.response,
+    required this.surveyDisplayMode,
+    required this.useWrapInRankingQuestion
   });
 
   @override
@@ -64,7 +69,7 @@ class QuestionWidget extends StatelessWidget {
       case 'nps':
         return NPSQuestion(question: question, onResponse: onResponse, response: response);
       case 'ranking':
-        return RankingQuestion(question: question, onResponse: onResponse, response: response);
+        return surveyDisplayMode == SurveyDisplayMode.formbricks ? RankingFormbricksQuestion(question: question, onResponse: onResponse, response: response, useWrapInRankingQuestion: useWrapInRankingQuestion,) : RankingQuestion(question: question, onResponse: onResponse, response: response, useWrapInRankingQuestion: useWrapInRankingQuestion,);
       case 'matrix':
         return MatrixQuestion(question: question, onResponse: onResponse, response: response);
       case 'statement':

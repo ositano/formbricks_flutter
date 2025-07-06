@@ -64,7 +64,7 @@ class _RatingQuestionState extends State<RatingQuestion> {
               allowHalfRating: false,
               itemCount: range,
               itemPadding: const EdgeInsets.symmetric(horizontal: 8.0),
-              itemSize: 60.0,
+              itemSize: 50.0,
               itemBuilder: (context, index) => scale == 'star'
                   ? Icon(Icons.star, color: theme.primaryColor)
                   : Text((index + 1).toString(), style: TextStyle(color: theme.primaryColor)),

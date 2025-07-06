@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../formbricks_flutter.dart';
-import 'utils/enums.dart';
 
 class TriggerManager {
   final FormBricksClient client;
@@ -18,11 +18,12 @@ class TriggerManager {
   bool _isInitialized = false;
   Function(String)? onSurveyTriggered;
   final ThemeData? customTheme;
-  final SurveyDisplayMode? surveyDisplayMode; // 'bottomSheet' or 'dialog'
+  final SurveyDisplayMode surveyDisplayMode; // 'bottomSheet' or 'dialog'
   final bool? showPoweredBy;
   final StreamController<String> _eventStream = StreamController<String>.broadcast();
   late StreamSubscription _eventSubscription;
   final List<TriggerValue>? triggers; // Updated to use Trigger model
+  final bool useWrapInRankingQuestion;
   final BuildContext context;
 
   TriggerManager({
@@ -31,10 +32,11 @@ class TriggerManager {
     this.userAttributes = const {},
     this.onSurveyTriggered,
     this.customTheme,
-    this.surveyDisplayMode = SurveyDisplayMode.bottomSheetModal,
+    required this.surveyDisplayMode,
     this.showPoweredBy = true,
     this.triggers,
     required this.context,
+    required this.useWrapInRankingQuestion
   }){
     _eventSubscription = _eventStream.stream.listen(_handleEvent);
   }
@@ -153,31 +155,72 @@ class TriggerManager {
   }
 
   void _showSurvey(Survey survey) {
-    if (surveyDisplayMode == SurveyDisplayMode.bottomSheetModal) {
-      debugPrint("tryign to show bottom sheet modal....");
-      showModalBottomSheet(
-        context: context,
-        isDismissible: false,
-        backgroundColor: Colors.transparent,
-        builder: (context) => SurveyWidget(
-          client: client,
-          survey: survey,
-          userId: userId,
-          customTheme: customTheme,
-          showPoweredBy: showPoweredBy,
+    if (surveyDisplayMode == SurveyDisplayMode.fullScreen) {
+      Navigator.push(
+        context,
+        Platform.isIOS ? CupertinoPageRoute(
+          builder: (context) => Scaffold(
+            appBar: AppBar(),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            body: SurveyWidget(
+              client: client,
+              survey: survey,
+              userId: userId,
+              customTheme: customTheme,
+              showPoweredBy: showPoweredBy,
+              surveyDisplayMode: surveyDisplayMode,
+              useWrapInRankingQuestion: useWrapInRankingQuestion,
+            ),
+          ),
+        ) : MaterialPageRoute(
+          builder: (context) => Scaffold(
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            body: SurveyWidget(
+              client: client,
+              survey: survey,
+              userId: userId,
+              customTheme: customTheme,
+              showPoweredBy: showPoweredBy,
+              surveyDisplayMode: surveyDisplayMode,
+              useWrapInRankingQuestion: useWrapInRankingQuestion,
+            ),
+          ),
         ),
       );
-    } else {
-      debugPrint("trying to show dialog ....");
+    } else if(surveyDisplayMode == SurveyDisplayMode.dialog){
       showDialog(
         context: context,
         barrierDismissible: false,
+        builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
+          titlePadding: EdgeInsets.zero,
+          contentPadding: EdgeInsets.zero,
+          //insetPadding: EdgeInsets.zero,
+        actionsPadding: EdgeInsets.zero,
+        content: SurveyWidget(
+          client: client,
+          survey: survey,
+          userId: userId,
+          customTheme: customTheme,
+          showPoweredBy: showPoweredBy,
+          surveyDisplayMode: surveyDisplayMode,
+          useWrapInRankingQuestion: useWrapInRankingQuestion,
+        ),
+        ),
+      );
+    }else {
+      showModalBottomSheet(
+        context: context,
+        isDismissible: false,
+        backgroundColor: surveyDisplayMode == SurveyDisplayMode.formbricks ? Colors.transparent : Theme.of(context).bottomSheetTheme.backgroundColor,
         builder: (context) => SurveyWidget(
           client: client,
           survey: survey,
           userId: userId,
           customTheme: customTheme,
           showPoweredBy: showPoweredBy,
+          surveyDisplayMode: surveyDisplayMode,
+          useWrapInRankingQuestion: useWrapInRankingQuestion,
         ),
       );
     }
