@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../../../../formbricks_flutter.dart';
+
 class SurveyError extends StatelessWidget{
 
   final double? width;
@@ -18,7 +20,7 @@ class SurveyError extends StatelessWidget{
     return SizedBox(
       height: width ?? containerWidth,
       width: height ?? screenHeight,
-      child: Center(child: Text('Error: $errorMessage')),
+      child: Center(child: Text('${AppLocalizations.of(context)!.error}: $errorMessage')),
     );
   }
 }

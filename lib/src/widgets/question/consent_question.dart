@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../formbricks_flutter.dart';
 import '../../models/question.dart';
 
 class ConsentQuestion extends StatefulWidget {
@@ -46,7 +47,7 @@ class _ConsentQuestionState extends State<ConsentQuestion> {
               ),
             const SizedBox(height: 16),
             CheckboxListTile(
-              title: Text(widget.question.label?['default'] ?? 'I agree', style: theme.textTheme.bodyMedium),
+              title: Text(widget.question.label?['default'] ?? AppLocalizations.of(context)!.i_agree, style: theme.textTheme.bodyMedium),
               value: consented,
               onChanged: (value) {
                 setState(() {

@@ -24,6 +24,7 @@ class TriggerManager {
   late StreamSubscription _eventSubscription;
   final List<TriggerValue>? triggers; // Updated to use Trigger model
   final bool useWrapInRankingQuestion;
+  late final String locale; // Default locale
   final BuildContext context;
 
   TriggerManager({
@@ -35,11 +36,34 @@ class TriggerManager {
     required this.surveyDisplayMode,
     this.showPoweredBy = true,
     this.triggers,
+    required this.locale,
     required this.context,
     required this.useWrapInRankingQuestion
   }){
     _eventSubscription = _eventStream.stream.listen(_handleEvent);
   }
+
+  String get currentLocale => locale;
+
+  void setLocale(String newLocale, {VoidCallback? onLocaleChanged}) {
+    locale = newLocale;
+    if (newLocale.isEmpty) {
+      throw ArgumentError('Locale cannot be empty');
+    }
+    // Check if the locale is different to avoid unnecessary updates
+    if (locale != newLocale) {
+      locale = newLocale; // Update the internal locale state
+
+      // Notify any registered callback to trigger a rebuild
+      if (onLocaleChanged != null) {
+        onLocaleChanged();
+      }
+
+      // Optional: Log the locale change for debugging
+      print('TriggerManager: Locale changed to $newLocale');
+    }
+  }
+
 
   Future<void> initialize() async {
     final prefs = await SharedPreferences.getInstance();

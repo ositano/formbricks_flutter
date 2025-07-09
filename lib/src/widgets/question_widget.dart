@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../formbricks_flutter.dart';
+import '../../l10n/app_localizations.dart';
 import '../models/question.dart';
 import 'question/address_question.dart';
 import 'question/consent_question.dart';
@@ -16,7 +17,7 @@ import 'question/picture_selection_question.dart';
 import 'question/ranking_formbricks_question.dart';
 import 'question/ranking_question.dart';
 import 'question/rating_question.dart';
-import 'question/schedule_meeting_question.dart';
+import 'question/cal_question.dart';
 import 'question/single_select_question.dart';
 import 'question/statement_question.dart';
 
@@ -29,6 +30,7 @@ class QuestionWidget extends StatelessWidget {
   final dynamic response;
   final SurveyDisplayMode surveyDisplayMode;
   final bool useWrapInRankingQuestion;
+  final GlobalKey<FormState> formKey;
 
   const QuestionWidget({
     super.key,
@@ -39,7 +41,8 @@ class QuestionWidget extends StatelessWidget {
     required this.userId,
     this.response,
     required this.surveyDisplayMode,
-    required this.useWrapInRankingQuestion
+    required this.useWrapInRankingQuestion,
+    required this.formKey
   });
 
   @override
@@ -48,57 +51,64 @@ class QuestionWidget extends StatelessWidget {
       case 'freeText':
       case 'openText': // Treat openText as freeText
         return FreeTextQuestion(
+          key: ValueKey(question.id),
           question: question,
           onResponse: onResponse,
           response: response,
           //textController: textController,
         );
       case 'singleSelect':
-        return SingleSelectQuestion(question: question, onResponse: onResponse, response: response);
+        return SingleSelectQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
       case 'multipleChoiceSingle':
-        return MultipleChoiceSingle(question: question, onResponse: onResponse, response: response);
+        return MultipleChoiceSingle(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
       case 'multipleChoiceMulti':
-        return MultipleChoiceMulti(question: question, onResponse: onResponse, response: response);
+        return MultipleChoiceMulti(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
       case 'pictureSelection':
         return PictureSelectionQuestion(
+            key: ValueKey(question.id),
           question: question,
           onResponse: onResponse, response: response
         );
       case 'rating':
-        return RatingQuestion(question: question, onResponse: onResponse, response: response);
+        return RatingQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
       case 'nps':
-        return NPSQuestion(question: question, onResponse: onResponse, response: response);
+        return NPSQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
       case 'ranking':
-        return surveyDisplayMode == SurveyDisplayMode.formbricks ? RankingFormbricksQuestion(question: question, onResponse: onResponse, response: response, useWrapInRankingQuestion: useWrapInRankingQuestion,) : RankingQuestion(question: question, onResponse: onResponse, response: response, useWrapInRankingQuestion: useWrapInRankingQuestion,);
+        return surveyDisplayMode == SurveyDisplayMode.formbricks ? RankingFormbricksQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response, useWrapInRankingQuestion: useWrapInRankingQuestion,) : RankingQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response, useWrapInRankingQuestion: useWrapInRankingQuestion,);
       case 'matrix':
-        return MatrixQuestion(question: question, onResponse: onResponse, response: response);
+        return MatrixQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
       case 'statement':
-        return StatementQuestion(question: question, onResponse: onResponse);
+        return StatementQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse);
       case 'consent':
-        return ConsentQuestion(question: question, onResponse: onResponse, response: response);
+        return ConsentQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
       case 'fileUpload':
         return FileUploadQuestion(
+            key: ValueKey(question.id),
           question: question,
           onResponse: onResponse,
           client: client,
           surveyId: surveyId,
-          userId: userId, response: response
+          userId: userId,
+            response: response
         );
       case 'date':
-        return DateQuestion(question: question, onResponse: onResponse, response: response);
+        return DateQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
+      case 'cal':
       case 'scheduleMeeting':
-        return ScheduleMeetingQuestion(
+        return CalQuestion(
+          key: ValueKey(question.id),
           question: question,
           onResponse: onResponse,
+          response: response,
         );
       case 'address':
-        return AddressQuestion(question: question, onResponse: onResponse, response: response);
+        return AddressQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
       case 'contactInfo':
-        return ContactInfoQuestion(question: question, onResponse: onResponse, response: response);
+        return ContactInfoQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
       case 'cta':
-        return CTAQuestion(question: question, onResponse: onResponse, response: response);
+        return CTAQuestion(key: ValueKey(question.id),question: question, onResponse: onResponse, response: response);
       default:
-        return const Text('Unsupported question type');
+        return Text(AppLocalizations.of(context)!.unsupported_question_type);
     }
   }
 }

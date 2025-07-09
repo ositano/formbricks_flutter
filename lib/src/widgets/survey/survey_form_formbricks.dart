@@ -6,7 +6,7 @@ import '../../../formbricks_flutter.dart';
 import '../end_widget.dart';
 import '../question_widget.dart';
 import '../welcome_widget.dart';
-import 'components/content.dart';
+import 'components/content_formbricks.dart';
 import 'components/error.dart';
 import 'components/loading.dart';
 
@@ -163,6 +163,7 @@ class SurveyFormFormbricksState extends State<SurveyFormFormbricks> {
           response: widget.responses[question.id],
           surveyDisplayMode: widget.surveyDisplayMode,
           useWrapInRankingQuestion: widget.useWrapInRankingQuestion,
+          formKey: widget.formKey,
         ),
       );
       nextLabel = question.buttonLabel?['default'];
@@ -178,7 +179,7 @@ class SurveyFormFormbricksState extends State<SurveyFormFormbricks> {
         radius: const Radius.circular(8),
         margin: EdgeInsets.only(top: twoFifthsHeight - twoHeight),
         shadowColor: Colors.black.withOpacity(0.2),
-        child: SurveyContent(
+        child: SurveyContentFormbricks(
           widgetWidth: containerWidth,
           widgetHeight: twoFifthsHeight,
           contentHeight: twoFifthsHeight,

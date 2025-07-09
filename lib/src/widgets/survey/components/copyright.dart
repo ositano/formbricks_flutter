@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../../../../formbricks_flutter.dart';
+
 class SurveyCopyright extends StatelessWidget{
   const SurveyCopyright({super.key});
 
@@ -13,7 +15,7 @@ class SurveyCopyright extends StatelessWidget{
       child: Text.rich(
         textAlign: TextAlign.center,
         TextSpan(
-          text: 'Powered by ',
+          text: AppLocalizations.of(context)!.powered_by,
           style: Theme.of(context).textTheme.bodySmall,
           children: [
             TextSpan(

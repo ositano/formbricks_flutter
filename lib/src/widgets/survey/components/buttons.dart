@@ -1,8 +1,8 @@
 
 
 import 'package:flutter/material.dart';
-
 import '../../../../formbricks_flutter.dart';
+
 
 class SurveyButtons extends StatelessWidget{
   final int currentStep;
@@ -32,7 +32,7 @@ class SurveyButtons extends StatelessWidget{
           if (currentStep > 1)
             OutlinedButton(
               onPressed: previousStep,
-              child: Text(previousLabel ?? 'Back'),
+              child: Text(previousLabel ?? AppLocalizations.of(context)!.back),
             ),
           if (nextLabel != null)
             if (currentStep == 0 ||
@@ -47,7 +47,7 @@ class SurveyButtons extends StatelessWidget{
                 currentStep == survey.questions.length + 1
                     ? () => Navigator.of(context).pop()
                     : nextStep,
-                child: Text(nextLabel ?? 'back'),
+                child: Text(nextLabel ?? AppLocalizations.of(context)!.next),
               ),
         ],
       ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
 
 class AddressQuestion extends StatefulWidget {
@@ -19,30 +19,76 @@ class AddressQuestion extends StatefulWidget {
 }
 
 class _AddressQuestionState extends State<AddressQuestion> {
-  late var _streetController = TextEditingController();
-  late var _cityController = TextEditingController();
-  late var _stateController = TextEditingController();
-  late var _zipController = TextEditingController();
-  late var _countryController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-  bool _isInitialized = false;
+  late final _addressLine1Controller = TextEditingController();
+  late final _addressLine2Controller = TextEditingController();
+  late final _cityController = TextEditingController();
+  late final _stateController = TextEditingController();
+  late final _zipController = TextEditingController();
+  late final _countryController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    final response = widget.response as Map<String, dynamic>? ?? {};
-    _streetController = TextEditingController();
-    _cityController = TextEditingController();
-    _stateController = TextEditingController();
-    _countryController = TextEditingController();
-    _zipController = TextEditingController();
-    _isInitialized = true;
-    _updateControllerText(response);
+    _populateFields(widget.response as Map<String, dynamic>? ?? {});
+  }
+
+  @override
+  void didUpdateWidget(covariant AddressQuestion oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.response != oldWidget.response) {
+      _populateFields(widget.response as Map<String, dynamic>? ?? {});
+    }
+  }
+
+  void _populateFields(Map<String, dynamic> response) {
+    _addressLine1Controller.text = response['addressLine1'] ?? '';
+    _addressLine2Controller.text = response['addressLine2'] ?? '';
+    _cityController.text = response['city'] ?? '';
+    _stateController.text = response['state'] ?? '';
+    _zipController.text = response['zip'] ?? '';
+    _countryController.text = response['country'] ?? '';
+  }
+
+  void _updateResponse() {
+    final data = {
+      'addressLine1': _addressLine1Controller.text,
+      'addressLine2': _addressLine2Controller.text,
+      'city': _cityController.text,
+      'state': _stateController.text,
+      'zip': _zipController.text,
+      'country': _countryController.text,
+    };
+    widget.onResponse(widget.question.id, data);
+  }
+
+  Widget _buildField({
+    required bool show,
+    required bool required,
+    required String label,
+    required TextEditingController controller,
+    required void Function() revalidate,
+  }) {
+    if (!show) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
+        onChanged: (_) {
+          _updateResponse();
+          revalidate();
+        },
+      ),
+    );
   }
 
   @override
   void dispose() {
-    _streetController.dispose();
+    _addressLine1Controller.dispose();
+    _addressLine2Controller.dispose();
     _cityController.dispose();
     _stateController.dispose();
     _zipController.dispose();
@@ -51,128 +97,116 @@ class _AddressQuestionState extends State<AddressQuestion> {
   }
 
   @override
-  void didUpdateWidget(covariant AddressQuestion oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.response != oldWidget.response) {
-      final response = widget.response as Map<String, dynamic>? ?? {};
-      _updateControllerText(response);
-    }
-  }
-
-  void _updateControllerText(Map<String, dynamic> response) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _streetController.text = response['street']?.toString() ?? '';
-      _cityController.text = response['city']?.toString() ?? '';
-      _stateController.text = response['state']?.toString() ?? '';
-      _countryController.text = response['country']?.toString() ?? '';
-      _zipController.text = response['zip']?.toString() ?? '';
-    });
-  }
-
-  void _updateResponse() {
-    if (_isInitialized) {
-      final response = {
-        'street': _streetController.text,
-        'city': _cityController.text,
-        'state': _stateController.text,
-        'zip': _zipController.text,
-        'country': _countryController.text,
-      };
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        widget.onResponse(widget.question.id, response);
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isRequired = widget.question.required ?? false;
+    final question = widget.question;
+
+    final addressLine1 = question.addressLine1 ?? {};
+    final addressLine2 = question.addressLine2 ?? {};
+    final city = question.city ?? {};
+    final state = question.state ?? {};
+    final zip = question.zip ?? {};
+    final country = question.country ?? {};
 
     return FormField<bool>(
-      key: _formKey,
-      validator: (value) {
-        if (isRequired &&
-            (_streetController.text.isEmpty ||
-                _cityController.text.isEmpty ||
-                _stateController.text.isEmpty ||
-                _countryController.text.isEmpty ||
-                _zipController.text.isEmpty)) {
-          return 'All fields are required';
+      validator: (_) {
+        if (!(question.required ?? false)) return null;
+
+        if (addressLine1['show'] == true &&
+            addressLine1['required'] == true &&
+            _addressLine1Controller.text.trim().isEmpty) {
+          return AppLocalizations.of(context)!.address1_required;
         }
+        if (addressLine2['show'] == true &&
+            addressLine2['required'] == true &&
+            _addressLine2Controller.text.trim().isEmpty) {
+          return AppLocalizations.of(context)!.address2_required;
+        }
+        if (city['show'] == true &&
+            city['required'] == true &&
+            _cityController.text.trim().isEmpty) {
+          return AppLocalizations.of(context)!.city_required;
+        }
+        if (state['show'] == true &&
+            state['required'] == true &&
+            _stateController.text.trim().isEmpty) {
+          return AppLocalizations.of(context)!.state_required;
+        }
+        if (zip['show'] == true &&
+            zip['required'] == true &&
+            _zipController.text.trim().isEmpty) {
+          return AppLocalizations.of(context)!.zip_required;
+        }
+        if (country['show'] == true &&
+            country['required'] == true &&
+            _countryController.text.trim().isEmpty) {
+          return AppLocalizations.of(context)!.country_required;
+        }
+
         return null;
       },
-      builder: (FormFieldState<bool> field) {
+      builder: (field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.question.headline['default'] ?? '',
-              style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              question.headline['default'] ?? '',
+              style: theme.textTheme.headlineMedium ??
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+            if (question.subheader?['default']?.isNotEmpty ?? false)
               Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 8),
                 child: Text(
-                  widget.question.subheader?['default'] ?? '',
+                  question.subheader?['default'] ?? '',
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _streetController,
-              decoration: InputDecoration(
-                labelText: 'Street',
-                border: OutlineInputBorder(),
-                labelStyle: theme.textTheme.bodyMedium,
-                errorText: field.hasError ? field.errorText : null,
-              ),
-              onChanged: (value) => _updateResponse(),
+
+            _buildField(
+              show: addressLine1['show'] ?? false,
+              required: addressLine1['required'] ?? false,
+              label: addressLine1['placeholder']?['default'] ?? 'Address Line 1',
+              controller: _addressLine1Controller,
+              revalidate: () => field.didChange,
             ),
-            const SizedBox(height: 8),
-            TextFormField(
+            _buildField(
+              show: addressLine2['show'] ?? false,
+              required: addressLine2['required'] ?? false,
+              label: addressLine2['placeholder']?['default'] ?? 'Address Line 2',
+              controller: _addressLine2Controller,
+              revalidate: () =>  field.didChange,
+            ),
+            _buildField(
+              show: city['show'] ?? false,
+              required: city['required'] ?? false,
+              label: city['placeholder']?['default'] ?? 'City',
               controller: _cityController,
-              decoration: InputDecoration(
-                labelText: 'City',
-                border: OutlineInputBorder(),
-                labelStyle: theme.textTheme.bodyMedium,
-                errorText: field.hasError ? field.errorText : null,
-              ),
-              onChanged: (value) => _updateResponse(),
+              revalidate: () => field.didChange,
             ),
-            const SizedBox(height: 8),
-            TextFormField(
+            _buildField(
+              show: state['show'] ?? false,
+              required: state['required'] ?? false,
+              label: state['placeholder']?['default'] ?? 'State',
               controller: _stateController,
-              decoration: InputDecoration(
-                labelText: 'State',
-                border: OutlineInputBorder(),
-                labelStyle: theme.textTheme.bodyMedium,
-                errorText: field.hasError ? field.errorText : null,
-              ),
-              onChanged: (value) => _updateResponse(),
+              revalidate: () => field.didChange,
             ),
-            const SizedBox(height: 8),
-            TextFormField(
+            _buildField(
+              show: zip['show'] ?? false,
+              required: zip['required'] ?? false,
+              label: zip['placeholder']?['default'] ?? 'ZIP',
               controller: _zipController,
-              decoration: InputDecoration(
-                labelText: 'ZIP Code',
-                border: OutlineInputBorder(),
-                labelStyle: theme.textTheme.bodyMedium,
-                errorText: field.hasError ? field.errorText : null,
-              ),
-              onChanged: (value) => _updateResponse(),
+                revalidate: () => field.didChange,
             ),
-            const SizedBox(height: 8),
-            TextFormField(
+            _buildField(
+              show: country['show'] ?? false,
+              required: country['required'] ?? false,
+              label: country['placeholder']?['default'] ?? 'Country',
               controller: _countryController,
-              decoration: InputDecoration(
-                labelText: 'Country',
-                border: OutlineInputBorder(),
-                labelStyle: theme.textTheme.bodyMedium,
-                errorText: field.hasError ? field.errorText : null,
-              ),
-              onChanged: (value) => _updateResponse(),
+              revalidate: () => field.didChange,
             ),
+
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),

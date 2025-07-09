@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
+import '../../../formbricks_flutter.dart';
 import '../../models/question.dart';
 
 class CTAQuestion extends StatefulWidget {
@@ -12,7 +13,7 @@ class CTAQuestion extends StatefulWidget {
     super.key,
     required this.question,
     required this.onResponse,
-    this.response
+    this.response,
   });
 
   @override
@@ -34,7 +35,7 @@ class _CTAQuestionState extends State<CTAQuestion> {
     final isRequired = widget.question.required ?? false;
 
     return FormField<bool>(
-      validator: (value) => isRequired && value != true ? 'Please take action' : null,
+      validator: (value) => isRequired && value != true ? AppLocalizations.of(context)!.please_take_action : null,
       builder: (FormFieldState<bool> field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,7 +55,7 @@ class _CTAQuestionState extends State<CTAQuestion> {
                     widget.onResponse(widget.question.id, true);
                     field.didChange(true); // Validate
                   },
-                  child: Text(widget.question.buttonLabel?['default'] ?? 'Action'),
+                  child: Text(widget.question.buttonLabel?['default'] ?? AppLocalizations.of(context)!.action),
                 ),
                 if (widget.question.dismissButtonLabel?['default'] != null)
                   TextButton(
@@ -62,7 +63,7 @@ class _CTAQuestionState extends State<CTAQuestion> {
                       widget.onResponse(widget.question.id, false);
                       Navigator.of(context).pop(); // Skip and close
                     },
-                    child: Text(widget.question.dismissButtonLabel!['default'] ?? 'Skip'),
+                    child: Text(widget.question.dismissButtonLabel!['default'] ?? AppLocalizations.of(context)!.skip),
                   ),
               ],
             ),

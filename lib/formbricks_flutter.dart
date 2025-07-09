@@ -8,3 +8,5 @@ export 'src/widgets/survey_widget.dart';
 export 'src/utils/error_handler.dart';
 export 'src/utils/enums.dart';
 export 'src/utils/theme_manager.dart';
+// export 'src/utils/extensions.dart';
+export 'l10n/app_localizations.dart';

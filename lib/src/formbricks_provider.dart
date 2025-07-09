@@ -12,6 +12,7 @@ class FormBricksProvider extends StatefulWidget {
   final SurveyDisplayMode surveyDisplayMode;
   final bool useWrapInRankingQuestion;
   final List<TriggerValue>? triggers;
+  final String locale;
 
   const FormBricksProvider({
     super.key,
@@ -24,6 +25,7 @@ class FormBricksProvider extends StatefulWidget {
     this.surveyDisplayMode = SurveyDisplayMode.formbricks,
     this.useWrapInRankingQuestion = true,
     this.triggers,
+    this.locale = 'en',
   });
 
   static _FormBricksProviderState? of(BuildContext context) {
@@ -41,18 +43,33 @@ class _FormBricksProviderState extends State<FormBricksProvider> {
   void initState() {
     super.initState();
     _triggerManager = TriggerManager(
-        client: widget.client,
-        userId: widget.userId,
-        userAttributes: widget.userAttributes,
-        surveyDisplayMode: widget.surveyDisplayMode,
-        showPoweredBy: widget.showPoweredBy,
-        context: context,
-        triggers: widget.triggers,
-      useWrapInRankingQuestion: widget.useWrapInRankingQuestion
+      client: widget.client,
+      userId: widget.userId,
+      userAttributes: widget.userAttributes,
+      surveyDisplayMode: widget.surveyDisplayMode,
+      showPoweredBy: widget.showPoweredBy,
+      context: context,
+      triggers: widget.triggers,
+      useWrapInRankingQuestion: widget.useWrapInRankingQuestion,
+      locale: widget.locale,
     );
     _triggerManager.initialize();
-    WidgetsBinding.instance.addPostFrameCallback((_){
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {});
+  }
+
+  @override
+  void didUpdateWidget(covariant FormBricksProvider oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.locale != oldWidget.locale) {
+      _triggerManager.setLocale(
+        widget.locale,
+        onLocaleChanged: () {
+          WidgetsBinding.instance.addPostFrameCallback((_){
+            setState(() {}); // Trigger a rebuild when locale changes
+          });
+        },
+      );
+    }
   }
 
   @override
@@ -98,5 +115,6 @@ class InheritedFormBricks extends InheritedWidget {
 
 // Extension for easy access in context
 extension FormbricksContext on BuildContext {
-  TriggerManager? get triggerManager => InheritedFormBricks.of(this)?.triggerManager;
+  TriggerManager? get triggerManager =>
+      InheritedFormBricks.of(this)?.triggerManager;
 }

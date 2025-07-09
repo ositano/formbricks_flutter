@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:reorderables/reorderables.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
 
 /// Order options by preference
@@ -46,7 +47,7 @@ class _RankingFormbricksQuestionState extends State<RankingFormbricksQuestion> {
               (rankedItems.length == choices.length &&
                   rankedItems.toSet().length == choices.length)
           ? null
-          : 'Please select an option',
+          : AppLocalizations.of(context)!.please_select_option,
       builder: (FormFieldState<bool> field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -26,6 +26,7 @@ dependencies:
   pretty_http_logger: ^1.0.5
   chewie: ^1.12.1
   video_player: ^2.10.0
+  easy_localization: ^3.0.7+1
 
 
 dev_dependencies:
@@ -38,7 +39,9 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
+  generate: true
+  assets:
+    - assets/translations/
   # To add assets to your package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
@@ -69,3 +72,16 @@ flutter:
   #
   # For details regarding fonts in packages, see
   # https://flutter.dev/to/font-from-package
+flutter_intl:
+  enabled: true
+  arb_dir: lib/l10n
+  template_arbs:
+    - lib/l10n/app_en.arb
+    - lib/l10n/app_fr.arb
+    - lib/l10n/app_es.arb
+    - lib/l10n/app_ar.arb
+    - lib/l10n/app_zh.arb
+    - lib/l10n/app_ja.arb
+    - lib/l10n/app_pt.arb
+    - lib/l10n/app_sw.arb
+  output_dir: lib/generated

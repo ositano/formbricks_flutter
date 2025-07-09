@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
+import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
 
-/// Grid-based question with rows and columns (e.g., rate multiple items on a scale).
 class MatrixQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
@@ -12,7 +13,7 @@ class MatrixQuestion extends StatefulWidget {
     super.key,
     required this.question,
     required this.onResponse,
-    this.response
+    this.response,
   });
 
   @override
@@ -20,66 +21,163 @@ class MatrixQuestion extends StatefulWidget {
 }
 
 class _MatrixQuestionState extends State<MatrixQuestion> {
-  Map<String, String> selections = {};
+  late Map<String, String> selections;
+  late List<Map<String, String>> shuffledRows;
+  final Random _random = Random();
+  String? _questionId;
 
   @override
   void initState() {
     super.initState();
-    selections = widget.response as Map<String, String>? ?? {};
+    _questionId = widget.question.id;
+    shuffledRows = _shuffleRows(widget.question.rows ?? []);
+    _updateSelections();
   }
+
+  @override
+  void didUpdateWidget(covariant MatrixQuestion oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.question.id != _questionId) {
+      shuffledRows = _shuffleRows(widget.question.rows ?? []);
+      _updateSelections();
+      _questionId = widget.question.id;
+    } else if (widget.response != oldWidget.response) {
+      _updateSelections(); // just update selections, no reshuffle
+    }
+  }
+
+
+  void _updateSelections() {
+    final responseMap = widget.response is Map<String, dynamic> ? widget.response as Map<String, dynamic> : {};
+    final questionResponse = responseMap[widget.question.id];
+    selections = questionResponse is Map<String, String>
+        ? Map<String, String>.from(questionResponse)
+        : {};
+  }
+
+  List<Map<String, String>> _shuffleRows(List<Map<String, String>> rows) {
+    final shuffleOption = widget.question.shuffleOption ?? 'none';
+    if (shuffleOption == 'none' || rows.isEmpty) return List<Map<String, String>>.from(rows);
+
+    final List<Map<String, String>> localRows = List<Map<String, String>>.from(rows);
+
+    if (shuffleOption == 'all') {
+      localRows.shuffle(_random);
+    } else if (shuffleOption == 'exceptLast' && localRows.length > 1) {
+      final last = localRows.removeLast();
+      localRows.shuffle(_random);
+      localRows.add(last);
+    }
+
+    return localRows;
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final rows = widget.question.inputConfig?['rows'] as List<dynamic>? ?? [];
-    final columns = widget.question.inputConfig?['columns'] as List<dynamic>? ?? [];
+    final columns = widget.question.columns ?? [];
+    final isRequired = widget.question.required ?? false;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(widget.question.headline['default'] ?? '', style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        if (widget.question.subheader?['default']?.isNotEmpty ?? false)
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Text(widget.question.subheader?['default'] ?? '', style: theme.textTheme.bodyMedium,),
-          ),
-        const SizedBox(height: 16),
-        Table(
-          border: TableBorder.all(),
+    return FormField<bool>(
+      key: ValueKey(widget.question.id),
+      validator: (_) {
+        if (isRequired && selections.length != shuffledRows.length) {
+          return AppLocalizations.of(context)!.please_rate_all;
+        }
+        return null;
+      },
+      builder: (field) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TableRow(
+            Text(
+              widget.question.headline['default'] ?? '',
+              style: theme.textTheme.headlineMedium ??
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  widget.question.subheader!['default']!,
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ),
+            const SizedBox(height: 16),
+            Table(
+              border: TableBorder.all(color: Colors.grey[300]!),
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              columnWidths: {
+                0: const FlexColumnWidth(2), // Row labels wider
+              },
               children: [
-                const SizedBox(),
-                ...columns.map((col) => Center(child: Text(col['label']))),
+                TableRow(
+                  children: [
+                    const SizedBox.shrink(),
+                    ...columns.map(
+                          (col) => Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Text(
+                            col['default'] ?? '',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                ...shuffledRows.map((row) {
+                  final rowLabel = row['default'] ?? '';
+                  return TableRow(
+                    key: ValueKey(rowLabel),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          rowLabel,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ),
+                      ...columns.map((col) {
+                        final colValue = col['default'] ?? '';
+                        return Radio<String>(
+                          value: colValue,
+                          groupValue: selections[rowLabel],
+                          onChanged: (value) {
+                            setState(() {
+                              selections[rowLabel] = value!;
+                              final updatedResponse = {
+                                widget.question.id:
+                                Map<String, String>.from(selections),
+                              };
+                              widget.onResponse(widget.question.id, updatedResponse);
+
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                field.didChange(true); // trigger validation
+                              });
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ],
+                  );
+                }),
               ],
             ),
-            ...rows.map((row) {
-              final rowId = row['id'];
-              return TableRow(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(row['label']),
-                  ),
-                  ...columns.map((col) {
-                    final colId = col['id'];
-                    return Radio<String>(
-                      value: colId,
-                      groupValue: selections[rowId],
-                      onChanged: (value) {
-                        setState(() {
-                          selections[rowId] = value!;
-                          widget.onResponse(widget.question.id, selections);
-                        });
-                      },
-                    );
-                  }),
-                ],
-              );
-            }),
+            if (field.hasError)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  field.errorText!,
+                  style: TextStyle(color: theme.colorScheme.error),
+                ),
+              ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 }

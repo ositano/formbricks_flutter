@@ -46,7 +46,7 @@ class SurveyForm extends StatefulWidget {
     required this.onResponse,
     required this.responses,
     required this.surveyDisplayMode,
-    required this.useWrapInRankingQuestion
+    required this.useWrapInRankingQuestion,
   });
 
   @override
@@ -103,6 +103,7 @@ class SurveyFormState extends State<SurveyForm> {
       question = widget.survey.questions[widget.currentStep - 1];
       content = Form(
         key: widget.formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: QuestionWidget(
           question: question,
           onResponse: widget.onResponse,
@@ -112,6 +113,7 @@ class SurveyFormState extends State<SurveyForm> {
           response: widget.responses[question.id],
           surveyDisplayMode: widget.surveyDisplayMode,
           useWrapInRankingQuestion: widget.useWrapInRankingQuestion,
+          formKey: widget.formKey,
         ),
       );
       nextLabel = question.buttonLabel?['default'];

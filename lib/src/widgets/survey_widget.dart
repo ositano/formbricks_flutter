@@ -77,10 +77,20 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
+  void _revalidateForm() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final isValid = formKey.currentState?.validate() ?? false;
+      debugPrint('Form validation result: $isValid');
+      // No need for setState here unless something reacts to it
+    });
+  }
+
+
   void _onResponse(String questionId, dynamic value) {
     setState(() {
       responses[questionId] = value;
     });
+    _revalidateForm(); // Revalidate form after response update
   }
 
   Future<void> _submitSurvey() async {
@@ -106,18 +116,24 @@ class SurveyWidgetState extends State<SurveyWidget> {
   }
 
   void nextStep() {
+    final form = formKey.currentState;
+
+    // Force interaction on all fields
+    setState(() {});
+
+    final isValid = form?.validate() ?? false;
     if (_currentStep == 0 && survey.welcomeCard?['enabled'] == true) {
       setState(() => _currentStep++);
-    } else if (_currentStep < survey.questions.length &&
-        (formKey.currentState?.validate() ?? false)) {
+    } else if (_currentStep < survey.questions.length && isValid) {
       setState(() => _currentStep++);
-    } else {
-      if (_currentStep >= survey.questions.length) {
-        _showEnding();
-        _submitSurvey();
-      }
+    } else if (_currentStep >= survey.questions.length) {
+      _showEnding();
+      _submitSurvey();
     }
   }
+
+
+
 
   void previousStep() {
     if (_currentStep > 0) {

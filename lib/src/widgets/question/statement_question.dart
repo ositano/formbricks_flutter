@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
 
 /// Button or link for an action
@@ -16,7 +17,7 @@ class StatementQuestion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final buttonText = question.inputConfig?['buttonText'] ?? 'Click here';
+    final buttonText = question.inputConfig?['buttonText'] ?? AppLocalizations.of(context)!.click_here;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

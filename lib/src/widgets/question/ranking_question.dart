@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:reorderables/reorderables.dart';
 
-import '../../../formbricks_flutter.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
 
-/// Order options by preference
 class RankingQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
@@ -25,98 +24,92 @@ class RankingQuestion extends StatefulWidget {
 
 class _RankingQuestionState extends State<RankingQuestion> {
   late List<String> rankedItems;
+  late List<Map<String, dynamic>> choices;
 
   @override
   void initState() {
     super.initState();
-    final choices = widget.question.choices ?? [];
-    rankedItems =
-        widget.response as List<String>? ??
-        choices.map((choice) => choice['id'] as String).toList();
+    choices = widget.question.choices ?? [];
+    rankedItems = (widget.response as List?)?.cast<String>() ??
+        choices.map((c) => c['id']?.toString() ?? '').toList();
+  }
+
+  void _onReorder(int oldIndex, int newIndex) {
+    setState(() {
+      final item = rankedItems.removeAt(oldIndex);
+      rankedItems.insert(newIndex, item);
+      widget.onResponse(widget.question.id, rankedItems);
+    });
+  }
+
+  String _getChoiceLabel(String id) {
+    final choice = choices.firstWhere(
+          (c) => c['id'] == id,
+      orElse: () => {},
+    );
+    return choice['label']?['default'] ?? id;
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final choices = widget.question.choices ?? [];
+    final isRequired = widget.question.required ?? false;
 
     return FormField<bool>(
-      validator: (value) =>
-          widget.question.required == false ||
-              (rankedItems.length == choices.length &&
-                  rankedItems.toSet().length == choices.length)
-          ? null
-          : 'Please select an option',
-      builder: (FormFieldState<bool> field) {
+      validator: (value) {
+        if (!isRequired) return null;
+
+        final allItemsValid = rankedItems.toSet().length == choices.length;
+        return allItemsValid ? null : AppLocalizations.of(context)!.please_rank_all_options;
+      },
+      builder: (field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               widget.question.headline['default'] ?? '',
-              style:
-                  theme.textTheme.headlineMedium ??
+              style: theme.textTheme.headlineMedium ??
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+            if ((widget.question.subheader?['default'] ?? '').isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  widget.question.subheader?['default'] ?? '',
+                  widget.question.subheader!['default']!,
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
             const SizedBox(height: 16),
             widget.useWrapInRankingQuestion
                 ? ReorderableWrap(
-                    spacing: 8.0,
-                    runSpacing: 8.0,
-                    ignorePrimaryScrollController: true,
-                    children: rankedItems
-                        .asMap()
-                        .entries
-                        .map(
-                          (entry) => Chip(
-                            key: ValueKey(rankedItems[entry.key]),
-                            label: Text(
-                              '${entry.key + 1}. ${choices.firstWhere((choice) => choice['id'] == entry.value)['label']['default'] ?? ''}',
-                            ),
-                            backgroundColor:
-                                Colors.grey[200], // Background color
-                          ),
-                        )
-                        .toList(),
-                    onReorder: (oldIndex, newIndex) {
-                      setState(() {
-                        final item = rankedItems.removeAt(oldIndex);
-                        rankedItems.insert(newIndex, item);
-                        widget.onResponse(widget.question.id, rankedItems);
-                      });
-                    },
-                  )
+              spacing: 8,
+              runSpacing: 8,
+              ignorePrimaryScrollController: true,
+              onReorder: _onReorder,
+              children: rankedItems
+                  .asMap()
+                  .entries
+                  .map((entry) => Chip(
+                key: ValueKey(entry.value),
+                label: Text('${entry.key + 1}. ${_getChoiceLabel(entry.value)}'),
+                backgroundColor: Colors.grey[200],
+              ))
+                  .toList(),
+            )
                 : ReorderableListView(
-                    shrinkWrap: true,
-                    primary: false,
-                    children: rankedItems
-                        .asMap()
-                        .entries
-                        .map(
-                          (entry) => ListTile(
-                            key: ValueKey(rankedItems[entry.key]),
-                            title: Text(
-                              '${entry.key + 1}. ${choices.firstWhere((choice) => choice['id'] == entry.value)['label']['default'] ?? ''}',
-                            ),
-                            tileColor: Colors.grey[200], // Background color
-                          ),
-                        )
-                        .toList(),
-                    onReorder: (oldIndex, newIndex) {
-                      setState(() {
-                        final item = rankedItems.removeAt(oldIndex);
-                        rankedItems.insert(newIndex, item);
-                        widget.onResponse(widget.question.id, rankedItems);
-                      });
-                    },
-                  ),
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              onReorder: _onReorder,
+              children: rankedItems
+                  .asMap()
+                  .entries
+                  .map((entry) => ListTile(
+                key: ValueKey(entry.value),
+                title: Text('${entry.key + 1}. ${_getChoiceLabel(entry.value)}'),
+                tileColor: Colors.grey[200],
+              ))
+                  .toList(),
+            ),
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),

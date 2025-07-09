@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../formbricks_flutter.dart';
 import '../../models/question.dart';
 
 class ContactInfoQuestion extends StatefulWidget {
@@ -21,7 +22,7 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
   late var _nameController = TextEditingController();
   late var _emailController = TextEditingController();
   late var _phoneController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+  // final _formKey = GlobalKey<FormState>();
   bool _isInitialized = false;
 
   @override
@@ -79,15 +80,15 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
     final isRequired = widget.question.required ?? false;
 
     return FormField<bool>(
-      key: _formKey,
+      //key: _formKey,
       validator: (value) {
         if (isRequired &&
             (_nameController.text.isEmpty || _phoneController.text.isEmpty || _emailController.text.isEmpty)) {
-          return 'All fields are required';
+          return AppLocalizations.of(context)!.all_fields_are_required;
         }
         final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
         if (!emailRegex.hasMatch(_emailController.text)) {
-          return 'Please enter a valid email';
+          return AppLocalizations.of(context)!.please_enter_valid_email;
         }
         return null;
       },

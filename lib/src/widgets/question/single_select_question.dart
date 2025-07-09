@@ -12,7 +12,7 @@ class SingleSelectQuestion extends StatefulWidget {
     super.key,
     required this.question,
     required this.onResponse,
-    this.response
+    this.response,
   });
 
   @override

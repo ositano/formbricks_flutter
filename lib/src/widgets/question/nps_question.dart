@@ -21,11 +21,13 @@ class NPSQuestion extends StatefulWidget {
 
 class _NPSQuestionState extends State<NPSQuestion> {
   int? selectedIndex;
+  bool _hasInteracted = false;
+
 
   @override
   void initState() {
     super.initState();
-    selectedIndex = widget.response as int? ?? -1;
+    selectedIndex = widget.response as int?;
   }
 
   @override
@@ -33,26 +35,34 @@ class _NPSQuestionState extends State<NPSQuestion> {
     final theme = Theme.of(context);
     final isRequired = widget.question.required ?? false;
 
-    return FormField<bool>(
-      validator: (value) => isRequired && selectedIndex == null ? 'Please select a score' : null,
-      builder: (FormFieldState<bool> field) {
+    return FormField<int>(
+      autovalidateMode: _hasInteracted
+          ? AutovalidateMode.onUserInteraction
+          : AutovalidateMode.disabled,
+      validator: (value) {
+        if (_hasInteracted && isRequired && value == null) {
+          return AppLocalizations.of(context)!.please_select_score;
+        }
+        return null;
+      },
+      builder: (FormFieldState<int> field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               widget.question.headline['default'] ?? '',
-              style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: theme.textTheme.headlineMedium ??
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             if (widget.question.subheader?['default']?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  widget.question.subheader?['default'] ?? '',
+                  widget.question.subheader!['default'] ?? '',
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
             const SizedBox(height: 24),
-
             Wrap(
               spacing: 8.0,
               children: List.generate(11, (index) {
@@ -63,17 +73,22 @@ class _NPSQuestionState extends State<NPSQuestion> {
                     if (selected) {
                       setState(() {
                         selectedIndex = index;
-                        widget.onResponse(widget.question.id, index);
-                        if (context.findAncestorStateOfType<SurveyWidgetState>()?.formKey.currentState?.validate() ?? false) {
-                          context.findAncestorStateOfType<SurveyWidgetState>()?.nextStep();
-                        }
+                        _hasInteracted = true;
                       });
-                      field.didChange(true); // Validate
+                      field.didChange(index);
+                      widget.onResponse(widget.question.id, index);
+
+                      final formState = context.findAncestorStateOfType<SurveyWidgetState>()?.formKey.currentState;
+                      if (formState?.validate() ?? false) {
+                        context.findAncestorStateOfType<SurveyWidgetState>()?.nextStep();
+                      }
                     }
                   },
                   selectedColor: theme.primaryColor,
                   labelStyle: TextStyle(
-                    color: selectedIndex == index ? Colors.white : theme.textTheme.bodyMedium?.color,
+                    color: selectedIndex == index
+                        ? Colors.white
+                        : theme.textTheme.bodyMedium?.color,
                   ),
                 );
               }),
@@ -87,7 +102,6 @@ class _NPSQuestionState extends State<NPSQuestion> {
                     widget.question.lowerLabel!['default'] ?? '',
                     style: theme.textTheme.bodySmall,
                   ),
-                const Spacer(),
                 if (widget.question.upperLabel != null)
                   Text(
                     widget.question.upperLabel!['default'] ?? '',
@@ -98,7 +112,10 @@ class _NPSQuestionState extends State<NPSQuestion> {
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: Text(field.errorText!, style: TextStyle(color: theme.colorScheme.error)),
+                child: Text(
+                  field.errorText!,
+                  style: TextStyle(color: theme.colorScheme.error),
+                ),
               ),
           ],
         );

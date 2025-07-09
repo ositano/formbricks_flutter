@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
 
 class MultipleChoiceMulti extends StatefulWidget {
@@ -11,7 +12,7 @@ class MultipleChoiceMulti extends StatefulWidget {
     super.key,
     required this.question,
     required this.onResponse,
-    this.response
+    this.response,
   });
 
   @override
@@ -34,7 +35,7 @@ class _MultipleChoiceMultiState extends State<MultipleChoiceMulti> {
     final isRequired = widget.question.required ?? false;
 
     return FormField<bool>(
-      validator: (value) => isRequired && selectedOptions.isEmpty ? 'Please select at least one option' : null,
+      validator: (value) => isRequired && selectedOptions.isEmpty ? AppLocalizations.of(context)!.please_select_option : null,
       builder: (FormFieldState<bool> field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

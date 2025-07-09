@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 import '../../formbricks_flutter.dart';
+import '../utils/helper.dart';
 
 class WelcomeWidget extends StatelessWidget {
   final Survey survey;
@@ -15,9 +16,9 @@ class WelcomeWidget extends StatelessWidget {
     if (survey.welcomeCard?['timeToFinish'] != null) {
       final time = survey.welcomeCard!['timeToFinish'];
       timeToFinishText = time is int
-          ? 'Estimated time: ${time ~/ 60} min ${time % 60} sec'
+          ? '${AppLocalizations.of(context)!.estimated_time}: ${time ~/ 60} min ${time % 60} sec'
           : time is String
-          ? 'Estimated time: $time'
+          ? '${AppLocalizations.of(context)!.estimated_time}: $time'
           : null;
     }
 
@@ -29,14 +30,20 @@ class WelcomeWidget extends StatelessWidget {
       children: [
         if (survey.welcomeCard?['fileUrl'] != null)
           Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Image.network(survey.welcomeCard!['fileUrl'], fit: BoxFit.fitWidth, height: 50,),
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: Image.network(
+              survey.welcomeCard!['fileUrl'],
+              fit: BoxFit.fitWidth,
+              height: 50,
+            ),
           ),
         Text(
-          survey.welcomeCard?['headline']['default'] ?? '',
-          style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          translateField(survey.welcomeCard?['headline'], context),
+          style:
+              theme.textTheme.headlineMedium ??
+              const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        HtmlWidget(survey.welcomeCard?['html']['default'] ?? ''),
+        HtmlWidget(translateField(survey.welcomeCard?['html'], context)),
         if (timeToFinishText != null)
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
@@ -50,7 +57,7 @@ class WelcomeWidget extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: Text(
-              '$responseCount responses',
+              '$responseCount ${AppLocalizations.of(context)!.responses}',
               style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey),
             ),
           ),

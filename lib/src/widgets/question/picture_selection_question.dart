@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
 
 /// Choose one or more images from a set
@@ -69,7 +70,7 @@ class _PictureSelectionQuestionState extends State<PictureSelectionQuestion> {
     final choices = widget.question.choices ?? [];
     final isMulti = widget.question.allowMulti ?? false;
     return FormField<bool>(
-      validator: (value) => widget.question.required == true && selectedImages.isEmpty ? 'Please select an option' : null,
+      validator: (value) => widget.question.required == true && selectedImages.isEmpty ? AppLocalizations.of(context)!.please_select_option : null,
       builder: (FormFieldState<bool> field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
