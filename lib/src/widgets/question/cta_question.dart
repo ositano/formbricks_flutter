@@ -3,6 +3,7 @@ import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 import '../../../formbricks_flutter.dart';
 import '../../models/question.dart';
+import '../../utils/helper.dart';
 
 class CTAQuestion extends StatefulWidget {
   final Question question;
@@ -40,11 +41,16 @@ class _CTAQuestionState extends State<CTAQuestion> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.question.headline['default'] ?? '', style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            if (widget.question.html?['default']?.isNotEmpty ?? false)
+            Text(
+                //widget.question.headline['default'] ?? '',
+                translate(widget.question.headline, context) ?? '',
+                style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            //if (widget.question.html?['default']?.isNotEmpty ?? false)
+            if (translate(widget.question.html, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: HtmlWidget(widget.question.html!['default'] ?? ''),
+                //child: HtmlWidget(widget.question.html!['default'] ?? ''),
+                child: HtmlWidget(translate(widget.question.html, context) ?? ''),
               ),
             const SizedBox(height: 16),
             Row(
@@ -55,7 +61,8 @@ class _CTAQuestionState extends State<CTAQuestion> {
                     widget.onResponse(widget.question.id, true);
                     field.didChange(true); // Validate
                   },
-                  child: Text(widget.question.buttonLabel?['default'] ?? AppLocalizations.of(context)!.action),
+                  //child: Text(widget.question.buttonLabel?['default'] ?? AppLocalizations.of(context)!.action),
+                  child: Text(translate(widget.question.buttonLabel, context) ?? AppLocalizations.of(context)!.action),
                 ),
                 if (widget.question.dismissButtonLabel?['default'] != null)
                   TextButton(
@@ -63,7 +70,8 @@ class _CTAQuestionState extends State<CTAQuestion> {
                       widget.onResponse(widget.question.id, false);
                       Navigator.of(context).pop(); // Skip and close
                     },
-                    child: Text(widget.question.dismissButtonLabel!['default'] ?? AppLocalizations.of(context)!.skip),
+                    //child: Text(widget.question.dismissButtonLabel!['default'] ?? AppLocalizations.of(context)!.skip),
+                    child: Text(translate(widget.question.dismissButtonLabel, context) ?? AppLocalizations.of(context)!.skip),
                   ),
               ],
             ),

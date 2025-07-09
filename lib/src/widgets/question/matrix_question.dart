@@ -3,6 +3,7 @@ import 'dart:math';
 
 import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
+import '../../utils/helper.dart';
 
 class MatrixQuestion extends StatefulWidget {
   final Question question;
@@ -93,15 +94,18 @@ class _MatrixQuestionState extends State<MatrixQuestion> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.question.headline['default'] ?? '',
+              //widget.question.headline['default'] ?? '',
+              translate(widget.question.headline, context) ?? '',
               style: theme.textTheme.headlineMedium ??
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+            //if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+            if (translate(widget.question.subheader, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  widget.question.subheader!['default']!,
+                  //widget.question.subheader!['default']!,
+                  translate(widget.question.subheader, context) ?? "",
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
@@ -121,7 +125,8 @@ class _MatrixQuestionState extends State<MatrixQuestion> {
                         padding: const EdgeInsets.all(8.0),
                         child: Center(
                           child: Text(
-                            col['default'] ?? '',
+                            //col['default'] ?? '',
+                            translate(col, context) ?? '',
                             style: theme.textTheme.bodyMedium,
                           ),
                         ),
@@ -130,7 +135,8 @@ class _MatrixQuestionState extends State<MatrixQuestion> {
                   ],
                 ),
                 ...shuffledRows.map((row) {
-                  final rowLabel = row['default'] ?? '';
+                  //final rowLabel = row['default'] ?? '';
+                  final rowLabel = translate(row, context) ?? '';
                   return TableRow(
                     key: ValueKey(rowLabel),
                     children: [
@@ -142,7 +148,8 @@ class _MatrixQuestionState extends State<MatrixQuestion> {
                         ),
                       ),
                       ...columns.map((col) {
-                        final colValue = col['default'] ?? '';
+                        //final colValue = col['default'] ?? '';
+                        final colValue = translate(col, context) ?? '';
                         return Radio<String>(
                           value: colValue,
                           groupValue: selections[rowLabel],
@@ -161,7 +168,7 @@ class _MatrixQuestionState extends State<MatrixQuestion> {
                             });
                           },
                         );
-                      }).toList(),
+                      }),
                     ],
                   );
                 }),

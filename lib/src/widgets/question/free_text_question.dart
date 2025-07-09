@@ -4,6 +4,7 @@ import 'package:chewie/chewie.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
+import '../../utils/helper.dart';
 
 class FreeTextQuestion extends StatefulWidget {
   final Question question;
@@ -128,6 +129,11 @@ class _FreeTextQuestionState extends State<FreeTextQuestion> {
                 child: Image.network(
                   question.imageUrl!,
                   fit: BoxFit.contain,
+                  loadingBuilder: (context, widget, event) => SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
                   errorBuilder: (context, error, stackTrace) =>
                       const SizedBox.shrink(),
                 ),
@@ -139,16 +145,19 @@ class _FreeTextQuestionState extends State<FreeTextQuestion> {
                 child: Chewie(controller: _chewieController!),
               ),
             Text(
-              question.headline['default'] ?? '',
+              //question.headline['default'] ?? '',
+              translate(question.headline, context) ?? '',
               style:
                   theme.textTheme.headlineMedium ??
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            if (question.subheader?['default']?.isNotEmpty ?? false)
+            //if (question.subheader?['default']?.isNotEmpty ?? false)
+            if (translate(question.subheader, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  question.subheader!['default'] ?? '',
+                  //question.subheader!['default'] ?? '',
+                  translate(question.subheader, context) ?? '',
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
@@ -156,9 +165,8 @@ class _FreeTextQuestionState extends State<FreeTextQuestion> {
             TextFormField(
               controller: _controller,
               decoration: InputDecoration(
-                labelText:
-                    question.placeholder?['default'] ??
-                        AppLocalizations.of(context)!.type_answer_here,
+                //labelText: question.placeholder?['default'] ?? AppLocalizations.of(context)!.type_answer_here,
+                labelText: translate(question.placeholder, context) ?? AppLocalizations.of(context)!.type_answer_here,
                 border: const OutlineInputBorder(),
                 labelStyle: theme.textTheme.bodyMedium,
               ),

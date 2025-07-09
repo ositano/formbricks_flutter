@@ -376,6 +376,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Click here'**
   String get click_here;
+
+  /// No description provided for @address_line_1.
+  ///
+  /// In en, this message translates to:
+  /// **'Address Line 1'**
+  String get address_line_1;
+
+  /// No description provided for @address_line_2.
+  ///
+  /// In en, this message translates to:
+  /// **'Address Line 2'**
+  String get address_line_2;
+
+  /// No description provided for @city.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get city;
+
+  /// No description provided for @state.
+  ///
+  /// In en, this message translates to:
+  /// **'State'**
+  String get state;
+
+  /// No description provided for @zip.
+  ///
+  /// In en, this message translates to:
+  /// **'ZIP'**
+  String get zip;
+
+  /// No description provided for @country.
+  ///
+  /// In en, this message translates to:
+  /// **'Country'**
+  String get country;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

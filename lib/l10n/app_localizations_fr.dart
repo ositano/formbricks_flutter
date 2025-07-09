@@ -142,4 +142,22 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get click_here => 'Cliquez ici';
+
+  @override
+  String get address_line_1 => 'Adresse Ligne 1';
+
+  @override
+  String get address_line_2 => 'Adresse Ligne 2';
+
+  @override
+  String get city => 'Ville';
+
+  @override
+  String get state => 'État';
+
+  @override
+  String get zip => 'Code postal';
+
+  @override
+  String get country => 'Pays';
 }

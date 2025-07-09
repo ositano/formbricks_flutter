@@ -142,4 +142,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get click_here => 'Click here';
+
+  @override
+  String get address_line_1 => 'Address Line 1';
+
+  @override
+  String get address_line_2 => 'Address Line 2';
+
+  @override
+  String get city => 'City';
+
+  @override
+  String get state => 'State';
+
+  @override
+  String get zip => 'ZIP';
+
+  @override
+  String get country => 'Country';
 }

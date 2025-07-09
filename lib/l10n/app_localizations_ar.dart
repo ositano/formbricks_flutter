@@ -142,4 +142,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get click_here => 'انقر هنا';
+
+  @override
+  String get address_line_1 => 'سطر العنوان 1';
+
+  @override
+  String get address_line_2 => 'سطر العنوان 2';
+
+  @override
+  String get city => 'المدينة';
+
+  @override
+  String get state => 'الولاية';
+
+  @override
+  String get zip => 'الرمز البريدي';
+
+  @override
+  String get country => 'البلد';
 }

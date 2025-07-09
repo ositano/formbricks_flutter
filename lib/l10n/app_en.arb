@@ -44,5 +44,11 @@
   "please_select_score": "Please select a score",
   "please_rank_all_options": "Please rank all options",
   "please_select_rating": "Please select a rating",
-  "click_here": "Click here"
+  "click_here": "Click here",
+  "address_line_1": "Address Line 1",
+  "address_line_2": "Address Line 2",
+  "city": "City",
+  "state": "State",
+  "zip": "ZIP",
+  "country": "Country"
 }

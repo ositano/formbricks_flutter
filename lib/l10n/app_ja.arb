@@ -44,5 +44,11 @@
   "please_select_score": "スコアを選択してください",
   "please_rank_all_options": "すべてのオプションをランク付けしてください",
   "please_select_rating": "評価を選択してください",
-  "click_here": "ここをクリック"
+  "click_here": "ここをクリック",
+    "address_line_1": "住所1",
+    "address_line_2": "住所2",
+    "city": "市区町村",
+    "state": "都道府県",
+    "zip": "郵便番号",
+    "country": "国"
 }

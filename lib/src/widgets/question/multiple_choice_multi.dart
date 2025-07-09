@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
+import '../../utils/helper.dart';
 
 class MultipleChoiceMulti extends StatefulWidget {
   final Question question;
@@ -40,15 +41,23 @@ class _MultipleChoiceMultiState extends State<MultipleChoiceMulti> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.question.headline['default'] ?? '', style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+            Text(
+                //widget.question.headline['default'] ?? '',
+                translate(widget.question.headline, context) ?? '',
+                style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            //if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+            if (translate(widget.question.subheader, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: Text(widget.question.subheader?['default'] ?? '', style: theme.textTheme.bodyMedium),
+                child: Text(
+                    //widget.question.subheader?['default'] ?? '',
+                    translate(widget.question.subheader, context) ?? '',
+                    style: theme.textTheme.bodyMedium),
               ),
             const SizedBox(height: 16),
             ...options.map((option) => CheckboxListTile(
-              title: Text(option['label']['default'] ?? '', style: theme.textTheme.bodyMedium),
+              //title: Text(option['label']['default'] ?? '', style: theme.textTheme.bodyMedium),
+              title: Text(translate(option['label'], context) ?? '', style: theme.textTheme.bodyMedium),
               value: selectedOptions.contains(option['id']),
               onChanged: (value) {
                 setState(() {

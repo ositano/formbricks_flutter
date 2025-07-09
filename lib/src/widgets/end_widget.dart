@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../formbricks_flutter.dart';
+import '../utils/helper.dart';
 
 class EndWidget extends StatelessWidget {
   final Survey survey;
@@ -18,18 +20,19 @@ class EndWidget extends StatelessWidget {
     );
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          ending?['headline']['default'] ?? "",
+          translate(ending?['headline'], context) ?? "",
           style:
           theme.textTheme.headlineMedium ??
               const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        if (ending?['subheader']['default']?.isNotEmpty ?? false)
+        if (translate(ending?['subheader'], context)?.isNotEmpty ?? false)
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: Text(
-              ending?['subheader']['default'] ?? '',
+              translate(ending?['subheader'], context) ?? '',
               style: theme.textTheme.bodyMedium,
             ),
           ),

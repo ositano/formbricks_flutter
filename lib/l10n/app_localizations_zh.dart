@@ -142,4 +142,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get click_here => '点击这里';
+
+  @override
+  String get address_line_1 => '地址行1';
+
+  @override
+  String get address_line_2 => '地址行2';
+
+  @override
+  String get city => '城市';
+
+  @override
+  String get state => '州/省';
+
+  @override
+  String get zip => '邮政编码';
+
+  @override
+  String get country => '国家';
 }

@@ -84,7 +84,7 @@ class Question {
     this.firstName,
     this.lastName,
     this.maxSizeInMB,
-    this.format
+    this.format,
   });
 
   factory Question.fromJson(Map<String, dynamic> json) {

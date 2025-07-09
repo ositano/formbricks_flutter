@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
+import '../../utils/helper.dart';
 
 /// Choose one or more images from a set
 class PictureSelectionQuestion extends StatefulWidget {
@@ -76,7 +77,8 @@ class _PictureSelectionQuestionState extends State<PictureSelectionQuestion> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.question.headline['default'] ?? '',
+              //widget.question.headline['default'] ?? '',
+              translate(widget.question.headline, context) ?? '',
               style:
                   theme.textTheme.headlineMedium ??
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -85,7 +87,8 @@ class _PictureSelectionQuestionState extends State<PictureSelectionQuestion> {
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  widget.question.subheader?['default'] ?? '',
+                  //widget.question.subheader?['default'] ?? '',
+                  translate(widget.question.subheader, context) ?? '',
                   style: theme.textTheme.bodyMedium,
                 ),
               ),

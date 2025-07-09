@@ -44,5 +44,11 @@
   "please_select_score": "请选择一个分数",
   "please_rank_all_options": "请对所有选项进行排序",
   "please_select_rating": "请选择一个评分",
-  "click_here": "点击这里"
+  "click_here": "点击这里",
+    "address_line_1": "地址行1",
+    "address_line_2": "地址行2",
+    "city": "城市",
+    "state": "州/省",
+    "zip": "邮政编码",
+    "country": "国家"
 }

@@ -17,6 +17,7 @@ class Survey {
   final List<Map<String, dynamic>>? endings;
   final List<Map<String, dynamic>>? variables;
   final List<dynamic>? followUps;
+  final bool? isBackButtonHidden;
 
   Survey({
     required this.id,
@@ -34,6 +35,7 @@ class Survey {
     this.endings,
     this.variables,
     this.followUps,
+    this.isBackButtonHidden
   });
 
   factory Survey.fromJson(Map<String, dynamic> json) {
@@ -55,6 +57,7 @@ class Survey {
       endings: (json['endings'] as List?)?.cast<Map<String, dynamic>>(),
       variables: (json['variables'] as List?)?.cast<Map<String, dynamic>>(),
       followUps: json['followUps'],
+      isBackButtonHidden: json['isBackButtonHidden']
     );
   }
 }

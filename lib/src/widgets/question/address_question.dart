@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
+import '../../utils/helper.dart';
 
 class AddressQuestion extends StatefulWidget {
   final Question question;
@@ -150,15 +151,15 @@ class _AddressQuestionState extends State<AddressQuestion> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              question.headline['default'] ?? '',
+              translate(question.headline, context) ?? '',
               style: theme.textTheme.headlineMedium ??
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            if (question.subheader?['default']?.isNotEmpty ?? false)
+            if (translate(question.subheader, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: Text(
-                  question.subheader?['default'] ?? '',
+                  translate(question.subheader, context) ?? '',
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
@@ -167,42 +168,48 @@ class _AddressQuestionState extends State<AddressQuestion> {
             _buildField(
               show: addressLine1['show'] ?? false,
               required: addressLine1['required'] ?? false,
-              label: addressLine1['placeholder']?['default'] ?? 'Address Line 1',
+              //label: addressLine1['placeholder']?['default'] ?? 'Address Line 1',
+              label: translate(addressLine1['placeholder'], context) ?? AppLocalizations.of(context)!.address_line_1,
               controller: _addressLine1Controller,
               revalidate: () => field.didChange,
             ),
             _buildField(
               show: addressLine2['show'] ?? false,
               required: addressLine2['required'] ?? false,
-              label: addressLine2['placeholder']?['default'] ?? 'Address Line 2',
+              //label: addressLine2['placeholder']?['default'] ?? 'Address Line 2',
+              label: translate(addressLine2['placeholder'], context) ?? AppLocalizations.of(context)!.address_line_2,
               controller: _addressLine2Controller,
               revalidate: () =>  field.didChange,
             ),
             _buildField(
               show: city['show'] ?? false,
               required: city['required'] ?? false,
-              label: city['placeholder']?['default'] ?? 'City',
+              //label: city['placeholder']?['default'] ?? 'City',
+              label: translate(city['placeholder'], context) ?? AppLocalizations.of(context)!.city,
               controller: _cityController,
               revalidate: () => field.didChange,
             ),
             _buildField(
               show: state['show'] ?? false,
               required: state['required'] ?? false,
-              label: state['placeholder']?['default'] ?? 'State',
+              //label: state['placeholder']?['default'] ?? 'State',
+              label: translate(state['placeholder'], context) ?? AppLocalizations.of(context)!.state,
               controller: _stateController,
               revalidate: () => field.didChange,
             ),
             _buildField(
               show: zip['show'] ?? false,
               required: zip['required'] ?? false,
-              label: zip['placeholder']?['default'] ?? 'ZIP',
+              //label: zip['placeholder']?['default'] ?? 'ZIP',
+              label: translate(zip['placeholder'], context) ?? AppLocalizations.of(context)!.zip,
               controller: _zipController,
                 revalidate: () => field.didChange,
             ),
             _buildField(
               show: country['show'] ?? false,
               required: country['required'] ?? false,
-              label: country['placeholder']?['default'] ?? 'Country',
+              //label: country['placeholder']?['default'] ?? 'Country',
+              label: translate(country['placeholder'], context) ?? AppLocalizations.of(context)!.country,
               controller: _countryController,
               revalidate: () => field.didChange,
             ),

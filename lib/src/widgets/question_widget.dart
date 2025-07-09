@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../formbricks_flutter.dart';
-import '../../l10n/app_localizations.dart';
 import '../models/question.dart';
 import 'question/address_question.dart';
 import 'question/consent_question.dart';
@@ -18,7 +17,6 @@ import 'question/ranking_formbricks_question.dart';
 import 'question/ranking_question.dart';
 import 'question/rating_question.dart';
 import 'question/cal_question.dart';
-import 'question/single_select_question.dart';
 import 'question/statement_question.dart';
 
 class QuestionWidget extends StatelessWidget {
@@ -57,8 +55,6 @@ class QuestionWidget extends StatelessWidget {
           response: response,
           //textController: textController,
         );
-      case 'singleSelect':
-        return SingleSelectQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
       case 'multipleChoiceSingle':
         return MultipleChoiceSingle(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
       case 'multipleChoiceMulti':

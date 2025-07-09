@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../formbricks_flutter.dart';
 import '../../models/question.dart';
+import '../../utils/helper.dart';
 
 /// Calendar booking input (e.g., using cal.com)
 class CalQuestion extends StatefulWidget {
@@ -55,10 +56,12 @@ class _CalQuestionState extends State<CalQuestion> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.question.headline['default'] ?? '',
+              //widget.question.headline['default'] ?? '',
+              translate(widget.question.headline, context) ?? '',
               style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+            //if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+            if (translate(widget.question.subheader, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(widget.question.subheader?['default'] ?? '', style: theme.textTheme.bodyMedium),
@@ -71,7 +74,7 @@ class _CalQuestionState extends State<CalQuestion> {
             if (isScheduled)
               Padding(
                 padding: EdgeInsets.only(top: 8.0),
-                child: Text(AppLocalizations.of(context)!.meeting_scheduled),
+                child: Text(AppLocalizations.of(context)!.meeting_scheduled, style: theme.textTheme.bodySmall,),
               ),
             if (field.hasError)
               Padding(

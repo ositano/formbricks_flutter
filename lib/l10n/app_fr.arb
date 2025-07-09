@@ -44,5 +44,11 @@
   "please_select_score": "Veuillez sélectionner un score",
   "please_rank_all_options": "Veuillez classer toutes les options",
   "please_select_rating": "Veuillez sélectionner une note",
-  "click_here": "Cliquez ici"
+  "click_here": "Cliquez ici",
+    "address_line_1": "Adresse Ligne 1",
+    "address_line_2": "Adresse Ligne 2",
+    "city": "Ville",
+    "state": "État",
+    "zip": "Code postal",
+    "country": "Pays"
 }

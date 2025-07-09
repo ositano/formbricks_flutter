@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
+import '../../utils/helper.dart';
 
 class MultipleChoiceSingle extends StatefulWidget {
   final Question question;
@@ -45,22 +46,26 @@ class _MultipleChoiceSingleState extends State<MultipleChoiceSingle> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.question.headline['default'] ?? '',
+              //widget.question.headline['default'] ?? '',
+              translate(widget.question.headline, context) ?? '',
               style: theme.textTheme.headlineMedium ??
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            if ((widget.question.subheader?['default'] ?? '').isNotEmpty)
+            //if ((widget.question.subheader?['default'] ?? '').isNotEmpty)
+            if ((translate(widget.question.subheader, context) ?? '').isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  widget.question.subheader!['default']!,
+                  //widget.question.subheader!['default']!,
+                  translate(widget.question.subheader, context) ?? '',
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
             const SizedBox(height: 16),
             ...options.map<Widget>((option) {
               final optionId = option['id']?.toString();
-              final label = option['label']?['default']?.toString() ?? '';
+              //final label = option['label']?['default']?.toString() ?? '';
+              final label = translate(option['label'], context)?.toString() ?? '';
 
               if (optionId == null) return const SizedBox.shrink();
 

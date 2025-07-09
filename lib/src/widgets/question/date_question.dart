@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../formbricks_flutter.dart';
 import '../../models/question.dart';
+import '../../utils/helper.dart';
 
 class DateQuestion extends StatefulWidget {
   final Question question;
@@ -51,7 +52,9 @@ class _DateQuestionState extends State<DateQuestion> {
     if (input is DateTime) return input;
     if (input is String && input.isNotEmpty) {
       try {
-        return DateFormat(widget.question.format ?? 'yyyy-MM-dd').parseStrict(input);
+        return DateFormat(
+          widget.question.format ?? 'yyyy-MM-dd',
+        ).parseStrict(input);
       } catch (_) {
         return null;
       }
@@ -101,15 +104,19 @@ class _DateQuestionState extends State<DateQuestion> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              q.headline['default'] ?? '',
-              style: theme.textTheme.headlineMedium ??
+              //q.headline['default'] ?? '',
+              translate(q.headline, context) ?? '',
+              style:
+                  theme.textTheme.headlineMedium ??
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            if (q.subheader?['default']?.isNotEmpty ?? false)
+            //if (q.subheader?['default']?.isNotEmpty ?? false)
+            if (translate(q.subheader, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  q.subheader!['default']!,
+                  //q.subheader!['default']!,
+                  translate(q.subheader, context) ?? "",
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
@@ -122,10 +129,18 @@ class _DateQuestionState extends State<DateQuestion> {
                 hintText: AppLocalizations.of(context)!.select_date,
                 border: const OutlineInputBorder(),
                 suffixIcon: const Icon(Icons.calendar_today),
-                errorText: field.hasError ? field.errorText : null,
+                //errorText: field.hasError ? field.errorText : null,
               ),
               style: theme.textTheme.bodyMedium,
             ),
+            if (field.hasError)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  field.errorText!,
+                  style: TextStyle(color: theme.colorScheme.error),
+                ),
+              ),
           ],
         );
       },

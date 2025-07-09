@@ -38,12 +38,12 @@ class WelcomeWidget extends StatelessWidget {
             ),
           ),
         Text(
-          translateField(survey.welcomeCard?['headline'], context),
+          translate(survey.welcomeCard?['headline'], context) ?? '',
           style:
               theme.textTheme.headlineMedium ??
               const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        HtmlWidget(translateField(survey.welcomeCard?['html'], context)),
+        HtmlWidget(translate(survey.welcomeCard?['html'], context) ?? ''),
         if (timeToFinishText != null)
           Padding(
             padding: const EdgeInsets.only(top: 8.0),

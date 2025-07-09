@@ -142,4 +142,22 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get click_here => 'Clique aqui';
+
+  @override
+  String get address_line_1 => 'Endereço Linha 1';
+
+  @override
+  String get address_line_2 => 'Endereço Linha 2';
+
+  @override
+  String get city => 'Cidade';
+
+  @override
+  String get state => 'Estado';
+
+  @override
+  String get zip => 'CEP';
+
+  @override
+  String get country => 'País';
 }

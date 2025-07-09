@@ -142,4 +142,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get click_here => 'ここをクリック';
+
+  @override
+  String get address_line_1 => '住所1';
+
+  @override
+  String get address_line_2 => '住所2';
+
+  @override
+  String get city => '市区町村';
+
+  @override
+  String get state => '都道府県';
+
+  @override
+  String get zip => '郵便番号';
+
+  @override
+  String get country => '国';
 }

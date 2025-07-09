@@ -29,7 +29,7 @@ class SurveyButtons extends StatelessWidget{
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          if (currentStep > 1)
+          if (currentStep > 1 && survey.isBackButtonHidden == false)
             OutlinedButton(
               onPressed: previousStep,
               child: Text(previousLabel ?? AppLocalizations.of(context)!.back),

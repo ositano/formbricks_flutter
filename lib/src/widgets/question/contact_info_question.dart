@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../formbricks_flutter.dart';
 import '../../models/question.dart';
+import '../../utils/helper.dart';
 
 class ContactInfoQuestion extends StatefulWidget {
   final Question question;
@@ -80,7 +81,6 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
     final isRequired = widget.question.required ?? false;
 
     return FormField<bool>(
-      //key: _formKey,
       validator: (value) {
         if (isRequired &&
             (_nameController.text.isEmpty || _phoneController.text.isEmpty || _emailController.text.isEmpty)) {
@@ -97,14 +97,17 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.question.headline['default'] ?? '',
+              //widget.question.headline['default'] ?? '',
+            translate(widget.question.headline, context) ?? '',
               style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+            //if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+            if (translate(widget.question.subheader, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  widget.question.subheader?['default'] ?? '',
+                  //widget.question.subheader?['default'] ?? '',
+                  translate(widget.question.subheader, context) ?? '',
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
@@ -112,10 +115,10 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
             TextFormField(
               controller: _nameController,
               decoration: InputDecoration(
-                labelText: 'Name',
+                labelText: AppLocalizations.of(context)!.name,
                 border: OutlineInputBorder(),
                 labelStyle: theme.textTheme.bodyMedium,
-                errorText: field.hasError ? field.errorText : null,
+                //errorText: field.hasError ? field.errorText : null,
               ),
               onChanged: (value) => _updateResponse(),
             ),
@@ -123,10 +126,10 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
             TextFormField(
               controller: _emailController,
               decoration: InputDecoration(
-                labelText: 'Email',
+                labelText: AppLocalizations.of(context)!.email,
                 border: OutlineInputBorder(),
                 labelStyle: theme.textTheme.bodyMedium,
-                errorText: field.hasError ? field.errorText : null,
+                //errorText: field.hasError ? field.errorText : null,
               ),
               keyboardType: TextInputType.emailAddress,
               onChanged: (value) => _updateResponse(),
@@ -135,10 +138,10 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
             TextFormField(
               controller: _phoneController,
               decoration: InputDecoration(
-                labelText: 'Phone',
+                labelText: AppLocalizations.of(context)!.phone,
                 border: OutlineInputBorder(),
                 labelStyle: theme.textTheme.bodyMedium,
-                errorText: field.hasError ? field.errorText : null,
+                //errorText: field.hasError ? field.errorText : null,
               ),
               keyboardType: TextInputType.phone,
               onChanged: (value) => _updateResponse(),

@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../formbricks_client.dart';
 import '../../models/question.dart';
+import '../../utils/helper.dart';
 
 /// Upload files (e.g., screenshots)
 class FileUploadQuestion extends StatefulWidget {
@@ -85,11 +86,17 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.question.headline['default'] ?? '', style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(
+                //widget.question.headline['default'] ?? '',
+                translate(widget.question.headline, context) ?? '',
+                style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             if (widget.question.subheader?['default']?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: Text(widget.question.subheader?['default'] ?? '', style: theme.textTheme.bodyMedium),
+                child: Text(
+                    //widget.question.subheader?['default'] ?? '',
+                    translate(widget.question.subheader, context) ?? '',
+                    style: theme.textTheme.bodyMedium),
               ),
             const SizedBox(height: 16),
             ElevatedButton(

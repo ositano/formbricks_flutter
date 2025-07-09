@@ -44,5 +44,11 @@
   "please_select_score": "Por favor, selecione uma pontuação",
   "please_rank_all_options": "Por favor, classifique todas as opções",
   "please_select_rating": "Por favor, selecione uma avaliação",
-  "click_here": "Clique aqui"
+  "click_here": "Clique aqui",
+    "address_line_1": "Endereço Linha 1",
+    "address_line_2": "Endereço Linha 2",
+    "city": "Cidade",
+    "state": "Estado",
+    "zip": "CEP",
+    "country": "País"
 }

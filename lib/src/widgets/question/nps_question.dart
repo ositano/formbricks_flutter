@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../formbricks_flutter.dart';
 import '../../models/question.dart';
+import '../../utils/helper.dart';
 
 class NPSQuestion extends StatefulWidget {
   final Question question;
@@ -50,15 +51,18 @@ class _NPSQuestionState extends State<NPSQuestion> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.question.headline['default'] ?? '',
+              //widget.question.headline['default'] ?? '',
+              translate(widget.question.headline, context) ?? '',
               style: theme.textTheme.headlineMedium ??
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+            //if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+            if (translate(widget.question.subheader, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  widget.question.subheader!['default'] ?? '',
+                  //widget.question.subheader!['default'] ?? '',
+                  translate(widget.question.subheader, context) ?? '',
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
@@ -99,12 +103,14 @@ class _NPSQuestionState extends State<NPSQuestion> {
               children: [
                 if (widget.question.lowerLabel != null)
                   Text(
-                    widget.question.lowerLabel!['default'] ?? '',
+                    //widget.question.lowerLabel!['default'] ?? '',
+                    translate(widget.question.lowerLabel, context) ?? '',
                     style: theme.textTheme.bodySmall,
                   ),
                 if (widget.question.upperLabel != null)
                   Text(
-                    widget.question.upperLabel!['default'] ?? '',
+                    //widget.question.upperLabel!['default'] ?? '',
+                    translate(widget.question.upperLabel, context) ?? '',
                     style: theme.textTheme.bodySmall,
                   ),
               ],

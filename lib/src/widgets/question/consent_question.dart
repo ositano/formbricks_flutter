@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../formbricks_flutter.dart';
 import '../../models/question.dart';
+import '../../utils/helper.dart';
 
 class ConsentQuestion extends StatefulWidget {
   final Question question;
@@ -39,15 +40,25 @@ class _ConsentQuestionState extends State<ConsentQuestion> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.question.headline['default'] ?? '', style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+            Text(
+                //widget.question.headline['default'] ?? '',
+                translate(widget.question.headline, context) ?? '',
+                style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            //if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+            if (translate(widget.question.subheader, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: Text(widget.question.subheader?['default'] ?? '', style: theme.textTheme.bodyMedium),
+                child: Text(
+                    //widget.question.subheader?['default'] ?? '',
+                    translate(widget.question.subheader, context) ?? '',
+                    style: theme.textTheme.bodyMedium),
               ),
             const SizedBox(height: 16),
             CheckboxListTile(
-              title: Text(widget.question.label?['default'] ?? AppLocalizations.of(context)!.i_agree, style: theme.textTheme.bodyMedium),
+              title: Text(
+                  //widget.question.label?['default']
+        translate(widget.question.label, context)
+                      ?? AppLocalizations.of(context)!.i_agree, style: theme.textTheme.bodyMedium),
               value: consented,
               onChanged: (value) {
                 setState(() {

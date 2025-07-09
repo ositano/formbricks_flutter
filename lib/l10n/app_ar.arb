@@ -44,5 +44,11 @@
   "please_select_score": "يرجى اختيار درجة",
   "please_rank_all_options": "يرجى ترتيب جميع الخيارات",
   "please_select_rating": "يرجى اختيار تقييم",
-  "click_here": "انقر هنا"
+  "click_here": "انقر هنا",
+    "address_line_1": "سطر العنوان 1",
+    "address_line_2": "سطر العنوان 2",
+    "city": "المدينة",
+    "state": "الولاية",
+    "zip": "الرمز البريدي",
+    "country": "البلد"
 }

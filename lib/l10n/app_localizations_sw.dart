@@ -142,4 +142,22 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get click_here => 'Bofya hapa';
+
+  @override
+  String get address_line_1 => 'Anwani Mstari wa 1';
+
+  @override
+  String get address_line_2 => 'Anwani Mstari wa 2';
+
+  @override
+  String get city => 'Jiji';
+
+  @override
+  String get state => 'Jimbo';
+
+  @override
+  String get zip => 'Msimbo wa posta';
+
+  @override
+  String get country => 'Nchi';
 }

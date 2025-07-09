@@ -44,5 +44,11 @@
   "please_select_score": "Tafadhali chagua alama",
   "please_rank_all_options": "Tafadhali panga chaguzi zote",
   "please_select_rating": "Tafadhali chagua kiwango",
-  "click_here": "Bofya hapa"
+  "click_here": "Bofya hapa",
+    "address_line_1": "Anwani Mstari wa 1",
+    "address_line_2": "Anwani Mstari wa 2",
+    "city": "Jiji",
+    "state": "Jimbo",
+    "zip": "Msimbo wa posta",
+    "country": "Nchi"
 }
