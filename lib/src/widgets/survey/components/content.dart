@@ -65,7 +65,6 @@ class SurveyContent extends StatelessWidget {
         padding = const EdgeInsets.all(16.0);
         isScrollable = false; // Dialogs typically handle overflow internally
         break;
-      case SurveyDisplayMode.formbricks:
       default:
         height = widgetHeight ?? deviceHeight;
         padding = const EdgeInsets.fromLTRB(24.0, 32.0, 24.0, 16.0);
@@ -76,6 +75,7 @@ class SurveyContent extends StatelessWidget {
       width: width,
       height: height,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(height: MediaQuery.of(context).padding.top + kToolbarHeight),
           Expanded(
@@ -85,14 +85,9 @@ class SurveyContent extends StatelessWidget {
                 padding: padding,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: progress >= 1.0 ? CrossAxisAlignment.center : CrossAxisAlignment.start,
                   children: [
-                    surveyDisplayMode == SurveyDisplayMode.formbricks
-                        ? Flexible(
-                      fit: FlexFit.loose,
-                      child: child,
-                    )
-                        : child,
+                    child,
                     SurveyButtons(
                       currentStep: currentStep,
                       nextStep: nextStep,

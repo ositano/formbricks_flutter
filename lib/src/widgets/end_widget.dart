@@ -23,11 +23,13 @@ class EndWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        Icon(Icons.check_circle, color: Colors.green, size: 100,),
         Text(
           translate(ending?['headline'], context) ?? "",
           style:
           theme.textTheme.headlineMedium ??
               const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
         ),
         if (translate(ending?['subheader'], context)?.isNotEmpty ?? false)
           Padding(
@@ -35,6 +37,7 @@ class EndWidget extends StatelessWidget {
             child: Text(
               translate(ending?['subheader'], context) ?? '',
               style: theme.textTheme.bodyMedium,
+              textAlign: TextAlign.center,
             ),
           ),
         const SizedBox(height: 16),

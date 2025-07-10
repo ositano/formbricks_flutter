@@ -75,6 +75,37 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
     }
   }
 
+  Widget _buildField({
+    required bool show,
+    required bool required,
+    required String label,
+    required TextEditingController controller,
+    required TextInputType? textInputType,
+    required void Function() onChanged,
+  }) {
+    if (!show) return const SizedBox.shrink();
+    return Padding(
+        padding: const EdgeInsets.only(bottom: 8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+            ),
+            SizedBox(height: 8.0,),
+            TextFormField(
+              controller: controller,
+              keyboardType: textInputType,
+              onChanged: (_) {
+                onChanged();
+              },
+            ),
+          ],
+        )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -112,40 +143,65 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
                 ),
               ),
             const SizedBox(height: 16),
-            TextFormField(
+
+            _buildField(
+              show: true,
+              required: true,
+              label: AppLocalizations.of(context)!.name,
               controller: _nameController,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.name,
-                border: OutlineInputBorder(),
-                labelStyle: theme.textTheme.bodyMedium,
-                //errorText: field.hasError ? field.errorText : null,
-              ),
-              onChanged: (value) => _updateResponse(),
+              onChanged: () => _updateResponse(),
+              textInputType: TextInputType.name,
             ),
-            const SizedBox(height: 8),
-            TextFormField(
+            _buildField(
+              show: true,
+              required: true,
+              label: AppLocalizations.of(context)!.email,
               controller: _emailController,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.email,
-                border: OutlineInputBorder(),
-                labelStyle: theme.textTheme.bodyMedium,
-                //errorText: field.hasError ? field.errorText : null,
-              ),
-              keyboardType: TextInputType.emailAddress,
-              onChanged: (value) => _updateResponse(),
+              onChanged: () => _updateResponse(),
+              textInputType: TextInputType.emailAddress,
             ),
-            const SizedBox(height: 8),
-            TextFormField(
+            _buildField(
+              show: true,
+              required: true,
+              label: AppLocalizations.of(context)!.phone,
               controller: _phoneController,
-              decoration: InputDecoration(
-                labelText: AppLocalizations.of(context)!.phone,
-                border: OutlineInputBorder(),
-                labelStyle: theme.textTheme.bodyMedium,
-                //errorText: field.hasError ? field.errorText : null,
-              ),
-              keyboardType: TextInputType.phone,
-              onChanged: (value) => _updateResponse(),
+              onChanged: () => _updateResponse(),
+              textInputType: TextInputType.phone,
             ),
+            // TextFormField(
+            //   controller: _nameController,
+            //   decoration: InputDecoration(
+            //     labelText: AppLocalizations.of(context)!.name,
+            //     border: OutlineInputBorder(),
+            //     labelStyle: theme.textTheme.bodyMedium,
+            //     //errorText: field.hasError ? field.errorText : null,
+            //   ),
+            //   onChanged: (value) => _updateResponse(),
+            // ),
+            // const SizedBox(height: 8),
+            // TextFormField(
+            //   controller: _emailController,
+            //   decoration: InputDecoration(
+            //     labelText: AppLocalizations.of(context)!.email,
+            //     border: OutlineInputBorder(),
+            //     labelStyle: theme.textTheme.bodyMedium,
+            //     //errorText: field.hasError ? field.errorText : null,
+            //   ),
+            //   keyboardType: TextInputType.emailAddress,
+            //   onChanged: (value) => _updateResponse(),
+            // ),
+            // const SizedBox(height: 8),
+            // TextFormField(
+            //   controller: _phoneController,
+            //   decoration: InputDecoration(
+            //     labelText: AppLocalizations.of(context)!.phone,
+            //     border: OutlineInputBorder(),
+            //     labelStyle: theme.textTheme.bodyMedium,
+            //     //errorText: field.hasError ? field.errorText : null,
+            //   ),
+            //   keyboardType: TextInputType.phone,
+            //   onChanged: (value) => _updateResponse(),
+            // ),
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),

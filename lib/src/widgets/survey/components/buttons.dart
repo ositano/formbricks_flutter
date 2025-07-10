@@ -24,10 +24,13 @@ class SurveyButtons extends StatelessWidget{
 
   @override
   Widget build(BuildContext context){
+    print("current step: $currentStep");
+    print("total: ${survey.questions.length}");
     return Padding(
       padding: const EdgeInsets.only(top: 16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: currentStep == survey.questions.length + 1 ? CrossAxisAlignment.center : CrossAxisAlignment.start,
         children: [
           if (currentStep > 1 && survey.isBackButtonHidden == false)
             OutlinedButton(

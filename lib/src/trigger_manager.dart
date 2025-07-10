@@ -253,9 +253,7 @@ class TriggerManager {
       showModalBottomSheet(
         context: context,
         isDismissible: false,
-        backgroundColor: surveyDisplayMode == SurveyDisplayMode.formbricks
-            ? Colors.transparent
-            : Theme.of(context).bottomSheetTheme.backgroundColor,
+        backgroundColor: Theme.of(context).bottomSheetTheme.backgroundColor,
         builder: (context) => Theme(
           data: buildTheme(context, customTheme, survey),
           child: SurveyWidget(

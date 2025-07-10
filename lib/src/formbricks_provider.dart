@@ -20,7 +20,7 @@ class FormBricksProvider extends StatefulWidget {
     this.userAttributes = const {},
     this.customTheme,
     this.showPoweredBy,
-    this.surveyDisplayMode = SurveyDisplayMode.formbricks,
+    this.surveyDisplayMode = SurveyDisplayMode.fullScreen,
     this.triggers,
     this.locale = 'en',
   });

@@ -72,17 +72,23 @@ class _AddressQuestionState extends State<AddressQuestion> {
     if (!show) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
-        ),
-        onChanged: (_) {
-          _updateResponse();
-          revalidate();
-        },
-      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+          ),
+          SizedBox(height: 8.0,),
+          TextFormField(
+            controller: controller,
+            onChanged: (_) {
+              _updateResponse();
+              revalidate();
+            },
+          ),
+        ],
+      )
     );
   }
 
