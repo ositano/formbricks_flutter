@@ -114,6 +114,9 @@ class AppLocalizationsSw extends AppLocalizations {
   String get upload_file => 'Pakia Faili';
 
   @override
+  String get click_to_upload_files => 'Bofya ili kupakia faili';
+
+  @override
   String get uploaded => 'Imepakiwa';
 
   @override

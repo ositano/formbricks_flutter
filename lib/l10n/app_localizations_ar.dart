@@ -114,6 +114,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get upload_file => 'رفع ملف';
 
   @override
+  String get click_to_upload_files => 'انقر لتحميل الملفات';
+
+  @override
   String get uploaded => 'تم الرفع';
 
   @override

@@ -114,6 +114,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get upload_file => 'Subir archivo';
 
   @override
+  String get click_to_upload_files => 'Haga clic para cargar archivos';
+
+  @override
   String get uploaded => 'Subido';
 
   @override

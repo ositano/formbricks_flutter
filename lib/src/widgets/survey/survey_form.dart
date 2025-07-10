@@ -15,7 +15,6 @@ class SurveyForm extends StatefulWidget {
   final String userId;
   final ThemeData? customTheme;
   final bool? showPoweredBy;
-  final bool useWrapInRankingQuestion;
 
   final int currentStep;
   final bool isLoading;
@@ -46,7 +45,6 @@ class SurveyForm extends StatefulWidget {
     required this.onResponse,
     required this.responses,
     required this.surveyDisplayMode,
-    required this.useWrapInRankingQuestion,
   });
 
   @override
@@ -66,12 +64,9 @@ class SurveyFormState extends State<SurveyForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: buildTheme(context, widget.customTheme, widget.survey),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: _buildSurvey(context),
-      ),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: _buildSurvey(context),
     );
   }
 
@@ -111,8 +106,6 @@ class SurveyFormState extends State<SurveyForm> {
           surveyId: widget.survey.id,
           userId: widget.userId,
           response: widget.responses[question.id],
-          surveyDisplayMode: widget.surveyDisplayMode,
-          useWrapInRankingQuestion: widget.useWrapInRankingQuestion,
           formKey: widget.formKey,
         ),
       );

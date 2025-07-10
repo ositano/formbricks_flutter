@@ -114,6 +114,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get upload_file => 'Enviar arquivo';
 
   @override
+  String get click_to_upload_files => 'Clique para fazer upload de arquivos';
+
+  @override
   String get uploaded => 'Enviado';
 
   @override

@@ -35,6 +35,7 @@
   "error_uploading_file": "Error uploading file",
   "please_upload_file": "Please upload a file",
   "upload_file": "Upload File",
+  "click_to_upload_files": "Click to upload files",
   "uploaded": "Uploaded",
   "type_answer_here": "Type your answer here...",
   "min_character_required": "Minimum characters required",

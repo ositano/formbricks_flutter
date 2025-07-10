@@ -13,7 +13,6 @@ import 'question/multiple_choice_multi.dart';
 import 'question/multiple_choice_single.dart';
 import 'question/nps_question.dart';
 import 'question/picture_selection_question.dart';
-import 'question/ranking_formbricks_question.dart';
 import 'question/ranking_question.dart';
 import 'question/rating_question.dart';
 import 'question/cal_question.dart';
@@ -26,8 +25,6 @@ class QuestionWidget extends StatelessWidget {
   final String surveyId;
   final String userId;
   final dynamic response;
-  final SurveyDisplayMode surveyDisplayMode;
-  final bool useWrapInRankingQuestion;
   final GlobalKey<FormState> formKey;
 
   const QuestionWidget({
@@ -38,8 +35,6 @@ class QuestionWidget extends StatelessWidget {
     required this.surveyId,
     required this.userId,
     this.response,
-    required this.surveyDisplayMode,
-    required this.useWrapInRankingQuestion,
     required this.formKey
   });
 
@@ -70,7 +65,7 @@ class QuestionWidget extends StatelessWidget {
       case 'nps':
         return NPSQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
       case 'ranking':
-        return surveyDisplayMode == SurveyDisplayMode.formbricks ? RankingFormbricksQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response, useWrapInRankingQuestion: useWrapInRankingQuestion,) : RankingQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response, useWrapInRankingQuestion: useWrapInRankingQuestion,);
+        return RankingQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
       case 'matrix':
         return MatrixQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
       case 'statement':

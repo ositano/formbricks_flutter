@@ -121,18 +121,48 @@ class _DateQuestionState extends State<DateQuestion> {
                 ),
               ),
             const SizedBox(height: 16),
-            TextFormField(
-              readOnly: true,
-              controller: _controller,
+            GestureDetector(
               onTap: () => _pickDate(field),
-              decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.select_date,
-                border: const OutlineInputBorder(),
-                suffixIcon: const Icon(Icons.calendar_today),
-                //errorText: field.hasError ? field.errorText : null,
+              child: Container(
+                height: 100,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: theme.inputDecorationTheme.fillColor,
+                  border: Border.all(color: theme.textTheme.headlineMedium!.color ?? Colors.black12, width: 1.0),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.calendar_month, color: Theme.of(context).iconTheme.color),
+                      const SizedBox(width: 8),
+                      Text(
+                        selectedDate != null
+                            ? formatter.format(selectedDate!)
+                            : AppLocalizations.of(context)!.select_date,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              style: theme.textTheme.bodyMedium,
             ),
+
+            // TextFormField(
+            //   readOnly: true,
+            //   controller: _controller,
+            //   onTap: () => _pickDate(field),
+            //   decoration: InputDecoration(
+            //     hintText: AppLocalizations.of(context)!.select_date,
+            //     border: const OutlineInputBorder(),
+            //     suffixIcon: const Icon(Icons.calendar_today),
+            //     //errorText: field.hasError ? field.errorText : null,
+            //   ),
+            //   style: theme.textTheme.bodyMedium,
+            // ),
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),

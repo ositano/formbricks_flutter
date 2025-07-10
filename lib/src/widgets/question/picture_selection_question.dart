@@ -1,11 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-
 import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
 import '../../utils/helper.dart';
 
-/// Choose one or more images from a set
 class PictureSelectionQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
@@ -19,8 +17,7 @@ class PictureSelectionQuestion extends StatefulWidget {
   });
 
   @override
-  State<PictureSelectionQuestion> createState() =>
-      _PictureSelectionQuestionState();
+  State<PictureSelectionQuestion> createState() => _PictureSelectionQuestionState();
 }
 
 class _PictureSelectionQuestionState extends State<PictureSelectionQuestion> {
@@ -45,9 +42,9 @@ class _PictureSelectionQuestionState extends State<PictureSelectionQuestion> {
                   imageUrl: imageUrl,
                   fit: BoxFit.contain,
                   placeholder: (context, url) =>
-                      const Center(child: CircularProgressIndicator()),
+                  const Center(child: CircularProgressIndicator()),
                   errorWidget: (context, url, error) =>
-                      const Center(child: Icon(Icons.error)),
+                  const Center(child: Icon(Icons.error)),
                 ),
               ),
               Positioned(
@@ -70,79 +67,101 @@ class _PictureSelectionQuestionState extends State<PictureSelectionQuestion> {
     final theme = Theme.of(context);
     final choices = widget.question.choices ?? [];
     final isMulti = widget.question.allowMulti ?? false;
+
     return FormField<bool>(
-      validator: (value) => widget.question.required == true && selectedImages.isEmpty ? AppLocalizations.of(context)!.please_select_option : null,
+      validator: (_) =>
+      widget.question.required == true && selectedImages.isEmpty
+          ? AppLocalizations.of(context)!.please_select_option
+          : null,
       builder: (FormFieldState<bool> field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              //widget.question.headline['default'] ?? '',
               translate(widget.question.headline, context) ?? '',
-              style:
-                  theme.textTheme.headlineMedium ??
+              style: theme.textTheme.headlineMedium ??
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+            if (translate(widget.question.subheader, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  //widget.question.subheader?['default'] ?? '',
                   translate(widget.question.subheader, context) ?? '',
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
             const SizedBox(height: 16),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: 12,
+              runSpacing: 12,
               children: choices.map((choice) {
                 final imageId = choice['id'] as String;
                 final imageUrl = choice['imageUrl'] as String;
                 final isSelected = selectedImages.contains(imageId);
-                //print('Rendering image: $imageUrl, selected: $isSelected');
+
                 return GestureDetector(
                   onTap: () {
                     setState(() {
                       if (isMulti) {
-                        if (isSelected) {
-                          selectedImages.remove(imageId);
-                        } else {
-                          selectedImages.add(imageId);
-                        }
+                        isSelected
+                            ? selectedImages.remove(imageId)
+                            : selectedImages.add(imageId);
                       } else {
                         selectedImages = [imageId];
                       }
-                      //print('Selected images: $selectedImages');
                       widget.onResponse(widget.question.id, selectedImages);
+                      field.didChange(true);
                     });
                   },
                   onDoubleTap: () => _showFullScreenImage(imageUrl),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: isSelected
-                            ? theme.primaryColor
-                            : Colors.transparent,
-                        width: 2.0,
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 100,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: isSelected
+                                ? theme.primaryColor
+                                : theme.inputDecorationTheme.enabledBorder!.borderSide.color,
+                            width: isSelected ? 3 : 0,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: CachedNetworkImage(
+                            imageUrl: imageUrl,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => const Center(
+                                child: SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator())),
+                            errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
+                          ),
+                        ),
                       ),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: CachedNetworkImage(
-                      imageUrl: imageUrl,
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) => SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: Center(child: CircularProgressIndicator()),
+                      Positioned(
+                        top: 4,
+                        right: 4,
+                        child: Icon(
+                            isMulti
+                                ? Icons.check_circle
+                                : (isSelected
+                                ? Icons.radio_button_checked
+                                : Icons.radio_button_unchecked),
+                            size: 20,
+                            color: isSelected
+                                ? theme.primaryColor
+                                : theme.unselectedWidgetColor,
+                        ),
                       ),
-                      errorWidget: (context, url, error) {
-                        //print('Image load error for $url: $error');
-                        return const Icon(Icons.error);
-                      },
-                    ),
+
+                    ],
                   ),
                 );
               }).toList(),
@@ -150,7 +169,10 @@ class _PictureSelectionQuestionState extends State<PictureSelectionQuestion> {
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: Text(field.errorText!, style: TextStyle(color: theme.colorScheme.error)),
+                child: Text(
+                  field.errorText!,
+                  style: TextStyle(color: theme.colorScheme.error),
+                ),
               ),
           ],
         );

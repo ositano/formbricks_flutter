@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:dotted_border/dotted_border.dart'; // Add to pubspec.yaml
 
 import '../../../l10n/app_localizations.dart';
 import '../../formbricks_client.dart';
 import '../../models/question.dart';
 import '../../utils/helper.dart';
 
-/// Upload files (e.g., screenshots)
 class FileUploadQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
@@ -59,9 +59,7 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
             userId: widget.userId,
             filePath: file.path!,
           );
-          if(url != null) {
-            urls.add(url);
-          }
+          if (url != null) urls.add(url);
         }
         setState(() {
           fileUrls.addAll(urls);
@@ -87,28 +85,54 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-                //widget.question.headline['default'] ?? '',
-                translate(widget.question.headline, context) ?? '',
-                style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+              translate(widget.question.headline, context) ?? '',
+              style: theme.textTheme.headlineMedium ??
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            if (translate(widget.question.subheader, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                    //widget.question.subheader?['default'] ?? '',
-                    translate(widget.question.subheader, context) ?? '',
-                    style: theme.textTheme.bodyMedium),
+                  translate(widget.question.subheader, context) ?? '',
+                  style: theme.textTheme.bodyMedium,
+                ),
               ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _pickAndUploadFile,
-              child: Text(AppLocalizations.of(context)!.upload_file),
+            GestureDetector(
+              onTap: _pickAndUploadFile,
+              child: DottedBorder(
+                options: RoundedRectDottedBorderOptions(
+                  color: theme.textTheme.headlineMedium!.color ?? Colors.black12,
+                  strokeWidth: 1.5,
+                  radius: const Radius.circular(12),
+                  dashPattern: const [6, 3],
+                ),
+                child: Container(
+                  color: theme.inputDecorationTheme.fillColor,
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.file_upload_outlined, size: 30, color: theme.textTheme.bodyMedium?.color),
+                      //const SizedBox(height: 12),
+                      Text(
+                        AppLocalizations.of(context)!.please_upload_file,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ),
             if (fileUrls.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 12.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: fileUrls.map((url) => Text('${AppLocalizations.of(context)!.uploaded}: $url')).toList(),
+                  children: fileUrls
+                      .map((url) => Text('${AppLocalizations.of(context)!.uploaded}: $url'))
+                      .toList(),
                 ),
               ),
             if (field.hasError)

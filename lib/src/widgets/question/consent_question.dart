@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../formbricks_flutter.dart';
 import '../../models/question.dart';
 import '../../utils/helper.dart';
@@ -35,43 +34,78 @@ class _ConsentQuestionState extends State<ConsentQuestion> {
     final isRequired = widget.question.required ?? false;
 
     return FormField<bool>(
-      validator: (value) => isRequired && !consented ? 'Please provide consent' : null,
+      validator: (value) =>
+      isRequired && !consented ? AppLocalizations.of(context)!.please_provide_consent : null,
       builder: (FormFieldState<bool> field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-                //widget.question.headline['default'] ?? '',
-                translate(widget.question.headline, context) ?? '',
-                style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            //if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+              translate(widget.question.headline, context) ?? '',
+              style: theme.textTheme.headlineMedium ??
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             if (translate(widget.question.subheader, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                    //widget.question.subheader?['default'] ?? '',
-                    translate(widget.question.subheader, context) ?? '',
-                    style: theme.textTheme.bodyMedium),
+                  translate(widget.question.subheader, context) ?? '',
+                  style: theme.textTheme.bodyMedium,
+                ),
               ),
             const SizedBox(height: 16),
-            CheckboxListTile(
-              title: Text(
-                  //widget.question.label?['default']
-        translate(widget.question.label, context)
-                      ?? AppLocalizations.of(context)!.i_agree, style: theme.textTheme.bodyMedium),
-              value: consented,
-              onChanged: (value) {
+            GestureDetector(
+              onTap: () {
                 setState(() {
-                  consented = value ?? false;
+                  consented = !consented;
                   widget.onResponse(widget.question.id, consented);
-                  field.didChange(true); // Validate
+                  field.didChange(true);
                 });
               },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12,),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: theme.inputDecorationTheme.enabledBorder!.borderSide.color,
+                    width: 2.0,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                  color: theme.inputDecorationTheme.fillColor,
+                ),
+                child: Row(
+                  children: [
+                    Checkbox(
+                      value: consented,
+                      //checkColor: theme.primaryColor,
+                      fillColor: consented ? WidgetStateProperty.all(theme.primaryColor) : null,
+                      onChanged: (value) {
+                        setState(() {
+                          consented = value ?? false;
+                          widget.onResponse(widget.question.id, consented);
+                          field.didChange(true);
+                        });
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        translate(widget.question.label, context) ??
+                            AppLocalizations.of(context)!.i_agree,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                    ),
+
+                  ],
+                ),
+              ),
             ),
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: Text(field.errorText!, style: TextStyle(color: theme.colorScheme.error)),
+                child: Text(
+                  field.errorText!,
+                  style: TextStyle(color: theme.colorScheme.error),
+                ),
               ),
           ],
         );

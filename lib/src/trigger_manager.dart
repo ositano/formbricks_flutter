@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,10 +21,10 @@ class TriggerManager {
   final ThemeData? customTheme;
   final SurveyDisplayMode surveyDisplayMode; // 'bottomSheet' or 'dialog'
   final bool? showPoweredBy;
-  final StreamController<String> _eventStream = StreamController<String>.broadcast();
+  final StreamController<String> _eventStream =
+      StreamController<String>.broadcast();
   late StreamSubscription _eventSubscription;
   final List<TriggerValue>? triggers; // Updated to use Trigger model
-  final bool useWrapInRankingQuestion;
   late final String locale; // Default locale
   final BuildContext context;
 
@@ -38,8 +39,7 @@ class TriggerManager {
     this.triggers,
     required this.locale,
     required this.context,
-    required this.useWrapInRankingQuestion
-  }){
+  }) {
     _eventSubscription = _eventStream.stream.listen(_handleEvent);
   }
 
@@ -64,12 +64,14 @@ class TriggerManager {
     }
   }
 
-
   Future<void> initialize() async {
     final prefs = await SharedPreferences.getInstance();
-    final completedSurveysJson = prefs.getString('completed_surveys_$userId') ?? '{}';
+    final completedSurveysJson =
+        prefs.getString('completed_surveys_$userId') ?? '{}';
     completedSurveys = Map<String, bool>.from(
-      (jsonDecode(completedSurveysJson) as Map).map((key, value) => MapEntry(key, value as bool)),
+      (jsonDecode(completedSurveysJson) as Map).map(
+        (key, value) => MapEntry(key, value as bool),
+      ),
     );
     _isInitialized = true;
     await _loadAndTriggerSurveys(); // Trigger survey check on app launch
@@ -77,7 +79,10 @@ class TriggerManager {
 
   Future<void> _saveCompletedSurveys() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('completed_surveys_$userId', jsonEncode(completedSurveys));
+    await prefs.setString(
+      'completed_surveys_$userId',
+      jsonEncode(completedSurveys),
+    );
   }
 
   bool _isPhoneDevice() {
@@ -102,11 +107,13 @@ class TriggerManager {
 
     try {
       // Fetch all surveys based on apiKey and environmentId
-      final surveys = await client.getSurveys(); // Assuming getSurveys() exists or adjust to your API call
+      final surveys = await client
+          .getSurveys(); // Assuming getSurveys() exists or adjust to your API call
       for (var surveyData in surveys) {
         final survey = Survey.fromJson(surveyData);
 
-        if (survey.status != 'inProgress' || survey.environmentId != client.environmentId) {
+        if (survey.status != 'inProgress' ||
+            survey.environmentId != client.environmentId) {
           continue;
         }
         debugPrint("pass in progress....");
@@ -127,10 +134,12 @@ class TriggerManager {
               // Match against predefined triggers
               for (var predefinedTrigger in triggers!) {
                 if (predefinedTrigger.type == TriggerType.noCode &&
-                    type == 'noCode' && name == predefinedTrigger.name) {
+                    type == 'noCode' &&
+                    name == predefinedTrigger.name) {
                   shouldTrigger = true;
                 } else if (predefinedTrigger.type == TriggerType.code &&
-                    type == 'code' && key == predefinedTrigger.key) {
+                    type == 'code' &&
+                    key == predefinedTrigger.key) {
                   shouldTrigger = true;
                 }
                 if (shouldTrigger) break;
@@ -144,7 +153,8 @@ class TriggerManager {
         if (survey.segment != null && survey.segment!['filters'] != null) {
           for (var filter in survey.segment!['filters']) {
             final resource = filter['resource'];
-            if (resource['root']['type'] == 'device' && resource['root']['deviceType'] == 'phone') {
+            if (resource['root']['type'] == 'device' &&
+                resource['root']['deviceType'] == 'phone') {
               if (!_isPhoneDevice()) {
                 shouldTrigger = false;
                 break;
@@ -153,7 +163,9 @@ class TriggerManager {
           }
         }
 
-        debugPrint("pass survey segment checks .... ${survey.displayPercentage}");
+        debugPrint(
+          "pass survey segment checks .... ${survey.displayPercentage}",
+        );
 
         // if (!_shouldDisplaySurvey(survey.displayPercentage)) {
         //   shouldTrigger = false;
@@ -172,9 +184,9 @@ class TriggerManager {
       }
     } catch (e) {
       debugPrint('Error fetching surveys: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to load survey: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to load survey: $e')));
     }
   }
 
@@ -182,69 +194,77 @@ class TriggerManager {
     if (surveyDisplayMode == SurveyDisplayMode.fullScreen) {
       Navigator.push(
         context,
-        Platform.isIOS ? CupertinoPageRoute(
-          builder: (context) => Scaffold(
-            appBar: AppBar(),
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            body: SurveyWidget(
-              client: client,
-              survey: survey,
-              userId: userId,
-              customTheme: customTheme,
-              showPoweredBy: showPoweredBy,
-              surveyDisplayMode: surveyDisplayMode,
-              useWrapInRankingQuestion: useWrapInRankingQuestion,
-            ),
-          ),
-        ) : MaterialPageRoute(
-          builder: (context) => Scaffold(
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            body: SurveyWidget(
-              client: client,
-              survey: survey,
-              userId: userId,
-              customTheme: customTheme,
-              showPoweredBy: showPoweredBy,
-              surveyDisplayMode: surveyDisplayMode,
-              useWrapInRankingQuestion: useWrapInRankingQuestion,
-            ),
-          ),
-        ),
+        Platform.isIOS
+            ? CupertinoPageRoute(
+                builder: (context) => Theme(
+                  data: buildTheme2(context, customTheme, survey),
+                  child: Scaffold(
+                    backgroundColor: Theme.of(context).cardColor,
+                    //backgroundColor: Color.from(alpha: 1.0000, red: 0.9490, green: 0.8902, blue: 0.8902, colorSpace: ColorSpace.sRGB),
+                    body: SurveyWidget(
+                      client: client,
+                      survey: survey,
+                      userId: userId,
+                      showPoweredBy: showPoweredBy,
+                      surveyDisplayMode: surveyDisplayMode,
+                    ),
+                  ),
+                ),
+              )
+            : MaterialPageRoute(
+                builder: (context) => Theme(
+                  data: buildTheme(context, customTheme, survey),
+                  child: Scaffold(
+                    backgroundColor: Colors.green,
+                    body: SurveyWidget(
+                      client: client,
+                      survey: survey,
+                      userId: userId,
+                      showPoweredBy: showPoweredBy,
+                      surveyDisplayMode: surveyDisplayMode,
+                    ),
+                  ),
+                ),
+              ),
       );
-    } else if(surveyDisplayMode == SurveyDisplayMode.dialog){
+    } else if (surveyDisplayMode == SurveyDisplayMode.dialog) {
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
+          backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
           titlePadding: EdgeInsets.zero,
           contentPadding: EdgeInsets.zero,
           //insetPadding: EdgeInsets.zero,
-        actionsPadding: EdgeInsets.zero,
-        content: SurveyWidget(
-          client: client,
-          survey: survey,
-          userId: userId,
-          customTheme: customTheme,
-          showPoweredBy: showPoweredBy,
-          surveyDisplayMode: surveyDisplayMode,
-          useWrapInRankingQuestion: useWrapInRankingQuestion,
-        ),
+          actionsPadding: EdgeInsets.zero,
+          content: Theme(
+            data: buildTheme(context, customTheme, survey),
+            child: SurveyWidget(
+              client: client,
+              survey: survey,
+              userId: userId,
+              showPoweredBy: showPoweredBy,
+              surveyDisplayMode: surveyDisplayMode,
+            ),
+          ),
         ),
       );
-    }else {
+    } else {
       showModalBottomSheet(
         context: context,
         isDismissible: false,
-        backgroundColor: surveyDisplayMode == SurveyDisplayMode.formbricks ? Colors.transparent : Theme.of(context).bottomSheetTheme.backgroundColor,
-        builder: (context) => SurveyWidget(
-          client: client,
-          survey: survey,
-          userId: userId,
-          customTheme: customTheme,
-          showPoweredBy: showPoweredBy,
-          surveyDisplayMode: surveyDisplayMode,
-          useWrapInRankingQuestion: useWrapInRankingQuestion,
+        backgroundColor: surveyDisplayMode == SurveyDisplayMode.formbricks
+            ? Colors.transparent
+            : Theme.of(context).bottomSheetTheme.backgroundColor,
+        builder: (context) => Theme(
+          data: buildTheme(context, customTheme, survey),
+          child: SurveyWidget(
+            client: client,
+            survey: survey,
+            userId: userId,
+            showPoweredBy: showPoweredBy,
+            surveyDisplayMode: surveyDisplayMode,
+          ),
         ),
       );
     }

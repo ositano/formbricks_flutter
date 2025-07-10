@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../formbricks_flutter.dart';
 
 class FormBricksProvider extends StatefulWidget {
@@ -10,7 +9,6 @@ class FormBricksProvider extends StatefulWidget {
   final ThemeData? customTheme;
   final bool? showPoweredBy;
   final SurveyDisplayMode surveyDisplayMode;
-  final bool useWrapInRankingQuestion;
   final List<TriggerValue>? triggers;
   final String locale;
 
@@ -23,7 +21,6 @@ class FormBricksProvider extends StatefulWidget {
     this.customTheme,
     this.showPoweredBy,
     this.surveyDisplayMode = SurveyDisplayMode.formbricks,
-    this.useWrapInRankingQuestion = true,
     this.triggers,
     this.locale = 'en',
   });
@@ -50,7 +47,6 @@ class _FormBricksProviderState extends State<FormBricksProvider> {
       showPoweredBy: widget.showPoweredBy,
       context: context,
       triggers: widget.triggers,
-      useWrapInRankingQuestion: widget.useWrapInRankingQuestion,
       locale: widget.locale,
     );
     _triggerManager.initialize();
@@ -80,17 +76,10 @@ class _FormBricksProviderState extends State<FormBricksProvider> {
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: widget.customTheme ?? Theme.of(context),
-      child: Builder(
-        builder: (context) {
-          return InheritedFormBricks(
+    return InheritedFormBricks(
             triggerManager: _triggerManager,
             child: widget.child,
           );
-        },
-      ),
-    );
   }
 }
 

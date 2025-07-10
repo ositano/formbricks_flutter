@@ -9,14 +9,12 @@ class RankingQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
-  final bool useWrapInRankingQuestion;
 
   const RankingQuestion({
     super.key,
     required this.question,
     required this.onResponse,
     this.response,
-    required this.useWrapInRankingQuestion,
   });
 
   @override
@@ -68,51 +66,66 @@ class _RankingQuestionState extends State<RankingQuestion> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              //widget.question.headline['default'] ?? '',
               translate(widget.question.headline, context) ?? '',
               style: theme.textTheme.headlineMedium ??
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            //if ((widget.question.subheader?['default'] ?? '').isNotEmpty)
             if ((translate(widget.question.subheader, context) ?? '').isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  //widget.question.subheader!['default']!,
                   translate(widget.question.subheader, context) ?? '',
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
             const SizedBox(height: 16),
-            widget.useWrapInRankingQuestion
-                ? ReorderableWrap(
-              spacing: 8,
-              runSpacing: 8,
-              ignorePrimaryScrollController: true,
+            ReorderableColumn(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              needsLongPressDraggable: false,
               onReorder: _onReorder,
-              children: rankedItems
-                  .asMap()
-                  .entries
-                  .map((entry) => Chip(
-                key: ValueKey(entry.value),
-                label: Text('${entry.key + 1}. ${_getChoiceLabel(entry.value)}'),
-                backgroundColor: Colors.grey[200],
-              ))
-                  .toList(),
-            )
-                : ReorderableListView(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              onReorder: _onReorder,
-              children: rankedItems
-                  .asMap()
-                  .entries
-                  .map((entry) => ListTile(
-                key: ValueKey(entry.value),
-                title: Text('${entry.key + 1}. ${_getChoiceLabel(entry.value)}'),
-                tileColor: Colors.grey[200],
-              ))
-                  .toList(),
+              children: rankedItems.asMap().entries.map((entry) {
+                final index = entry.key + 1;
+                final value = entry.value;
+                final label = _getChoiceLabel(value);
+                return Container(
+                  key: ValueKey(value),
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: theme.inputDecorationTheme.enabledBorder!.borderSide.color, width: 2),
+                    borderRadius: BorderRadius.circular(10),
+                    color: theme.inputDecorationTheme.fillColor
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: theme.primaryColor,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '$index',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: theme.scaffoldBackgroundColor,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          label,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                      ),
+                      const Icon(Icons.drag_handle, color: Colors.grey),
+                    ],
+                  ),
+                );
+              }).toList(),
             ),
             if (field.hasError)
               Padding(

@@ -317,6 +317,12 @@ abstract class AppLocalizations {
   /// **'Upload File'**
   String get upload_file;
 
+  /// No description provided for @click_to_upload_files.
+  ///
+  /// In en, this message translates to:
+  /// **'Click to upload files'**
+  String get click_to_upload_files;
+
   /// No description provided for @uploaded.
   ///
   /// In en, this message translates to:

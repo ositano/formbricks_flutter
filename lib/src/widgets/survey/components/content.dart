@@ -77,6 +77,7 @@ class SurveyContent extends StatelessWidget {
       height: height,
       child: Column(
         children: [
+          SizedBox(height: MediaQuery.of(context).padding.top + kToolbarHeight),
           Expanded(
             child: SingleChildScrollView(
               physics: isScrollable ? const AlwaysScrollableScrollPhysics() : const NeverScrollableScrollPhysics(),
@@ -108,9 +109,6 @@ class SurveyContent extends StatelessWidget {
           ),
           Container(
             width: width,
-            color: surveyDisplayMode == SurveyDisplayMode.dialog
-                ? Theme.of(context).dialogTheme.backgroundColor
-                : Theme.of(context).cardColor,
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Column(
               children: [

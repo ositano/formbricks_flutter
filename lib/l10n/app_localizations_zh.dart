@@ -114,6 +114,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get upload_file => '上传文件';
 
   @override
+  String get click_to_upload_files => '点击上传文件';
+
+  @override
   String get uploaded => '已上传';
 
   @override

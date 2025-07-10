@@ -35,6 +35,7 @@
   "error_uploading_file": "Error al cargar el archivo",
   "please_upload_file": "Por favor, cargue un archivo",
   "upload_file": "Subir archivo",
+    "click_to_upload_files": "Haga clic para cargar archivos",
   "uploaded": "Subido",
   "type_answer_here": "Escriba su respuesta aquí...",
   "min_character_required": "Se requiere un mínimo de caracteres",

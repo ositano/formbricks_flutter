@@ -1,27 +1,21 @@
 import 'package:flutter/material.dart';
 import '../../formbricks_flutter.dart';
-
 import 'survey/survey_form.dart';
-import 'survey/survey_form_formbricks.dart';
 
 class SurveyWidget extends StatefulWidget {
   final FormBricksClient client;
   final Survey survey;
   final String userId;
-  final ThemeData? customTheme;
   final bool? showPoweredBy;
   final SurveyDisplayMode surveyDisplayMode;
-  final bool useWrapInRankingQuestion;
 
   const SurveyWidget({
     super.key,
     required this.client,
     required this.survey,
     required this.userId,
-    this.customTheme,
     this.showPoweredBy = true,
     required this.surveyDisplayMode,
-    required this.useWrapInRankingQuestion,
   });
 
   @override
@@ -85,7 +79,6 @@ class SurveyWidgetState extends State<SurveyWidget> {
     });
   }
 
-
   void _onResponse(String questionId, dynamic value) {
     setState(() {
       responses[questionId] = value;
@@ -132,9 +125,6 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
-
-
-
   void previousStep() {
     if (_currentStep > 0) {
       setState(() => _currentStep--);
@@ -147,34 +137,20 @@ class SurveyWidgetState extends State<SurveyWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.surveyDisplayMode == SurveyDisplayMode.formbricks
-        ? SurveyFormFormbricks(
-            client: widget.client,
-            userId: widget.userId,
-            currentStep: _currentStep,
-            isLoading: isLoading,
-            formKey: formKey,
-            nextStep: nextStep,
-            previousStep: previousStep,
-            onResponse: _onResponse,
-            survey: survey,
-            responses: responses,
-            surveyDisplayMode: widget.surveyDisplayMode,
-            useWrapInRankingQuestion: widget.useWrapInRankingQuestion,
-          )
-        : SurveyForm(
-            client: widget.client,
-            userId: widget.userId,
-            currentStep: _currentStep,
-            isLoading: isLoading,
-            formKey: formKey,
-            nextStep: nextStep,
-            previousStep: previousStep,
-            onResponse: _onResponse,
-            survey: survey,
-            responses: responses,
-            surveyDisplayMode: widget.surveyDisplayMode,
-            useWrapInRankingQuestion: widget.useWrapInRankingQuestion,
-          );
+    return Container(
+      color: Theme.of(context).cardColor,
+        child: SurveyForm(
+      client: widget.client,
+      userId: widget.userId,
+      currentStep: _currentStep,
+      isLoading: isLoading,
+      formKey: formKey,
+      nextStep: nextStep,
+      previousStep: previousStep,
+      onResponse: _onResponse,
+      survey: survey,
+      responses: responses,
+      surveyDisplayMode: widget.surveyDisplayMode,
+    ));
   }
 }

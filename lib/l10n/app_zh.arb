@@ -35,6 +35,7 @@
   "error_uploading_file": "上传文件时出错",
   "please_upload_file": "请上传文件",
   "upload_file": "上传文件",
+    "click_to_upload_files": "点击上传文件",
   "uploaded": "已上传",
   "type_answer_here": "在此输入你的回答...",
   "min_character_required": "最少字符数要求",

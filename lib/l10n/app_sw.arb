@@ -35,6 +35,7 @@
   "error_uploading_file": "Hitilafu katika kupakia faili",
   "please_upload_file": "Tafadhali pakia faili",
   "upload_file": "Pakia Faili",
+    "click_to_upload_files": "Bofya ili kupakia faili",
   "uploaded": "Imepakiwa",
   "type_answer_here": "Andika jibu lako hapa...",
   "min_character_required": "Idadi ndogo ya herufi inahitajika",

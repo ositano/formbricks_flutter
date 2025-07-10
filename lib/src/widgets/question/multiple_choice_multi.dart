@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
 import '../../utils/helper.dart';
@@ -36,45 +35,88 @@ class _MultipleChoiceMultiState extends State<MultipleChoiceMulti> {
     final isRequired = widget.question.required ?? false;
 
     return FormField<bool>(
-      validator: (value) => isRequired && selectedOptions.isEmpty ? AppLocalizations.of(context)!.please_select_option : null,
-      builder: (FormFieldState<bool> field) {
+      validator: (value) => isRequired && selectedOptions.isEmpty
+          ? AppLocalizations.of(context)!.please_select_option
+          : null,
+      builder: (field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-                //widget.question.headline['default'] ?? '',
-                translate(widget.question.headline, context) ?? '',
-                style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            //if (widget.question.subheader?['default']?.isNotEmpty ?? false)
+              translate(widget.question.headline, context) ?? '',
+              style: theme.textTheme.headlineMedium ??
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             if (translate(widget.question.subheader, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                    //widget.question.subheader?['default'] ?? '',
-                    translate(widget.question.subheader, context) ?? '',
-                    style: theme.textTheme.bodyMedium),
+                  translate(widget.question.subheader, context) ?? '',
+                  style: theme.textTheme.bodyMedium,
+                ),
               ),
             const SizedBox(height: 16),
-            ...options.map((option) => CheckboxListTile(
-              //title: Text(option['label']['default'] ?? '', style: theme.textTheme.bodyMedium),
-              title: Text(translate(option['label'], context) ?? '', style: theme.textTheme.bodyMedium),
-              value: selectedOptions.contains(option['id']),
-              onChanged: (value) {
-                setState(() {
-                  if (value == true) {
-                    selectedOptions.add(option['id']);
-                  } else {
-                    selectedOptions.remove(option['id']);
-                  }
-                  widget.onResponse(widget.question.id, selectedOptions);
-                  field.didChange(true); // Validate
-                });
-              },
-            )),
+            ...options.map((option) {
+              final optionId = option['id']?.toString();
+              final label = translate(option['label'], context)?.toString() ?? '';
+              final isSelected = selectedOptions.contains(optionId);
+
+              if (optionId == null) return const SizedBox.shrink();
+
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    if (isSelected) {
+                      selectedOptions.remove(optionId);
+                    } else {
+                      selectedOptions.add(optionId);
+                    }
+                    widget.onResponse(widget.question.id, selectedOptions);
+                    field.didChange(true);
+                  });
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: isSelected
+                          ? theme.primaryColor
+                          : theme.inputDecorationTheme.enabledBorder!.borderSide.color,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                    color: theme.inputDecorationTheme.fillColor,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        isSelected
+                            ? Icons.check_box
+                            : Icons.check_box_outline_blank,
+                        color: isSelected
+                            ? theme.primaryColor
+                            : theme.unselectedWidgetColor,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          label,
+                          style: theme.textTheme.bodyMedium
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: Text(field.errorText!, style: TextStyle(color: theme.colorScheme.error)),
+                child: Text(
+                  field.errorText!,
+                  style: TextStyle(color: theme.colorScheme.error),
+                ),
               ),
           ],
         );

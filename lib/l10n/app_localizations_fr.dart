@@ -114,6 +114,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get upload_file => 'Téléverser un fichier';
 
   @override
+  String get click_to_upload_files => 'Cliquez pour télécharger des fichiers';
+
+  @override
   String get uploaded => 'Téléversé';
 
   @override

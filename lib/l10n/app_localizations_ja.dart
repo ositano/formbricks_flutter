@@ -114,6 +114,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get upload_file => 'ファイルをアップロード';
 
   @override
+  String get click_to_upload_files => 'クリックしてファイルをアップロードします';
+
+  @override
   String get uploaded => 'アップロード済み';
 
   @override

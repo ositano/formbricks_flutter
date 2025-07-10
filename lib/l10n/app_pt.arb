@@ -35,6 +35,7 @@
   "error_uploading_file": "Erro ao enviar o arquivo",
   "please_upload_file": "Por favor, envie um arquivo",
   "upload_file": "Enviar arquivo",
+    "click_to_upload_files": "Clique para fazer upload de arquivos",
   "uploaded": "Enviado",
   "type_answer_here": "Digite sua resposta aqui...",
   "min_character_required": "Número mínimo de caracteres necessário",

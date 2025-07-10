@@ -35,28 +35,25 @@ class _MultipleChoiceSingleState extends State<MultipleChoiceSingle> {
     final options = (widget.question.inputConfig?['choices'] as List?) ?? [];
 
     return FormField<bool>(
-      validator: (value) {
+      validator: (_) {
         if (isRequired && selectedOption == null) {
           return AppLocalizations.of(context)!.select_option;
         }
         return null;
       },
-      builder: (FormFieldState<bool> field) {
+      builder: (field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              //widget.question.headline['default'] ?? '',
               translate(widget.question.headline, context) ?? '',
               style: theme.textTheme.headlineMedium ??
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            //if ((widget.question.subheader?['default'] ?? '').isNotEmpty)
             if ((translate(widget.question.subheader, context) ?? '').isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  //widget.question.subheader!['default']!,
                   translate(widget.question.subheader, context) ?? '',
                   style: theme.textTheme.bodyMedium,
                 ),
@@ -64,29 +61,58 @@ class _MultipleChoiceSingleState extends State<MultipleChoiceSingle> {
             const SizedBox(height: 16),
             ...options.map<Widget>((option) {
               final optionId = option['id']?.toString();
-              //final label = option['label']?['default']?.toString() ?? '';
               final label = translate(option['label'], context)?.toString() ?? '';
 
               if (optionId == null) return const SizedBox.shrink();
 
-              return RadioListTile<String>(
-                title: Text(label, style: theme.textTheme.bodyMedium),
-                value: optionId,
-                groupValue: selectedOption,
-                onChanged: (value) {
+              final isSelected = selectedOption == optionId;
+
+              return GestureDetector(
+                onTap: () {
                   setState(() {
-                    selectedOption = value;
-                    widget.onResponse(widget.question.id, value);
-                    field.didChange(true); // Trigger validation
+                    selectedOption = optionId;
+                    widget.onResponse(widget.question.id, optionId);
+                    field.didChange(true);
                   });
                 },
-                contentPadding: EdgeInsets.zero,
-                dense: true,
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: isSelected
+                          ? theme.primaryColor
+                          : theme.inputDecorationTheme.enabledBorder!.borderSide.color,
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                    color: theme.inputDecorationTheme.fillColor,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        isSelected
+                            ? Icons.radio_button_checked
+                            : Icons.radio_button_off,
+                        color: isSelected
+                            ? theme.primaryColor
+                            : theme.unselectedWidgetColor,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          label,
+                          style: theme.textTheme.bodyMedium
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               );
             }),
             if (field.hasError)
               Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 8),
                 child: Text(
                   field.errorText!,
                   style: TextStyle(color: theme.colorScheme.error),

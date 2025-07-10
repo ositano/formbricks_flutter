@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'dart:math';
 
@@ -111,7 +113,7 @@ class _MatrixQuestionState extends State<MatrixQuestion> {
               ),
             const SizedBox(height: 16),
             Table(
-              border: TableBorder.all(color: Colors.grey[300]!),
+              border: TableBorder.all(color: Colors.grey[300]!, style: BorderStyle.none),
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               columnWidths: {
                 0: const FlexColumnWidth(2), // Row labels wider
@@ -134,44 +136,56 @@ class _MatrixQuestionState extends State<MatrixQuestion> {
                     ),
                   ],
                 ),
-                ...shuffledRows.map((row) {
-                  //final rowLabel = row['default'] ?? '';
+                ...shuffledRows.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final row = entry.value;
                   final rowLabel = translate(row, context) ?? '';
+
+                  final bgColor = index.isEven ? theme.inputDecorationTheme.fillColor: Colors.transparent;
                   return TableRow(
                     key: ValueKey(rowLabel),
+                    decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(8)),
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           rowLabel,
-                          style: theme.textTheme.bodyMedium,
+                          style: theme.textTheme.headlineMedium?.copyWith(fontSize: 14),
                         ),
                       ),
                       ...columns.map((col) {
-                        //final colValue = col['default'] ?? '';
                         final colValue = translate(col, context) ?? '';
-                        return Radio<String>(
-                          value: colValue,
-                          groupValue: selections[rowLabel],
-                          onChanged: (value) {
-                            setState(() {
-                              selections[rowLabel] = value!;
-                              final updatedResponse = {
-                                widget.question.id:
-                                Map<String, String>.from(selections),
-                              };
-                              widget.onResponse(widget.question.id, updatedResponse);
-
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                field.didChange(true); // trigger validation
+                        return Center(
+                          child: Radio<String>(
+                            value: colValue,
+                            groupValue: selections[rowLabel],
+                            fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+                              if (states.contains(MaterialState.selected)) {
+                                return theme.primaryColor; // Selected = primary color
+                              }
+                              return theme.primaryColor; // Unselected = white fill
+                            }),
+                            overlayColor: WidgetStateProperty.all(Colors.white), // Optional: removes ripple effect
+                            onChanged: (value) {
+                              setState(() {
+                                selections[rowLabel] = value!;
+                                final updatedResponse = {
+                                  widget.question.id: Map<String, String>.from(selections),
+                                };
+                                widget.onResponse(widget.question.id, updatedResponse);
+                                WidgetsBinding.instance.addPostFrameCallback((_) {
+                                  field.didChange(true);
+                                });
                               });
-                            });
-                          },
+                            },
+                          ),
                         );
                       }),
                     ],
                   );
                 }),
+
+
               ],
             ),
             if (field.hasError)

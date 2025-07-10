@@ -21,6 +21,7 @@ class EndWidget extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           translate(ending?['headline'], context) ?? "",

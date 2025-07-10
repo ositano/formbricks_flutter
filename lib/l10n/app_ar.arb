@@ -35,6 +35,7 @@
   "error_uploading_file": "حدث خطأ أثناء رفع الملف",
   "please_upload_file": "يرجى رفع ملف",
   "upload_file": "رفع ملف",
+    "click_to_upload_files": "انقر لتحميل الملفات",
   "uploaded": "تم الرفع",
   "type_answer_here": "اكتب إجابتك هنا...",
   "min_character_required": "الحد الأدنى من الأحرف مطلوب",

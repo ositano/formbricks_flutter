@@ -35,6 +35,7 @@
   "error_uploading_file": "Erreur lors du téléversement du fichier",
   "please_upload_file": "Veuillez téléverser un fichier",
   "upload_file": "Téléverser un fichier",
+    "click_to_upload_files": "Cliquez pour télécharger des fichiers",
   "uploaded": "Téléversé",
   "type_answer_here": "Tapez votre réponse ici...",
   "min_character_required": "Nombre minimum de caractères requis",
