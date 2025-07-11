@@ -16,7 +16,6 @@ import 'question/picture_selection_question.dart';
 import 'question/ranking_question.dart';
 import 'question/rating_question.dart';
 import 'question/cal_question.dart';
-import 'question/statement_question.dart';
 
 class QuestionWidget extends StatelessWidget {
   final Question question;
@@ -25,7 +24,7 @@ class QuestionWidget extends StatelessWidget {
   final String surveyId;
   final String userId;
   final dynamic response;
-  final GlobalKey<FormState> formKey;
+  final bool requiredAnswerByLogicCondition;
 
   const QuestionWidget({
     super.key,
@@ -35,43 +34,40 @@ class QuestionWidget extends StatelessWidget {
     required this.surveyId,
     required this.userId,
     this.response,
-    required this.formKey
+    required this.requiredAnswerByLogicCondition
   });
 
   @override
   Widget build(BuildContext context) {
     switch (question.type) {
       case 'freeText':
-      case 'openText': // Treat openText as freeText
         return FreeTextQuestion(
           key: ValueKey(question.id),
           question: question,
           onResponse: onResponse,
           response: response,
-          //textController: textController,
+          requiredAnswerByLogicCondition: requiredAnswerByLogicCondition,
         );
       case 'multipleChoiceSingle':
-        return MultipleChoiceSingle(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
+        return MultipleChoiceSingle(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response, requiredAnswerByLogicCondition: requiredAnswerByLogicCondition,);
       case 'multipleChoiceMulti':
-        return MultipleChoiceMulti(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
+        return MultipleChoiceMulti(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response, requiredAnswerByLogicCondition: requiredAnswerByLogicCondition,);
       case 'pictureSelection':
         return PictureSelectionQuestion(
             key: ValueKey(question.id),
           question: question,
-          onResponse: onResponse, response: response
+          onResponse: onResponse, response: response, requiredAnswerByLogicCondition: requiredAnswerByLogicCondition,
         );
       case 'rating':
-        return RatingQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
+        return RatingQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response, requiredAnswerByLogicCondition: requiredAnswerByLogicCondition,);
       case 'nps':
-        return NPSQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
+        return NPSQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response, requiredAnswerByLogicCondition: requiredAnswerByLogicCondition,);
       case 'ranking':
-        return RankingQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
+        return RankingQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response, requiredAnswerByLogicCondition: requiredAnswerByLogicCondition,);
       case 'matrix':
-        return MatrixQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
-      case 'statement':
-        return StatementQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse);
+        return MatrixQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response, requiredAnswerByLogicCondition: requiredAnswerByLogicCondition,);
       case 'consent':
-        return ConsentQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
+        return ConsentQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response, requiredAnswerByLogicCondition: requiredAnswerByLogicCondition,);
       case 'fileUpload':
         return FileUploadQuestion(
             key: ValueKey(question.id),
@@ -80,24 +76,25 @@ class QuestionWidget extends StatelessWidget {
           client: client,
           surveyId: surveyId,
           userId: userId,
-            response: response
+            response: response,
+          requiredAnswerByLogicCondition: requiredAnswerByLogicCondition,
         );
       case 'date':
-        return DateQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
+        return DateQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response, requiredAnswerByLogicCondition: requiredAnswerByLogicCondition,);
       case 'cal':
-      case 'scheduleMeeting':
         return CalQuestion(
           key: ValueKey(question.id),
           question: question,
           onResponse: onResponse,
           response: response,
+          requiredAnswerByLogicCondition: requiredAnswerByLogicCondition,
         );
       case 'address':
-        return AddressQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
+        return AddressQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response, requiredAnswerByLogicCondition: requiredAnswerByLogicCondition,);
       case 'contactInfo':
-        return ContactInfoQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response);
+        return ContactInfoQuestion(key: ValueKey(question.id), question: question, onResponse: onResponse, response: response, requiredAnswerByLogicCondition: requiredAnswerByLogicCondition,);
       case 'cta':
-        return CTAQuestion(key: ValueKey(question.id),question: question, onResponse: onResponse, response: response);
+        return CTAQuestion(key: ValueKey(question.id),question: question, onResponse: onResponse, response: response, requiredAnswerByLogicCondition: requiredAnswerByLogicCondition,);
       default:
         return Text(AppLocalizations.of(context)!.unsupported_question_type);
     }

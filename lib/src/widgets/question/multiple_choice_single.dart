@@ -7,12 +7,14 @@ class MultipleChoiceSingle extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
+  final bool requiredAnswerByLogicCondition;
 
   const MultipleChoiceSingle({
     super.key,
     required this.question,
     required this.onResponse,
     this.response,
+    required this.requiredAnswerByLogicCondition
   });
 
   @override
@@ -36,6 +38,10 @@ class _MultipleChoiceSingleState extends State<MultipleChoiceSingle> {
 
     return FormField<bool>(
       validator: (_) {
+        if(widget.requiredAnswerByLogicCondition) {
+          return AppLocalizations.of(context)!.response_required;
+        }
+
         if (isRequired && selectedOption == null) {
           return AppLocalizations.of(context)!.select_option;
         }

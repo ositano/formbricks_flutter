@@ -7,12 +7,14 @@ class ConsentQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
+  final bool requiredAnswerByLogicCondition;
 
   const ConsentQuestion({
     super.key,
     required this.question,
     required this.onResponse,
     this.response,
+    required this.requiredAnswerByLogicCondition
   });
 
   @override
@@ -34,8 +36,9 @@ class _ConsentQuestionState extends State<ConsentQuestion> {
     final isRequired = widget.question.required ?? false;
 
     return FormField<bool>(
-      validator: (value) =>
-      isRequired && !consented ? AppLocalizations.of(context)!.please_provide_consent : null,
+      validator: (value) => widget.requiredAnswerByLogicCondition
+          ? AppLocalizations.of(context)!.response_required
+          : (isRequired && !consented ? AppLocalizations.of(context)!.please_provide_consent : null),
       builder: (FormFieldState<bool> field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

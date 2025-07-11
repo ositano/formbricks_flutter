@@ -13,7 +13,9 @@ and the Flutter guide for
 
 # Formbricks_flutter
 
-Formbricks_flutter allows you to integrate in-product micro-surveys and forms into your Flutter applications, enhancing user experience and gathering valuable feedback. 🚀 This package provides a customizable solution to display surveys and manage triggers, built with Flutter and Dart.
+Formbricks_flutter allows you to integrate in-product micro-surveys and forms into your applications, enhancing user experience and gathering valuable feedback. 🚀 This package provides a customizable solution to display surveys and manage triggers, built with Flutter and Dart.
+
+Formbricks is a versatile open-source platform for collecting and analyzing feedback from customers, users, and employees through targeted surveys. Whether you need simple forms or complex experience management solutions, Formbricks scales with your needs.
 
 For more information, visit [formbricks.com](https://formbricks.com).
 

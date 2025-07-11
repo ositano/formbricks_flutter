@@ -18,7 +18,8 @@ class SurveyContent extends StatelessWidget {
   final String? previousLabel;
   final Survey survey;
   final SurveyDisplayMode surveyDisplayMode;
-
+  final int estimatedTimeInSecs;
+  final bool showPoweredBy;
   final Function() previousStep;
   final Function() nextStep;
   final Function(String, dynamic) onResponse;
@@ -42,6 +43,8 @@ class SurveyContent extends StatelessWidget {
     required this.survey,
     required this.child,
     required this.surveyDisplayMode,
+    required this.estimatedTimeInSecs,
+    required this.showPoweredBy,
   });
 
   @override
@@ -58,7 +61,12 @@ class SurveyContent extends StatelessWidget {
     switch (surveyDisplayMode) {
       case SurveyDisplayMode.bottomSheetModal:
         height = contentHeight ?? deviceHeight * 0.8; // 80% of screen height
-        padding = const EdgeInsets.fromLTRB(24.0, 32.0, 24.0, 16.0); // Reduced bottom padding
+        padding = const EdgeInsets.fromLTRB(
+          24.0,
+          32.0,
+          24.0,
+          16.0,
+        ); // Reduced bottom padding
         break;
       case SurveyDisplayMode.dialog:
         height = contentHeight ?? deviceHeight * 0.7; // 70% of screen height
@@ -80,12 +88,16 @@ class SurveyContent extends StatelessWidget {
           SizedBox(height: MediaQuery.of(context).padding.top + kToolbarHeight),
           Expanded(
             child: SingleChildScrollView(
-              physics: isScrollable ? const AlwaysScrollableScrollPhysics() : const NeverScrollableScrollPhysics(),
+              physics: isScrollable
+                  ? const AlwaysScrollableScrollPhysics()
+                  : const NeverScrollableScrollPhysics(),
               child: Padding(
                 padding: padding,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: progress >= 1.0 ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+                  crossAxisAlignment: progress >= 1.0
+                      ? CrossAxisAlignment.center
+                      : CrossAxisAlignment.start,
                   children: [
                     child,
                     SurveyButtons(
@@ -96,22 +108,46 @@ class SurveyContent extends StatelessWidget {
                       previousLabel: previousLabel,
                       survey: survey,
                     ),
+                    currentStep == -1 &&
+                            survey.welcomeCard?['enabled'] == true &&
+                            survey.welcomeCard?['timeToFinish'] == true
+                        ? Padding(
+                            padding: EdgeInsets.only(top: 20),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.schedule_outlined,
+                                  size: 12,
+                                  color: Theme.of(
+                                    context,
+                                  ).textTheme.bodySmall?.color,
+                                ),
+                                Text(
+                                  "${AppLocalizations.of(context)!.takes_less_than}${Duration(seconds: estimatedTimeInSecs).inMinutes}min",
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
+                            ),
+                          )
+                        : SizedBox.shrink(),
                     SizedBox(height: spacerHeight),
                   ],
                 ),
               ),
             ),
           ),
-          Container(
-            width: width,
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Column(
-              children: [
-                SurveyCopyright(),
-                SurveyProgress(progress: progress),
-              ],
-            ),
-          ),
+          currentStep >= survey.questions.length
+              ? SizedBox.shrink()
+              : Container(
+                  width: width,
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Column(
+                    children: [
+                      showPoweredBy ? SurveyCopyright() : SizedBox.shrink(),
+                      SurveyProgress(progress: progress),
+                    ],
+                  ),
+                ),
         ],
       ),
     );

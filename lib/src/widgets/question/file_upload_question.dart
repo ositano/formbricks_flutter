@@ -14,6 +14,7 @@ class FileUploadQuestion extends StatefulWidget {
   final String surveyId;
   final String userId;
   final dynamic response;
+  final bool requiredAnswerByLogicCondition;
 
   const FileUploadQuestion({
     super.key,
@@ -23,6 +24,7 @@ class FileUploadQuestion extends StatefulWidget {
     required this.surveyId,
     required this.userId,
     this.response,
+    required this.requiredAnswerByLogicCondition
   });
 
   @override
@@ -79,7 +81,9 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
     final isRequired = widget.question.required ?? false;
 
     return FormField<bool>(
-      validator: (value) => isRequired && fileUrls.isEmpty ? AppLocalizations.of(context)!.please_upload_file : null,
+      validator: (value) => widget.requiredAnswerByLogicCondition
+        ? AppLocalizations.of(context)!.response_required
+        : (isRequired && fileUrls.isEmpty ? AppLocalizations.of(context)!.please_upload_file : null),
       builder: (FormFieldState<bool> field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

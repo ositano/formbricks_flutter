@@ -9,12 +9,14 @@ class RankingQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
+  final bool requiredAnswerByLogicCondition;
 
   const RankingQuestion({
     super.key,
     required this.question,
     required this.onResponse,
     this.response,
+    required this.requiredAnswerByLogicCondition
   });
 
   @override
@@ -56,6 +58,10 @@ class _RankingQuestionState extends State<RankingQuestion> {
 
     return FormField<bool>(
       validator: (value) {
+        if(widget.requiredAnswerByLogicCondition) {
+          return AppLocalizations.of(context)!.response_required;
+        }
+
         if (!isRequired) return null;
 
         final allItemsValid = rankedItems.toSet().length == choices.length;

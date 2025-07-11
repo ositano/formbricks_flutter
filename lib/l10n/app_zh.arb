@@ -51,5 +51,7 @@
     "city": "城市",
     "state": "州/省",
     "zip": "邮政编码",
-    "country": "国家"
+    "country": "国家",
+      "response_required": "需要回应",
+        "takes_less_than": "花费少于"
 }

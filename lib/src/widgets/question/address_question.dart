@@ -7,12 +7,14 @@ class AddressQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
+  final bool requiredAnswerByLogicCondition;
 
   const AddressQuestion({
     super.key,
     required this.question,
     required this.onResponse,
     this.response,
+    required this.requiredAnswerByLogicCondition
   });
 
   @override
@@ -117,6 +119,10 @@ class _AddressQuestionState extends State<AddressQuestion> {
 
     return FormField<bool>(
       validator: (_) {
+        if(widget.requiredAnswerByLogicCondition) {
+          return AppLocalizations.of(context)!.response_required;
+        }
+
         if (!(question.required ?? false)) return null;
 
         if (addressLine1['show'] == true &&

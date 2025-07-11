@@ -163,4 +163,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get country => 'البلد';
+
+  @override
+  String get response_required => 'الاستجابة مطلوبة';
+
+  @override
+  String get takes_less_than => 'يستغرق أقل من ';
 }

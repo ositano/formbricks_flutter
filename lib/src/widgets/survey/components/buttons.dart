@@ -24,30 +24,28 @@ class SurveyButtons extends StatelessWidget{
 
   @override
   Widget build(BuildContext context){
-    print("current step: $currentStep");
-    print("total: ${survey.questions.length}");
     return Padding(
       padding: const EdgeInsets.only(top: 16.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: currentStep == survey.questions.length + 1 ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+        crossAxisAlignment: currentStep >= survey.questions.length ? CrossAxisAlignment.center : CrossAxisAlignment.start,
         children: [
-          if (currentStep > 1 && survey.isBackButtonHidden == false)
+          if (currentStep > 0 && survey.isBackButtonHidden == false)
             OutlinedButton(
               onPressed: previousStep,
               child: Text(previousLabel ?? AppLocalizations.of(context)!.back),
             ),
           if (nextLabel != null)
-            if (currentStep == 0 ||
-                (currentStep > 0 &&
+            if (currentStep == -1 ||
+                (currentStep > -1 &&
                     !['rating', 'nps'].contains(
                       survey.questions
-                          .elementAtOrNull(currentStep - 1)
+                          .elementAtOrNull(currentStep)
                           ?.type,
                     )))
               ElevatedButton(
                 onPressed:
-                currentStep == survey.questions.length + 1
+                currentStep >= survey.questions.length
                     ? () => Navigator.of(context).pop()
                     : nextStep,
                 child: Text(nextLabel ?? AppLocalizations.of(context)!.next),

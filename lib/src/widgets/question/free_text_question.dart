@@ -10,12 +10,14 @@ class FreeTextQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
+  final bool requiredAnswerByLogicCondition;
 
   const FreeTextQuestion({
     super.key,
     required this.question,
     required this.onResponse,
     this.response,
+    required this.requiredAnswerByLogicCondition,
   });
 
   @override
@@ -25,7 +27,6 @@ class FreeTextQuestion extends StatefulWidget {
 class _FreeTextQuestionState extends State<FreeTextQuestion> {
   late TextEditingController _controller;
   late String _currentValue;
-  bool _hasInteracted = false;
 
   VideoPlayerController? _videoController;
   ChewieController? _chewieController;
@@ -97,8 +98,13 @@ class _FreeTextQuestionState extends State<FreeTextQuestion> {
 
     return FormField<bool>(
       key: ValueKey(question.id),
+      //autovalidateMode: AutovalidateMode.onUnfocus,
       initialValue: _currentValue.isNotEmpty,
       validator: (state) {
+        if(widget.requiredAnswerByLogicCondition) {
+          return AppLocalizations.of(context)!.response_required;
+        }
+
         if (!(question.required ?? false)) return null;
 
         if (isRequired && _controller.text.trim().isEmpty) {

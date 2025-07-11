@@ -163,4 +163,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get country => '国家';
+
+  @override
+  String get response_required => '需要回应';
+
+  @override
+  String get takes_less_than => '花费少于';
 }

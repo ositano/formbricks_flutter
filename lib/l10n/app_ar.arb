@@ -51,5 +51,7 @@
     "city": "المدينة",
     "state": "الولاية",
     "zip": "الرمز البريدي",
-    "country": "البلد"
+    "country": "البلد",
+      "response_required": "الاستجابة مطلوبة",
+        "takes_less_than": "يستغرق أقل من "
 }

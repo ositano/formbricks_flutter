@@ -9,12 +9,14 @@ class CTAQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
+  final bool requiredAnswerByLogicCondition;
 
   const CTAQuestion({
     super.key,
     required this.question,
     required this.onResponse,
     this.response,
+    required this.requiredAnswerByLogicCondition
   });
 
   @override
@@ -36,7 +38,9 @@ class _CTAQuestionState extends State<CTAQuestion> {
     final isRequired = widget.question.required ?? false;
 
     return FormField<bool>(
-      validator: (value) => isRequired && value != true ? AppLocalizations.of(context)!.please_take_action : null,
+      validator: (value) => widget.requiredAnswerByLogicCondition
+        ? AppLocalizations.of(context)!.response_required
+        : (isRequired && value != true ? AppLocalizations.of(context)!.please_take_action : null),
       builder: (FormFieldState<bool> field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../formbricks_flutter.dart';
+import 'models/question.dart';
 
 class TriggerManager {
   final FormBricksClient client;
@@ -20,7 +21,7 @@ class TriggerManager {
   Function(String)? onSurveyTriggered;
   final ThemeData? customTheme;
   final SurveyDisplayMode surveyDisplayMode; // 'bottomSheet' or 'dialog'
-  final bool? showPoweredBy;
+  final bool showPoweredBy;
   final StreamController<String> _eventStream =
       StreamController<String>.broadcast();
   late StreamSubscription _eventSubscription;
@@ -35,7 +36,7 @@ class TriggerManager {
     this.onSurveyTriggered,
     this.customTheme,
     required this.surveyDisplayMode,
-    this.showPoweredBy = true,
+    required this.showPoweredBy,
     this.triggers,
     required this.locale,
     required this.context,
@@ -182,8 +183,8 @@ class TriggerManager {
           }
         }
       }
-    } catch (e) {
-      debugPrint('Error fetching surveys: $e');
+    } catch (e, st) {
+      debugPrint('Error fetching surveys: $st');
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Failed to load survey: $e')));
@@ -191,13 +192,14 @@ class TriggerManager {
   }
 
   void _showSurvey(Survey survey) {
+    int estimatedTimeInSecs = calculateEstimatedTime(survey.questions);
     if (surveyDisplayMode == SurveyDisplayMode.fullScreen) {
       Navigator.push(
         context,
         Platform.isIOS
             ? CupertinoPageRoute(
                 builder: (context) => Theme(
-                  data: buildTheme2(context, customTheme, survey),
+                  data: buildTheme(context, customTheme, survey),
                   child: Scaffold(
                     backgroundColor: Theme.of(context).cardColor,
                     //backgroundColor: Color.from(alpha: 1.0000, red: 0.9490, green: 0.8902, blue: 0.8902, colorSpace: ColorSpace.sRGB),
@@ -207,6 +209,7 @@ class TriggerManager {
                       userId: userId,
                       showPoweredBy: showPoweredBy,
                       surveyDisplayMode: surveyDisplayMode,
+                      estimatedTimeInSecs: estimatedTimeInSecs,
                     ),
                   ),
                 ),
@@ -215,13 +218,14 @@ class TriggerManager {
                 builder: (context) => Theme(
                   data: buildTheme(context, customTheme, survey),
                   child: Scaffold(
-                    backgroundColor: Colors.green,
+                    backgroundColor: Theme.of(context).cardColor,
                     body: SurveyWidget(
                       client: client,
                       survey: survey,
                       userId: userId,
                       showPoweredBy: showPoweredBy,
                       surveyDisplayMode: surveyDisplayMode,
+                      estimatedTimeInSecs: estimatedTimeInSecs,
                     ),
                   ),
                 ),
@@ -232,7 +236,7 @@ class TriggerManager {
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-          backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
+          backgroundColor: Theme.of(context).cardColor,
           titlePadding: EdgeInsets.zero,
           contentPadding: EdgeInsets.zero,
           //insetPadding: EdgeInsets.zero,
@@ -245,6 +249,7 @@ class TriggerManager {
               userId: userId,
               showPoweredBy: showPoweredBy,
               surveyDisplayMode: surveyDisplayMode,
+              estimatedTimeInSecs: estimatedTimeInSecs,
             ),
           ),
         ),
@@ -253,7 +258,7 @@ class TriggerManager {
       showModalBottomSheet(
         context: context,
         isDismissible: false,
-        backgroundColor: Theme.of(context).bottomSheetTheme.backgroundColor,
+        backgroundColor: Theme.of(context).cardColor,
         builder: (context) => Theme(
           data: buildTheme(context, customTheme, survey),
           child: SurveyWidget(
@@ -262,6 +267,7 @@ class TriggerManager {
             userId: userId,
             showPoweredBy: showPoweredBy,
             surveyDisplayMode: surveyDisplayMode,
+            estimatedTimeInSecs: estimatedTimeInSecs,
           ),
         ),
       );
@@ -276,4 +282,32 @@ class TriggerManager {
   void addEvent(String event) {
     _eventStream.add(event);
   }
+
+  int calculateEstimatedTime(List<Question> questions) {
+    int totalSeconds = 0;
+    for (var question in questions) {
+      switch (question.type) {
+        case 'date':
+          totalSeconds += 10; // Base time for date selection
+          break;
+        case 'rating':
+        case 'nps':
+          totalSeconds += 5; // Quick score selection
+          break;
+        default:
+          totalSeconds += 10; // Default for unsupported types
+      }
+
+      // Add buffer time per question
+      totalSeconds += 5;
+
+      // Add extra time if required
+      if (question.required ?? false) {
+        totalSeconds += 2; // Slight increase for mandatory questions
+      }
+    }
+
+    return totalSeconds;
+  }
+
 }

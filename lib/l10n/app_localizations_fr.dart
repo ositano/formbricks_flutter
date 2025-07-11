@@ -163,4 +163,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get country => 'Pays';
+
+  @override
+  String get response_required => 'Réponse requise';
+
+  @override
+  String get takes_less_than => 'Prend moins de ';
 }

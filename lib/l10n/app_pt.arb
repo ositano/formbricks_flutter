@@ -51,5 +51,7 @@
     "city": "Cidade",
     "state": "Estado",
     "zip": "CEP",
-    "country": "País"
+    "country": "País",
+      "response_required": "Resposta necessária",
+        "takes_less_than": "Demora menos de "
 }

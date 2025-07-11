@@ -10,12 +10,14 @@ class CalQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
+  final bool requiredAnswerByLogicCondition;
 
   const CalQuestion({
     super.key,
     required this.question,
     required this.onResponse,
     this.response,
+    required this.requiredAnswerByLogicCondition,
   });
 
   @override
@@ -32,7 +34,8 @@ class _CalQuestionState extends State<CalQuestion> {
   }
 
   Future<void> _openCalendar() async {
-    final url = 'https://${widget.question.calHost ?? 'cal.com'}/${widget.question.calUserName ?? ''}';
+    final url =
+        'https://${widget.question.calHost ?? 'cal.com'}/${widget.question.calUserName ?? ''}';
     if (await canLaunch(url)) {
       await launch(url);
       setState(() {
@@ -40,7 +43,11 @@ class _CalQuestionState extends State<CalQuestion> {
         widget.onResponse(widget.question.id, true);
       });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.could_not_open_calendar)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.could_not_open_calendar),
+        ),
+      );
     }
   }
 
@@ -50,7 +57,11 @@ class _CalQuestionState extends State<CalQuestion> {
     final isRequired = widget.question.required ?? false;
 
     return FormField<bool>(
-      validator: (value) => isRequired && !isScheduled ? AppLocalizations.of(context)!.pls_schedule_meeting : null,
+      validator: (value) => widget.requiredAnswerByLogicCondition
+          ? AppLocalizations.of(context)!.response_required
+          : (isRequired && !isScheduled
+                ? AppLocalizations.of(context)!.pls_schedule_meeting
+                : null),
       builder: (FormFieldState<bool> field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,13 +69,19 @@ class _CalQuestionState extends State<CalQuestion> {
             Text(
               //widget.question.headline['default'] ?? '',
               translate(widget.question.headline, context) ?? '',
-              style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style:
+                  theme.textTheme.headlineMedium ??
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             //if (widget.question.subheader?['default']?.isNotEmpty ?? false)
-            if (translate(widget.question.subheader, context)?.isNotEmpty ?? false)
+            if (translate(widget.question.subheader, context)?.isNotEmpty ??
+                false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: Text(widget.question.subheader?['default'] ?? '', style: theme.textTheme.bodyMedium),
+                child: Text(
+                  widget.question.subheader?['default'] ?? '',
+                  style: theme.textTheme.bodyMedium,
+                ),
               ),
             const SizedBox(height: 16),
             ElevatedButton(
@@ -74,12 +91,18 @@ class _CalQuestionState extends State<CalQuestion> {
             if (isScheduled)
               Padding(
                 padding: EdgeInsets.only(top: 8.0),
-                child: Text(AppLocalizations.of(context)!.meeting_scheduled, style: theme.textTheme.bodySmall,),
+                child: Text(
+                  AppLocalizations.of(context)!.meeting_scheduled,
+                  style: theme.textTheme.bodySmall,
+                ),
               ),
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: Text(field.errorText!, style: TextStyle(color: theme.colorScheme.error)),
+                child: Text(
+                  field.errorText!,
+                  style: TextStyle(color: theme.colorScheme.error),
+                ),
               ),
           ],
         );

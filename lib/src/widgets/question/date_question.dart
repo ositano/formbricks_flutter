@@ -8,12 +8,14 @@ class DateQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
+  final bool requiredAnswerByLogicCondition;
 
   const DateQuestion({
     super.key,
     required this.question,
     required this.onResponse,
     this.response,
+    required this.requiredAnswerByLogicCondition
   });
 
   @override
@@ -96,9 +98,11 @@ class _DateQuestionState extends State<DateQuestion> {
     return FormField<bool>(
       key: ValueKey(q.id),
       initialValue: selectedDate != null,
-      validator: (_) => isRequired && selectedDate == null
+      validator: (_) => widget.requiredAnswerByLogicCondition
+    ? AppLocalizations.of(context)!.response_required
+        : (isRequired && selectedDate == null
           ? AppLocalizations.of(context)!.please_select_date
-          : null,
+          : null),
       builder: (field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

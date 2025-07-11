@@ -163,4 +163,10 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get country => 'Nchi';
+
+  @override
+  String get response_required => 'Jibu linahitajika';
+
+  @override
+  String get takes_less_than => 'Inachukua chini ya ';
 }

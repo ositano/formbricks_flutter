@@ -1,4 +1,6 @@
 
+import 'logic.dart';
+
 /// Defines the survey question model.
 class Question {
   final String id;
@@ -42,6 +44,10 @@ class Question {
   final Map<String, dynamic>? lastName;
   final int? maxSizeInMB;
   final String? format;
+  final List<Logic> logic;
+  final String? logicFallback; // Target if logic conditions fail
+
+  double? _styleRoundness;
 
   Question({
     required this.id,
@@ -85,10 +91,18 @@ class Question {
     this.lastName,
     this.maxSizeInMB,
     this.format,
+    required this.logic,
+    this.logicFallback,
   });
 
+  set styleRoundness(double roundness){
+    _styleRoundness = roundness;
+  }
+
+  double get styleRoundness => _styleRoundness ?? 8.0;
+
   factory Question.fromJson(Map<String, dynamic> json) {
-    //print("rows: ${json['rows']}");
+    print("question: ${json}");
 
     return Question(
       id: json['id'],
@@ -147,6 +161,10 @@ class Question {
       firstName: json['firstName'] != null ? Map<String, dynamic>.from(json['firstName']) : null,
       maxSizeInMB: json['maxSizeInMB'] ?? 0,
       format: json['format'],
+      logic: json['logic'] != null ? (json['logic'] as List)
+          .map((q) => Logic.fromJson(q))
+          .toList() : [],
+      logicFallback: json['logicFallback'],
     );
   }
 

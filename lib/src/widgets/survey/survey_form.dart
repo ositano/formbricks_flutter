@@ -9,24 +9,24 @@ import 'components/content.dart';
 import 'components/error.dart';
 import 'components/loading.dart';
 
-class SurveyForm extends StatefulWidget {
+class SurveyForm extends StatelessWidget {
   final FormBricksClient client;
   final Survey survey;
   final String userId;
   final ThemeData? customTheme;
-  final bool? showPoweredBy;
-
+  final int estimatedTimeInSecs;
   final int currentStep;
   final bool isLoading;
   final String? error;
   final String? displayId;
   final GlobalKey<FormState> formKey;
   final SurveyDisplayMode surveyDisplayMode;
-
+  final bool showPoweredBy;
   final Function() previousStep;
   final Function() nextStep;
   final Function(String, dynamic) onResponse;
   final Map<String, dynamic> responses;
+  final Map<String, bool> requiredAnswers;
 
   const SurveyForm({
     super.key,
@@ -34,33 +34,21 @@ class SurveyForm extends StatefulWidget {
     required this.survey,
     required this.userId,
     this.customTheme,
-    this.showPoweredBy,
     required this.currentStep,
     required this.isLoading,
     this.error,
     this.displayId,
+    required this.estimatedTimeInSecs,
     required this.formKey,
     required this.nextStep,
     required this.previousStep,
     required this.onResponse,
     required this.responses,
     required this.surveyDisplayMode,
+    required this.requiredAnswers,
+    required this.showPoweredBy
   });
 
-  @override
-  State<SurveyForm> createState() => SurveyFormState();
-}
-
-class SurveyFormState extends State<SurveyForm> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,16 +59,13 @@ class SurveyFormState extends State<SurveyForm> {
   }
 
   Widget _buildSurvey(BuildContext context) {
-    final totalSteps =
-        widget.survey.questions.length +
-        (widget.survey.welcomeCard?['enabled'] == true ? 1 : 0) +
-        1;
+    final totalSteps = survey.questions.length;
 
-    if (widget.isLoading) {
+    if (isLoading) {
       return SurveyLoading();
     }
-    if (widget.error != null) {
-      return SurveyError(errorMessage: widget.error.toString());
+    if (error != null) {
+      return SurveyError(errorMessage: error.toString());
     }
 
     // Add the front interactive card
@@ -88,47 +73,47 @@ class SurveyFormState extends State<SurveyForm> {
     String? nextLabel;
     String? previousLabel;
     Question? question;
-    if (widget.currentStep == 0 &&
-        widget.survey.welcomeCard?['enabled'] == true) {
-      content = WelcomeWidget(survey: widget.survey);
-      nextLabel =
-          widget.survey.welcomeCard!['buttonLabel']['default'] ?? 'Next';
-    } else if (widget.currentStep > 0 &&
-        widget.currentStep <= widget.survey.questions.length) {
-      question = widget.survey.questions[widget.currentStep - 1];
+    if (currentStep == -1 && survey.welcomeCard?['enabled'] == true) {
+      content = WelcomeWidget(survey: survey);
+      nextLabel = survey.welcomeCard!['buttonLabel']['default'] ?? 'Next';
+    } else if (currentStep < survey.questions.length) {
+      question = survey.questions[currentStep];
+      question.styleRoundness = styleRoundness(survey);
       content = Form(
-        key: widget.formKey,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
+        key: formKey,
+        //autovalidateMode: AutovalidateMode.onUserInteraction,
         child: QuestionWidget(
           question: question,
-          onResponse: widget.onResponse,
-          client: widget.client,
-          surveyId: widget.survey.id,
-          userId: widget.userId,
-          response: widget.responses[question.id],
-          formKey: widget.formKey,
+          onResponse: onResponse,
+          client: client,
+          surveyId: survey.id,
+          userId: userId,
+          response: responses[question.id],
+          requiredAnswerByLogicCondition: requiredAnswers.containsKey(question.id),
         ),
       );
       nextLabel = question.buttonLabel?['default'];
       previousLabel = question.backButtonLabel?['default'];
     } else {
-      content = EndWidget(survey: widget.survey);
+      content = EndWidget(survey: survey);
       nextLabel = 'Close';
     }
 
     return SurveyContent(
-      progress: (widget.currentStep + 1) / totalSteps,
-      currentStep: widget.currentStep,
-      nextStep: widget.nextStep,
-      previousStep: widget.previousStep,
+      progress: (currentStep + 1) / totalSteps,
+      currentStep: currentStep,
+      nextStep: nextStep,
+      previousStep: previousStep,
       nextLabel: nextLabel,
       previousLabel: previousLabel,
-      onResponse: widget.onResponse,
-      survey: widget.survey,
-      response: widget.responses[question?.id],
+      onResponse: onResponse,
+      survey: survey,
+      showPoweredBy: showPoweredBy,
+      response: responses[question?.id],
       contentHeight: MediaQuery.of(context).size.height,
       spacerHeight: 0,
-      surveyDisplayMode: widget.surveyDisplayMode,
+      surveyDisplayMode: surveyDisplayMode,
+      estimatedTimeInSecs: estimatedTimeInSecs,
       child: content,
     );
   }

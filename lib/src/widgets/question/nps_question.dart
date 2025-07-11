@@ -8,12 +8,14 @@ class NPSQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
+  final bool requiredAnswerByLogicCondition;
 
   const NPSQuestion({
     super.key,
     required this.question,
     required this.onResponse,
     this.response,
+    required this.requiredAnswerByLogicCondition
   });
 
   @override
@@ -41,6 +43,10 @@ class _NPSQuestionState extends State<NPSQuestion> {
           ? AutovalidateMode.onUserInteraction
           : AutovalidateMode.disabled,
       validator: (value) {
+        if(widget.requiredAnswerByLogicCondition) {
+          return AppLocalizations.of(context)!.response_required;
+        }
+
         if (_hasInteracted && isRequired && value == null) {
           return AppLocalizations.of(context)!.please_select_score;
         }
@@ -69,47 +75,89 @@ class _NPSQuestionState extends State<NPSQuestion> {
             const SizedBox(height: 24),
             Wrap(
               spacing: 8.0,
+              runSpacing: 8.0,
               children: List.generate(11, (index) {
-                return ChoiceChip(
-                  label: Text('$index'),
-                  selected: selectedIndex == index,
-                  onSelected: (selected) {
-                    if (selected) {
-                      setState(() {
-                        selectedIndex = index;
-                        _hasInteracted = true;
-                      });
-                      field.didChange(index);
-                      widget.onResponse(widget.question.id, index);
+                final isSelected = selectedIndex == index;
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedIndex = index;
+                      _hasInteracted = true;
+                    });
+                    field.didChange(index);
+                    widget.onResponse(widget.question.id, index);
 
-                      final formState = context.findAncestorStateOfType<SurveyWidgetState>()?.formKey.currentState;
-                      if (formState?.validate() ?? false) {
-                        context.findAncestorStateOfType<SurveyWidgetState>()?.nextStep();
-                      }
+                    final formState = context.findAncestorStateOfType<SurveyWidgetState>()?.formKey.currentState;
+                    if (formState?.validate() ?? false) {
+                      context.findAncestorStateOfType<SurveyWidgetState>()?.nextStep();
                     }
                   },
-                  selectedColor: theme.primaryColor,
-                  labelStyle: TextStyle(
-                    color: selectedIndex == index
-                        ? Colors.white
-                        : theme.textTheme.bodyMedium?.color,
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: isSelected ? theme.primaryColor : Colors.transparent,
+                      border: Border.all(color: isSelected ? theme.primaryColor : Colors.grey),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      '$index',
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : theme.textTheme.bodyMedium?.color,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
                 );
               }),
             ),
+
+
+
+            // Wrap(
+            //   spacing: 8.0,
+            //   children: List.generate(11, (index) {
+            //     return ChoiceChip(
+            //       label: Text('$index'),
+            //       selected: selectedIndex == index,
+            //       onSelected: (selected) {
+            //         if (selected) {
+            //           setState(() {
+            //             selectedIndex = index;
+            //             _hasInteracted = true;
+            //           });
+            //           field.didChange(index);
+            //           widget.onResponse(widget.question.id, index);
+            //
+            //           final formState = context.findAncestorStateOfType<SurveyWidgetState>()?.formKey.currentState;
+            //           if (formState?.validate() ?? false) {
+            //             context.findAncestorStateOfType<SurveyWidgetState>()?.nextStep();
+            //           }
+            //         }
+            //       },
+            //       selectedColor: theme.primaryColor,
+            //       labelStyle: TextStyle(
+            //         color: selectedIndex == index
+            //             ? Colors.white
+            //             : theme.textTheme.bodyMedium?.color,
+            //       ),
+            //     );
+            //   }),
+            // ),
+
+
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (widget.question.lowerLabel != null)
                   Text(
-                    //widget.question.lowerLabel!['default'] ?? '',
                     translate(widget.question.lowerLabel, context) ?? '',
                     style: theme.textTheme.bodySmall,
                   ),
                 if (widget.question.upperLabel != null)
                   Text(
-                    //widget.question.upperLabel!['default'] ?? '',
                     translate(widget.question.upperLabel, context) ?? '',
                     style: theme.textTheme.bodySmall,
                   ),

@@ -7,12 +7,14 @@ class MultipleChoiceMulti extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
+  final bool requiredAnswerByLogicCondition;
 
   const MultipleChoiceMulti({
     super.key,
     required this.question,
     required this.onResponse,
     this.response,
+    required this.requiredAnswerByLogicCondition
   });
 
   @override
@@ -35,9 +37,11 @@ class _MultipleChoiceMultiState extends State<MultipleChoiceMulti> {
     final isRequired = widget.question.required ?? false;
 
     return FormField<bool>(
-      validator: (value) => isRequired && selectedOptions.isEmpty
+      validator: (value) => widget.requiredAnswerByLogicCondition
+        ? AppLocalizations.of(context)!.response_required
+        : (isRequired && selectedOptions.isEmpty
           ? AppLocalizations.of(context)!.please_select_option
-          : null,
+          : null),
       builder: (field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

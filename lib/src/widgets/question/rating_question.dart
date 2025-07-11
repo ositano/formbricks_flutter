@@ -9,12 +9,14 @@ class RatingQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
+  final bool requiredAnswerByLogicCondition;
 
   const RatingQuestion({
     super.key,
     required this.question,
     required this.onResponse,
     this.response,
+    required this.requiredAnswerByLogicCondition
   });
 
   @override
@@ -33,76 +35,131 @@ class _RatingQuestionState extends State<RatingQuestion> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final range = int.tryParse(widget.question.inputConfig?['range']?.toString() ?? '') ?? 5;
-    final scale = widget.question.inputConfig?['scale'] ?? 'star';
+    final range = int.tryParse(widget.question.inputConfig?['range']?.toString() ?? '5') ?? 5; //3,4,6,7,10
+    final scale = widget.question.inputConfig?['scale'] ?? 'star'; // 'star', 'smiley', 'number'
     final isRequired = widget.question.required ?? false;
 
-    return FormField<double>(
-      validator: (value) => isRequired && (selectedRating == null || selectedRating == 0)
-          ? AppLocalizations.of(context)!.please_select_rating
-          : null,
-      builder: (FormFieldState<double> field) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              //widget.question.headline['default'] ?? '',
-              translate(widget.question.headline, context) ?? '',
-              style: theme.textTheme.headlineMedium ??
-                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            //if (widget.question.subheader?['default']?.isNotEmpty ?? false)
-            if (translate(widget.question.subheader, context)?.isNotEmpty ?? false)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  //widget.question.subheader!['default'] ?? '',
-                  translate(widget.question.subheader, context) ?? '',
-                  style: theme.textTheme.bodyMedium,
-                ),
-              ),
-            const SizedBox(height: 16),
-            RatingBar.builder(
-              initialRating: selectedRating ?? 0,
-              minRating: 1,
-              direction: Axis.horizontal,
-              allowHalfRating: false,
-              itemCount: range,
-              itemPadding: const EdgeInsets.symmetric(horizontal: 8.0),
-              itemSize: 50.0,
-              itemBuilder: (context, index) => scale == 'star'
-                  ? Icon(Icons.star, color: theme.primaryColor)
-                  : Text(
-                (index + 1).toString(),
-                style: TextStyle(color: theme.primaryColor),
-              ),
-              onRatingUpdate: (rating) {
-                setState(() {
-                  selectedRating = rating;
-                });
-                field.didChange(rating);
-                widget.onResponse(widget.question.id, rating.toInt());
 
-                // Proceed to next step if valid
+
+    IconData getSmileyIcon(int index, int range) {
+      final smileys = [
+        Icons.sentiment_very_dissatisfied,
+        Icons.sentiment_dissatisfied,
+        Icons.sentiment_neutral,
+        Icons.sentiment_satisfied,
+        Icons.sentiment_very_satisfied,
+      ];
+      // Map current index to smiley range
+      double normalized = index / (range - 1); // between 0.0 and 1.0
+      int smileyIndex = (normalized * (smileys.length - 1)).round();
+
+      return smileys[smileyIndex.clamp(0, smileys.length - 1)];
+    }
+
+    Widget buildRatingWidget(FormFieldState<double> field) {
+      if (scale == 'number') {
+        return Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: List.generate(range, (index) {
+            final value = index + 1;
+            final isSelected = selectedRating == value.toDouble();
+            return GestureDetector(
+              onTap: () {
+                setState(() => selectedRating = value.toDouble());
+                field.didChange(selectedRating);
+                widget.onResponse(widget.question.id, value);
+
                 final formState = context.findAncestorStateOfType<SurveyWidgetState>()?.formKey.currentState;
                 if (formState?.validate() ?? false) {
                   context.findAncestorStateOfType<SurveyWidgetState>()?.nextStep();
                 }
               },
+              child: Container(
+                width: 40,
+                height: 40,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: theme.primaryColor),
+                  color: isSelected ? theme.primaryColor : Colors.white,
+                ),
+                child: Text(
+                  value.toString(),
+                  style: TextStyle(
+                    color: isSelected ? Colors.white : theme.primaryColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            );
+          }),
+        );
+      }
+
+      // Use RatingBar for 'star' and 'smiley'
+      return RatingBar.builder(
+        initialRating: selectedRating ?? 0,
+        minRating: 1,
+        allowHalfRating: false,
+        itemCount: range,
+        itemSize: range > 6 ? 36 : 50,
+        itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+        itemBuilder: (context, index) {
+          if (scale == 'smiley') {
+            return Icon(getSmileyIcon(index, range), color: theme.primaryColor, size: 36);
+          }
+          return Icon(Icons.star, color: theme.primaryColor);
+        },
+        onRatingUpdate: (rating) {
+          setState(() => selectedRating = rating);
+          field.didChange(rating);
+          widget.onResponse(widget.question.id, rating.toInt());
+
+          final formState = context.findAncestorStateOfType<SurveyWidgetState>()?.formKey.currentState;
+          if (formState?.validate() ?? false) {
+            context.findAncestorStateOfType<SurveyWidgetState>()?.nextStep();
+          }
+        },
+      );
+    }
+
+    return FormField<double>(
+      validator: (value) => widget.requiredAnswerByLogicCondition
+          ? AppLocalizations.of(context)!.response_required
+          : (isRequired && (selectedRating == null || selectedRating == 0)
+          ? AppLocalizations.of(context)!.please_select_rating
+          : null),
+      builder: (FormFieldState<double> field) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              translate(widget.question.headline, context) ?? '',
+              style: theme.textTheme.headlineMedium ??
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
+            if (translate(widget.question.subheader, context)?.isNotEmpty ?? false)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  translate(widget.question.subheader, context) ?? '',
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ),
+            const SizedBox(height: 16),
+            buildRatingWidget(field),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (widget.question.lowerLabel != null)
                   Text(
-                    //widget.question.lowerLabel!['default'] ?? '',
                     translate(widget.question.lowerLabel, context) ?? '',
                     style: theme.textTheme.bodySmall,
                   ),
                 if (widget.question.upperLabel != null)
                   Text(
-                    //widget.question.upperLabel!['default'] ?? '',
                     translate(widget.question.upperLabel, context) ?? '',
                     style: theme.textTheme.bodySmall,
                   ),
@@ -111,10 +168,7 @@ class _RatingQuestionState extends State<RatingQuestion> {
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  field.errorText!,
-                  style: TextStyle(color: theme.colorScheme.error),
-                ),
+                child: Text(field.errorText!, style: TextStyle(color: theme.colorScheme.error)),
               ),
           ],
         );

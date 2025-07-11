@@ -51,5 +51,7 @@
     "city": "市区町村",
     "state": "都道府県",
     "zip": "郵便番号",
-    "country": "国"
+    "country": "国",
+      "response_required": "要対応",
+        "takes_less_than": "かかる時間は以下です"
 }

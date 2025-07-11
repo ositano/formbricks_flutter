@@ -51,5 +51,7 @@
   "city": "City",
   "state": "State",
   "zip": "ZIP",
-  "country": "Country"
+  "country": "Country",
+  "response_required": "Response required",
+  "takes_less_than": "Takes less than "
 }

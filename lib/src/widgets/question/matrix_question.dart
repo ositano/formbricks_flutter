@@ -11,12 +11,14 @@ class MatrixQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
+  final bool requiredAnswerByLogicCondition;
 
   const MatrixQuestion({
     super.key,
     required this.question,
     required this.onResponse,
     this.response,
+    required this.requiredAnswerByLogicCondition
   });
 
   @override
@@ -86,6 +88,10 @@ class _MatrixQuestionState extends State<MatrixQuestion> {
     return FormField<bool>(
       key: ValueKey(widget.question.id),
       validator: (_) {
+        if(widget.requiredAnswerByLogicCondition) {
+          return AppLocalizations.of(context)!.response_required;
+        }
+
         if (isRequired && selections.length != shuffledRows.length) {
           return AppLocalizations.of(context)!.please_rate_all;
         }

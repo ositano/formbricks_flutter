@@ -8,12 +8,14 @@ class PictureSelectionQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
+  final bool requiredAnswerByLogicCondition;
 
   const PictureSelectionQuestion({
     super.key,
     required this.question,
     required this.onResponse,
     this.response,
+    required this.requiredAnswerByLogicCondition
   });
 
   @override
@@ -70,9 +72,11 @@ class _PictureSelectionQuestionState extends State<PictureSelectionQuestion> {
 
     return FormField<bool>(
       validator: (_) =>
-      widget.question.required == true && selectedImages.isEmpty
+    widget.requiredAnswerByLogicCondition
+        ? AppLocalizations.of(context)!.response_required
+        : (widget.question.required == true && selectedImages.isEmpty
           ? AppLocalizations.of(context)!.please_select_option
-          : null,
+          : null),
       builder: (FormFieldState<bool> field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -163,4 +163,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get country => '国';
+
+  @override
+  String get response_required => '要対応';
+
+  @override
+  String get takes_less_than => 'かかる時間は以下です';
 }

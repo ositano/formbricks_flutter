@@ -7,12 +7,14 @@ class ContactInfoQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
+  final bool requiredAnswerByLogicCondition;
 
   const ContactInfoQuestion({
     super.key,
     required this.question,
     required this.onResponse,
     this.response,
+    required this.requiredAnswerByLogicCondition
   });
 
   @override
@@ -113,6 +115,9 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
 
     return FormField<bool>(
       validator: (value) {
+        if(widget.requiredAnswerByLogicCondition) {
+          return AppLocalizations.of(context)!.response_required;
+        }
         if (isRequired &&
             (_nameController.text.isEmpty || _phoneController.text.isEmpty || _emailController.text.isEmpty)) {
           return AppLocalizations.of(context)!.all_fields_are_required;

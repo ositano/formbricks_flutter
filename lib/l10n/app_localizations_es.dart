@@ -163,4 +163,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get country => 'País';
+
+  @override
+  String get response_required => 'Se requiere respuesta';
+
+  @override
+  String get takes_less_than => 'Toma menos de ';
 }

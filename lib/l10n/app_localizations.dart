@@ -418,6 +418,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Country'**
   String get country;
+
+  /// No description provided for @response_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Response required'**
+  String get response_required;
+
+  /// No description provided for @takes_less_than.
+  ///
+  /// In en, this message translates to:
+  /// **'Takes less than '**
+  String get takes_less_than;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
