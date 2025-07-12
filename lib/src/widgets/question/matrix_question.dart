@@ -1,6 +1,9 @@
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 import 'dart:math';
 
 import '../../../l10n/app_localizations.dart';
@@ -30,6 +33,8 @@ class _MatrixQuestionState extends State<MatrixQuestion> {
   late List<Map<String, String>> shuffledRows;
   final Random _random = Random();
   String? _questionId;
+  VideoPlayerController? _videoController;
+  ChewieController? _chewieController;
 
   @override
   void initState() {
@@ -37,6 +42,14 @@ class _MatrixQuestionState extends State<MatrixQuestion> {
     _questionId = widget.question.id;
     shuffledRows = _shuffleRows(widget.question.rows ?? []);
     _updateSelections();
+    _initializeVideo();
+  }
+
+  @override
+  void dispose() {
+    _videoController?.dispose();
+    _chewieController?.dispose();
+    super.dispose();
   }
 
   @override
@@ -48,6 +61,36 @@ class _MatrixQuestionState extends State<MatrixQuestion> {
       _questionId = widget.question.id;
     } else if (widget.response != oldWidget.response) {
       _updateSelections(); // just update selections, no reshuffle
+    }
+
+    if (widget.question.videoUrl != oldWidget.question.videoUrl) {
+      _initializeVideo();
+    }
+  }
+
+  void _initializeVideo() {
+    _videoController?.dispose();
+    _chewieController?.dispose();
+    _chewieController = null;
+
+    final videoUrl = widget.question.videoUrl;
+    if (videoUrl?.isNotEmpty ?? false) {
+      _videoController = VideoPlayerController.network(videoUrl!)
+        ..initialize()
+            .then((_) {
+          if (!mounted) return;
+          if (_videoController!.value.isInitialized) {
+            _chewieController = ChewieController(
+              videoPlayerController: _videoController!,
+              autoPlay: false,
+              looping: false,
+            );
+            setState(() {});
+          }
+        })
+            .catchError((error) {
+          print('Video initialization error: $error');
+        });
     }
   }
 
@@ -77,8 +120,6 @@ class _MatrixQuestionState extends State<MatrixQuestion> {
     return localRows;
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -101,18 +142,43 @@ class _MatrixQuestionState extends State<MatrixQuestion> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (widget.question.imageUrl?.isNotEmpty ?? false)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: GestureDetector(child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: CachedNetworkImage(
+                    imageUrl: widget.question.imageUrl!,
+                    height: 150,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => const Center(
+                        child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator())),
+                    errorWidget: (context, url, error) =>
+                    const Icon(Icons.error),
+                  ),
+                ),
+                  onTap: () => showFullScreenImage(context, widget.question.imageUrl!),
+                ),
+              )
+            else if (_chewieController != null &&
+                _videoController?.value.isInitialized == true)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Chewie(controller: _chewieController!),
+              ),
             Text(
-              //widget.question.headline['default'] ?? '',
               translate(widget.question.headline, context) ?? '',
               style: theme.textTheme.headlineMedium ??
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            //if (widget.question.subheader?['default']?.isNotEmpty ?? false)
             if (translate(widget.question.subheader, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  //widget.question.subheader!['default']!,
                   translate(widget.question.subheader, context) ?? "",
                   style: theme.textTheme.bodyMedium,
                 ),

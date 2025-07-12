@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
@@ -132,16 +133,23 @@ class _FreeTextQuestionState extends State<FreeTextQuestion> {
             if (question.imageUrl?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
-                child: Image.network(
-                  question.imageUrl!,
-                  fit: BoxFit.contain,
-                  loadingBuilder: (context, widget, event) => SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: Center(child: CircularProgressIndicator()),
+                child: GestureDetector(child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: CachedNetworkImage(
+                    imageUrl: question.imageUrl!,
+                    height: 150,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => const Center(
+                        child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator())),
+                    errorWidget: (context, url, error) =>
+                    const Icon(Icons.error),
                   ),
-                  errorBuilder: (context, error, stackTrace) =>
-                      const SizedBox.shrink(),
+                ),
+                  onTap: () => showFullScreenImage(context, question.imageUrl!),
                 ),
               )
             else if (_chewieController != null &&
@@ -151,18 +159,15 @@ class _FreeTextQuestionState extends State<FreeTextQuestion> {
                 child: Chewie(controller: _chewieController!),
               ),
             Text(
-              //question.headline['default'] ?? '',
               translate(question.headline, context) ?? '',
               style:
                   theme.textTheme.headlineMedium ??
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            //if (question.subheader?['default']?.isNotEmpty ?? false)
             if (translate(question.subheader, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  //question.subheader!['default'] ?? '',
                   translate(question.subheader, context) ?? '',
                   style: theme.textTheme.bodyMedium,
                 ),
@@ -171,7 +176,6 @@ class _FreeTextQuestionState extends State<FreeTextQuestion> {
             TextFormField(
               controller: _controller,
               decoration: InputDecoration(
-                //labelText: question.placeholder?['default'] ?? AppLocalizations.of(context)!.type_answer_here,
                 labelText: translate(question.placeholder, context) ?? AppLocalizations.of(context)!.type_answer_here,
                 border: const OutlineInputBorder(),
                 labelStyle: theme.textTheme.bodyMedium,

@@ -85,7 +85,7 @@ class SurveyContent extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(height: MediaQuery.of(context).padding.top + kToolbarHeight),
+          surveyDisplayMode == SurveyDisplayMode.fullScreen ? SizedBox(height: MediaQuery.of(context).padding.top + kToolbarHeight) : SizedBox.shrink(),
           Expanded(
             child: SingleChildScrollView(
               physics: isScrollable

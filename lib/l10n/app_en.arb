@@ -53,5 +53,6 @@
   "zip": "ZIP",
   "country": "Country",
   "response_required": "Response required",
-  "takes_less_than": "Takes less than "
+  "takes_less_than": "Takes less than ",
+  "close": "Close"
 }

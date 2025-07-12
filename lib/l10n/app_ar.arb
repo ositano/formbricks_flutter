@@ -53,5 +53,6 @@
     "zip": "الرمز البريدي",
     "country": "البلد",
       "response_required": "الاستجابة مطلوبة",
-        "takes_less_than": "يستغرق أقل من "
+        "takes_less_than": "يستغرق أقل من ",
+          "close": "يغلق"
 }

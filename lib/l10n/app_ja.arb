@@ -53,5 +53,6 @@
     "zip": "郵便番号",
     "country": "国",
       "response_required": "要対応",
-        "takes_less_than": "かかる時間は以下です"
+        "takes_less_than": "かかる時間は以下です",
+          "close": "近い"
 }

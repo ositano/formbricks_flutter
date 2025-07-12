@@ -1,5 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:video_player/video_player.dart';
 import '../../../formbricks_flutter.dart';
 import '../../models/question.dart';
 import '../../utils/helper.dart';
@@ -26,6 +29,8 @@ class _DateQuestionState extends State<DateQuestion> {
   DateTime? selectedDate;
   late final DateFormat formatter;
   late final TextEditingController _controller;
+  VideoPlayerController? _videoController;
+  ChewieController? _chewieController;
 
   @override
   void initState() {
@@ -33,6 +38,15 @@ class _DateQuestionState extends State<DateQuestion> {
     formatter = DateFormat(widget.question.format ?? 'yyyy-MM-dd');
     selectedDate = _parseDate(widget.response);
     _controller = TextEditingController(text: widget.response);
+    _initializeVideo();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _videoController?.dispose();
+    _chewieController?.dispose();
+    super.dispose();
   }
 
   @override
@@ -47,6 +61,35 @@ class _DateQuestionState extends State<DateQuestion> {
           _controller.text = formatter.format(newDate);
         }
       });
+    }
+    if (widget.question.videoUrl != oldWidget.question.videoUrl) {
+      _initializeVideo();
+    }
+  }
+
+  void _initializeVideo() {
+    _videoController?.dispose();
+    _chewieController?.dispose();
+    _chewieController = null;
+
+    final videoUrl = widget.question.videoUrl;
+    if (videoUrl?.isNotEmpty ?? false) {
+      _videoController = VideoPlayerController.network(videoUrl!)
+        ..initialize()
+            .then((_) {
+          if (!mounted) return;
+          if (_videoController!.value.isInitialized) {
+            _chewieController = ChewieController(
+              videoPlayerController: _videoController!,
+              autoPlay: false,
+              looping: false,
+            );
+            setState(() {});
+          }
+        })
+            .catchError((error) {
+          print('Video initialization error: $error');
+        });
     }
   }
 
@@ -83,11 +126,6 @@ class _DateQuestionState extends State<DateQuestion> {
     }
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,19 +145,44 @@ class _DateQuestionState extends State<DateQuestion> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (widget.question.imageUrl?.isNotEmpty ?? false)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: GestureDetector(child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: CachedNetworkImage(
+                    imageUrl: widget.question.imageUrl!,
+                    height: 150,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => const Center(
+                        child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator())),
+                    errorWidget: (context, url, error) =>
+                    const Icon(Icons.error),
+                  ),
+                ),
+                  onTap: () => showFullScreenImage(context, widget.question.imageUrl!),
+                ),
+              )
+            else if (_chewieController != null &&
+                _videoController?.value.isInitialized == true)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Chewie(controller: _chewieController!),
+              ),
             Text(
-              //q.headline['default'] ?? '',
               translate(q.headline, context) ?? '',
               style:
                   theme.textTheme.headlineMedium ??
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            //if (q.subheader?['default']?.isNotEmpty ?? false)
             if (translate(q.subheader, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  //q.subheader!['default']!,
                   translate(q.subheader, context) ?? "",
                   style: theme.textTheme.bodyMedium,
                 ),
@@ -154,19 +217,6 @@ class _DateQuestionState extends State<DateQuestion> {
                 ),
               ),
             ),
-
-            // TextFormField(
-            //   readOnly: true,
-            //   controller: _controller,
-            //   onTap: () => _pickDate(field),
-            //   decoration: InputDecoration(
-            //     hintText: AppLocalizations.of(context)!.select_date,
-            //     border: const OutlineInputBorder(),
-            //     suffixIcon: const Icon(Icons.calendar_today),
-            //     //errorText: field.hasError ? field.errorText : null,
-            //   ),
-            //   style: theme.textTheme.bodyMedium,
-            // ),
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),

@@ -1,4 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 import '../../../formbricks_flutter.dart';
 import '../../models/question.dart';
 import '../../utils/helper.dart';
@@ -25,7 +28,10 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
   late var _nameController = TextEditingController();
   late var _emailController = TextEditingController();
   late var _phoneController = TextEditingController();
-  // final _formKey = GlobalKey<FormState>();
+
+  VideoPlayerController? _videoController;
+  ChewieController? _chewieController;
+
   bool _isInitialized = false;
 
   @override
@@ -37,6 +43,7 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
     _phoneController = TextEditingController();
     _isInitialized = true;
     _updateControllerText(response);
+    _initializeVideo();
   }
 
   @override
@@ -44,6 +51,8 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
+    _videoController?.dispose();
+    _chewieController?.dispose();
     super.dispose();
   }
 
@@ -53,6 +62,35 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
     if (widget.response != oldWidget.response) {
       final response = widget.response as Map<String, dynamic>? ?? {};
       _updateControllerText(response);
+    }
+    if (widget.question.videoUrl != oldWidget.question.videoUrl) {
+      _initializeVideo();
+    }
+  }
+
+  void _initializeVideo() {
+    _videoController?.dispose();
+    _chewieController?.dispose();
+    _chewieController = null;
+
+    final videoUrl = widget.question.videoUrl;
+    if (videoUrl?.isNotEmpty ?? false) {
+      _videoController = VideoPlayerController.network(videoUrl!)
+        ..initialize()
+            .then((_) {
+          if (!mounted) return;
+          if (_videoController!.value.isInitialized) {
+            _chewieController = ChewieController(
+              videoPlayerController: _videoController!,
+              autoPlay: false,
+              looping: false,
+            );
+            setState(() {});
+          }
+        })
+            .catchError((error) {
+          print('Video initialization error: $error');
+        });
     }
   }
 
@@ -132,17 +170,42 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (widget.question.imageUrl?.isNotEmpty ?? false)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: GestureDetector(child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: CachedNetworkImage(
+                    imageUrl: widget.question.imageUrl!,
+                    height: 150,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => const Center(
+                        child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator())),
+                    errorWidget: (context, url, error) =>
+                    const Icon(Icons.error),
+                  ),
+                ),
+                  onTap: () => showFullScreenImage(context, widget.question.imageUrl!),
+                ),
+              )
+            else if (_chewieController != null &&
+                _videoController?.value.isInitialized == true)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Chewie(controller: _chewieController!),
+              ),
             Text(
-              //widget.question.headline['default'] ?? '',
             translate(widget.question.headline, context) ?? '',
               style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            //if (widget.question.subheader?['default']?.isNotEmpty ?? false)
             if (translate(widget.question.subheader, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  //widget.question.subheader?['default'] ?? '',
                   translate(widget.question.subheader, context) ?? '',
                   style: theme.textTheme.bodyMedium,
                 ),
@@ -173,40 +236,6 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
               onChanged: () => _updateResponse(),
               textInputType: TextInputType.phone,
             ),
-            // TextFormField(
-            //   controller: _nameController,
-            //   decoration: InputDecoration(
-            //     labelText: AppLocalizations.of(context)!.name,
-            //     border: OutlineInputBorder(),
-            //     labelStyle: theme.textTheme.bodyMedium,
-            //     //errorText: field.hasError ? field.errorText : null,
-            //   ),
-            //   onChanged: (value) => _updateResponse(),
-            // ),
-            // const SizedBox(height: 8),
-            // TextFormField(
-            //   controller: _emailController,
-            //   decoration: InputDecoration(
-            //     labelText: AppLocalizations.of(context)!.email,
-            //     border: OutlineInputBorder(),
-            //     labelStyle: theme.textTheme.bodyMedium,
-            //     //errorText: field.hasError ? field.errorText : null,
-            //   ),
-            //   keyboardType: TextInputType.emailAddress,
-            //   onChanged: (value) => _updateResponse(),
-            // ),
-            // const SizedBox(height: 8),
-            // TextFormField(
-            //   controller: _phoneController,
-            //   decoration: InputDecoration(
-            //     labelText: AppLocalizations.of(context)!.phone,
-            //     border: OutlineInputBorder(),
-            //     labelStyle: theme.textTheme.bodyMedium,
-            //     //errorText: field.hasError ? field.errorText : null,
-            //   ),
-            //   keyboardType: TextInputType.phone,
-            //   onChanged: (value) => _updateResponse(),
-            // ),
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),

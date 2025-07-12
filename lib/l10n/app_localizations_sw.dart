@@ -169,4 +169,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get takes_less_than => 'Inachukua chini ya ';
+
+  @override
+  String get close => 'Funga';
 }

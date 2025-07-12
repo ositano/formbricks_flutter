@@ -28,8 +28,9 @@ class SurveyWidget extends StatefulWidget {
 }
 
 class SurveyWidgetState extends State<SurveyWidget> {
-  int _currentStep =
-      -1; // 0 = welcome, 1+ = questions, questions.length + 1 = ending
+  int _currentStep = -1; // -1 = welcome, 0+ = questions, questions.length >= ending
+  int _currentEndingStep = 0;
+
   late Survey survey;
   Map<String, dynamic> responses = {}; // User responses
   final Map<String, dynamic> _variables = {}; // Store calculated variables
@@ -93,7 +94,6 @@ class SurveyWidgetState extends State<SurveyWidget> {
       _currentQuestionId = questionId;
       responses[questionId] = value;
     });
-    //_evaluateLogic(_currentQuestionId!);
   }
 
   Future<void> _submitSurvey() async {
@@ -122,9 +122,10 @@ class SurveyWidgetState extends State<SurveyWidget> {
     final form = formKey.currentState;
     form?.validate();
 
+    // Handle welcome screen
     if (_currentStep == -1 && survey.welcomeCard?['enabled'] == true) {
-      setState(() => _currentStep++); // Move to first question (index 0)
-      return; // Exit early, no logic or validation needed for welcome
+      setState(() => _currentStep++);
+      return;
     }
 
     final currentQuestion = survey.questions.elementAtOrNull(_currentStep);
@@ -133,46 +134,64 @@ class SurveyWidgetState extends State<SurveyWidget> {
         _showEnding();
         _submitSurvey();
       }
-      return; // Exit if no valid question (e.g., end of survey)
-    }
-
-    // Evaluate logic for the current question
-    if (currentQuestion.logic.isNotEmpty) {
-      for (Logic logic in currentQuestion.logic) {
-        if (_evaluateConditions(logic.conditions)) {
-          debugPrint("passed");
-          for (var action in logic.actions) {
-            _executeAction(action);
-          }
-        } else if (currentQuestion.logicFallback != null) {
-          debugPrint("not passed");
-          _jumpToQuestion(currentQuestion.logicFallback!);
-          return; // Exit after jumping
-        }else{
-          // Check form validity, including dynamic required fields
-          if (_requiredAnswers[currentQuestion.id] == true && !responses.containsKey(currentQuestion.id)) {
-            //form?.validate();
-            return; // Block progression if required but unanswered
-          }
-
-          if (_currentStep < survey.questions.length && (form?.validate() ?? false)) {
-            setState(() => _currentStep++);
-          } else if (_currentStep >= survey.questions.length) {
-            _showEnding();
-            _submitSurvey();
-          }
-        }
-      }
       return;
     }
 
-    // Check form validity, including dynamic required fields
-    if (_requiredAnswers[currentQuestion.id] == true && !responses.containsKey(currentQuestion.id)) {
-      //form?.validate();
-      return; // Block progression if required but unanswered
+    // Evaluate logic
+    if (currentQuestion.logic.isNotEmpty) {
+      bool anyLogicMatched = false;
+
+      for (Logic logic in currentQuestion.logic) {
+        if (_evaluateConditions(logic.conditions)) {
+          debugPrint("✅ logic condition matched");
+
+          anyLogicMatched = true;
+          for (var action in logic.actions) {
+            _executeAction(action);
+
+            // Exit if jump occurs
+            if (action.objective == 'jumpToQuestion') {
+              return;
+            }
+          }
+        }
+      }
+
+      if (!anyLogicMatched && currentQuestion.logicFallback != null) {
+        debugPrint("↪️ logic not matched, jumping to fallback");
+        _jumpToQuestion(currentQuestion.logicFallback!);
+        return;
+      }
+
+      // If logic evaluated but no jump occurred and no fallback, continue normally
+      if (!anyLogicMatched) {
+        if (_requiredAnswers[currentQuestion.id] == true &&
+            !responses.containsKey(currentQuestion.id)) {
+          form?.validate();
+          return;
+        }
+
+        if (_currentStep < survey.questions.length &&
+            (form?.validate() ?? false)) {
+          setState(() => _currentStep++);
+        } else if (_currentStep >= survey.questions.length) {
+          _showEnding();
+          _submitSurvey();
+        }
+      }
+
+      return;
     }
 
-    if (_currentStep < survey.questions.length && (form?.validate() ?? false)) {
+    // If no logic, validate and proceed normally
+    if (_requiredAnswers[currentQuestion.id] == true &&
+        !responses.containsKey(currentQuestion.id)) {
+      form?.validate();
+      return;
+    }
+
+    if (_currentStep < survey.questions.length &&
+        (form?.validate() ?? false)) {
       setState(() => _currentStep++);
     } else if (_currentStep >= survey.questions.length) {
       _showEnding();
@@ -180,23 +199,6 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
-  // void nextStep() {
-  //   debugPrint("clicked next step....");
-  //   final form = formKey.currentState;
-  //
-  //   // Force interaction on all fields
-  //   form?.validate();
-  //
-  //   if (_currentStep == -1 && survey.welcomeCard?['enabled'] == true) {
-  //     setState(() => _currentStep++);
-  //   } else if (_currentStep < survey.questions.length &&
-  //       (form?.validate() ?? false)) {
-  //     setState(() => _currentStep++);
-  //   } else if (_currentStep >= survey.questions.length) {
-  //     _showEnding();
-  //     _submitSurvey();
-  //   }
-  // }
 
   void previousStep() {
     if (_currentStep > 0) {
@@ -205,7 +207,14 @@ class SurveyWidgetState extends State<SurveyWidget> {
   }
 
   void _showEnding() {
-    setState(() => _currentStep = survey.questions.length);
+    setState(() {
+      _currentStep = survey.questions.length;
+      _currentEndingStep = 0;
+    });
+  }
+
+  void _endingStep(){
+    setState(() => _currentEndingStep++);
   }
 
   void _initializeVariables() {
@@ -213,28 +222,6 @@ class SurveyWidgetState extends State<SurveyWidget> {
       for (var v in survey.variables ?? []) v['id']: v['value'],
     });
   }
-
-  // void _evaluateLogic(String questionId) {
-  //   final currentQuestion = survey.questions.firstWhere(
-  //     (q) => q.id == questionId,
-  //   );
-  //   if (currentQuestion.logic.isEmpty) {
-  //     debugPrint("stopping here...");
-  //     return;
-  //   }
-  //
-  //   for (Logic logic in currentQuestion.logic) {
-  //     if (_evaluateConditions(logic.conditions)) {
-  //
-  //       for (var action in logic.actions) {
-  //         _executeAction(action);
-  //       }
-  //     } else if (currentQuestion.logicFallback != null) {
-  //       debugPrint("not passed");
-  //       _jumpToQuestion(currentQuestion.logicFallback!);
-  //     }
-  //   }
-  // }
 
   bool _evaluateConditions(dynamic conditions) {
     if (conditions == null) return true;
@@ -282,12 +269,10 @@ class SurveyWidgetState extends State<SurveyWidget> {
   bool _evaluateCondition(dynamic left, String operator, dynamic right) {
     switch (operator) {
       case 'equals':
-        debugPrint("equals: $left, $right");
         return left == right;
       case "equalsOneOf":
         return (right as List).contains(left.toString());
       case 'isLessThan':
-        debugPrint("isless than::::  left: $left, right: $right");
         return num.parse(left.toString()) < num.parse(right.toString());
       case 'isLessThanOrEqual':
         return num.parse(left.toString()) <= num.parse(right.toString());
@@ -320,7 +305,6 @@ class SurveyWidgetState extends State<SurveyWidget> {
   void _executeAction(LogicAction action) {
     switch (action.objective) {
       case 'jumpToQuestion':
-        debugPrint("jumping to question: ${action.target}");
         _jumpToQuestion(action.target!);
         break;
       case 'requireAnswer':
@@ -335,9 +319,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
   }
 
   void _jumpToQuestion(String targetId) {
-    debugPrint("target id: $targetId");
     _currentStep = survey.questions.indexWhere((q) => q.id == targetId);
-    debugPrint("jump to index: $_currentStep");
     if(_currentStep == -1){
       _currentStep = survey.questions.length;
     }
@@ -433,7 +415,9 @@ class SurveyWidgetState extends State<SurveyWidget> {
         surveyDisplayMode: widget.surveyDisplayMode,
         requiredAnswers: _requiredAnswers,
         estimatedTimeInSecs:
-            widget.estimatedTimeInSecs, // Pass to SurveyForm for validation
+            widget.estimatedTimeInSecs,
+        currentStepEnding: _currentEndingStep,
+        nextStepEnding: _endingStep, // Pass to SurveyForm for validation
       ),
     );
   }

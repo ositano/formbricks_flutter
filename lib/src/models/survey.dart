@@ -1,3 +1,4 @@
+import 'ending.dart';
 import 'question.dart';
 
 /// Defines the survey model, including questions and styling.
@@ -14,7 +15,7 @@ class Survey {
   final double? displayPercentage;
   final Map<String, dynamic>? segment;
   final Map<String, dynamic>? welcomeCard;
-  final List<Map<String, dynamic>>? endings;
+  final List<Ending> endings;
   final List<Map<String, dynamic>>? variables;
   final List<dynamic>? followUps;
   final bool? isBackButtonHidden;
@@ -32,7 +33,7 @@ class Survey {
     this.displayPercentage,
     this.segment,
     this.welcomeCard,
-    this.endings,
+    required this.endings,
     this.variables,
     this.followUps,
     this.isBackButtonHidden
@@ -54,7 +55,9 @@ class Survey {
       displayPercentage: json['displayPercentage']?.toDouble(),
       segment: json['segment'],
       welcomeCard: json['welcomeCard'],
-      endings: (json['endings'] as List?)?.cast<Map<String, dynamic>>(),
+        endings: json['endings'] != null ? (json['endings'] as List)
+            .map((q) => Ending.fromJson(q))
+            .toList() : [],
       variables: (json['variables'] as List?)?.cast<Map<String, dynamic>>(),
       followUps: json['followUps'],
       isBackButtonHidden: json['isBackButtonHidden']

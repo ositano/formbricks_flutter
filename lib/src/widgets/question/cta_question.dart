@@ -1,5 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../../formbricks_flutter.dart';
 import '../../models/question.dart';
@@ -25,11 +29,67 @@ class CTAQuestion extends StatefulWidget {
 
 class _CTAQuestionState extends State<CTAQuestion> {
   bool performedAction = false;
+  VideoPlayerController? _videoController;
+  ChewieController? _chewieController;
 
   @override
   void initState() {
     super.initState();
     performedAction = widget.response as bool? ?? false;
+    _initializeVideo();
+  }
+
+  @override
+  void dispose() {
+    _videoController?.dispose();
+    _chewieController?.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant CTAQuestion oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.question.videoUrl != oldWidget.question.videoUrl) {
+      _initializeVideo();
+    }
+  }
+
+  void _initializeVideo() {
+    _videoController?.dispose();
+    _chewieController?.dispose();
+    _chewieController = null;
+
+    final videoUrl = widget.question.videoUrl;
+    if (videoUrl?.isNotEmpty ?? false) {
+      _videoController = VideoPlayerController.network(videoUrl!)
+        ..initialize()
+            .then((_) {
+          if (!mounted) return;
+          if (_videoController!.value.isInitialized) {
+            _chewieController = ChewieController(
+              videoPlayerController: _videoController!,
+              autoPlay: false,
+              looping: false,
+            );
+            setState(() {});
+          }
+        })
+            .catchError((error) {
+          print('Video initialization error: $error');
+        });
+    }
+  }
+
+  Future<void> _openLink() async {
+    final url = widget.question.buttonUrl!;
+    if (await canLaunch(url)) {
+      await launch(url);
+      setState(() {
+        performedAction = true;
+        widget.onResponse(widget.question.id, true);
+      });
+    }
   }
 
   @override
@@ -45,15 +105,40 @@ class _CTAQuestionState extends State<CTAQuestion> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (widget.question.imageUrl?.isNotEmpty ?? false)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: GestureDetector(child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: CachedNetworkImage(
+                    imageUrl: widget.question.imageUrl!,
+                    height: 150,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => const Center(
+                        child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator())),
+                    errorWidget: (context, url, error) =>
+                    const Icon(Icons.error),
+                  ),
+                ),
+                  onTap: () => showFullScreenImage(context, widget.question.imageUrl!),
+                ),
+              )
+            else if (_chewieController != null &&
+                _videoController?.value.isInitialized == true)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Chewie(controller: _chewieController!),
+              ),
             Text(
-                //widget.question.headline['default'] ?? '',
                 translate(widget.question.headline, context) ?? '',
                 style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            //if (widget.question.html?['default']?.isNotEmpty ?? false)
             if (translate(widget.question.html, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                //child: HtmlWidget(widget.question.html!['default'] ?? ''),
                 child: HtmlWidget(translate(widget.question.html, context) ?? ''),
               ),
             const SizedBox(height: 16),
@@ -62,10 +147,9 @@ class _CTAQuestionState extends State<CTAQuestion> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    widget.onResponse(widget.question.id, true);
+                    _openLink();
                     field.didChange(true); // Validate
                   },
-                  //child: Text(widget.question.buttonLabel?['default'] ?? AppLocalizations.of(context)!.action),
                   child: Text(translate(widget.question.buttonLabel, context) ?? AppLocalizations.of(context)!.action),
                 ),
                 if (widget.question.dismissButtonLabel?['default'] != null)
@@ -74,7 +158,6 @@ class _CTAQuestionState extends State<CTAQuestion> {
                       widget.onResponse(widget.question.id, false);
                       Navigator.of(context).pop(); // Skip and close
                     },
-                    //child: Text(widget.question.dismissButtonLabel!['default'] ?? AppLocalizations.of(context)!.skip),
                     child: Text(translate(widget.question.dismissButtonLabel, context) ?? AppLocalizations.of(context)!.skip),
                   ),
               ],

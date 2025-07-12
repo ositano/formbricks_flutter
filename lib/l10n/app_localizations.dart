@@ -430,6 +430,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Takes less than '**
   String get takes_less_than;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

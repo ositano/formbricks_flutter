@@ -53,5 +53,6 @@
     "zip": "邮政编码",
     "country": "国家",
       "response_required": "需要回应",
-        "takes_less_than": "花费少于"
+        "takes_less_than": "花费少于",
+          "close": "关闭"
 }

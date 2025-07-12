@@ -31,38 +31,6 @@ class _PictureSelectionQuestionState extends State<PictureSelectionQuestion> {
     selectedImages = widget.response as List<String>? ?? [];
   }
 
-  void _showFullScreenImage(String imageUrl) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Scaffold(
-          backgroundColor: Colors.black,
-          body: Stack(
-            children: [
-              Center(
-                child: CachedNetworkImage(
-                  imageUrl: imageUrl,
-                  fit: BoxFit.contain,
-                  placeholder: (context, url) =>
-                  const Center(child: CircularProgressIndicator()),
-                  errorWidget: (context, url, error) =>
-                  const Center(child: Icon(Icons.error)),
-                ),
-              ),
-              Positioned(
-                top: 40,
-                left: 10,
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +85,7 @@ class _PictureSelectionQuestionState extends State<PictureSelectionQuestion> {
                       field.didChange(true);
                     });
                   },
-                  onDoubleTap: () => _showFullScreenImage(imageUrl),
+                  onDoubleTap: () => showFullScreenImage(context, imageUrl),
                   child: Stack(
                     children: [
                       Container(

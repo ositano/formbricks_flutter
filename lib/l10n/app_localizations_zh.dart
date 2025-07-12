@@ -169,4 +169,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get takes_less_than => '花费少于';
+
+  @override
+  String get close => '关闭';
 }

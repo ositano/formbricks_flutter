@@ -53,5 +53,6 @@
     "zip": "Code postal",
     "country": "Pays",
       "response_required": "Réponse requise",
-        "takes_less_than": "Prend moins de "
+        "takes_less_than": "Prend moins de ",
+          "close": "Fermer"
 }

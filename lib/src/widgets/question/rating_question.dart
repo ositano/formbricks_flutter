@@ -1,5 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../../formbricks_flutter.dart';
 import '../../models/question.dart';
@@ -25,11 +28,56 @@ class RatingQuestion extends StatefulWidget {
 
 class _RatingQuestionState extends State<RatingQuestion> {
   double? selectedRating;
+  VideoPlayerController? _videoController;
+  ChewieController? _chewieController;
 
   @override
   void initState() {
     super.initState();
     selectedRating = (widget.response as int?)?.toDouble();
+    _initializeVideo();
+  }
+
+  @override
+  void dispose() {
+    _videoController?.dispose();
+    _chewieController?.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant RatingQuestion oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.question.videoUrl != oldWidget.question.videoUrl) {
+      _initializeVideo();
+    }
+  }
+
+  void _initializeVideo() {
+    _videoController?.dispose();
+    _chewieController?.dispose();
+    _chewieController = null;
+
+    final videoUrl = widget.question.videoUrl;
+    if (videoUrl?.isNotEmpty ?? false) {
+      _videoController = VideoPlayerController.network(videoUrl!)
+        ..initialize()
+            .then((_) {
+          if (!mounted) return;
+          if (_videoController!.value.isInitialized) {
+            _chewieController = ChewieController(
+              videoPlayerController: _videoController!,
+              autoPlay: false,
+              looping: false,
+            );
+            setState(() {});
+          }
+        })
+            .catchError((error) {
+          print('Video initialization error: $error');
+        });
+    }
   }
 
   @override
@@ -103,7 +151,7 @@ class _RatingQuestionState extends State<RatingQuestion> {
         minRating: 1,
         allowHalfRating: false,
         itemCount: range,
-        itemSize: range > 6 ? 36 : 50,
+        itemSize: range > 7 ? 25 : 40,
         itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
         itemBuilder: (context, index) {
           if (scale == 'smiley') {
@@ -134,6 +182,34 @@ class _RatingQuestionState extends State<RatingQuestion> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            if (widget.question.imageUrl?.isNotEmpty ?? false)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: GestureDetector(child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: CachedNetworkImage(
+                    imageUrl: widget.question.imageUrl!,
+                    height: 150,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => const Center(
+                        child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator())),
+                    errorWidget: (context, url, error) =>
+                    const Icon(Icons.error),
+                  ),
+                ),
+                  onTap: () => showFullScreenImage(context, widget.question.imageUrl!),
+                ),
+              )
+            else if (_chewieController != null &&
+                _videoController?.value.isInitialized == true)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Chewie(controller: _chewieController!),
+              ),
             Text(
               translate(widget.question.headline, context) ?? '',
               style: theme.textTheme.headlineMedium ??

@@ -16,6 +16,7 @@ class SurveyForm extends StatelessWidget {
   final ThemeData? customTheme;
   final int estimatedTimeInSecs;
   final int currentStep;
+  final int currentStepEnding;
   final bool isLoading;
   final String? error;
   final String? displayId;
@@ -24,6 +25,7 @@ class SurveyForm extends StatelessWidget {
   final bool showPoweredBy;
   final Function() previousStep;
   final Function() nextStep;
+  final Function() nextStepEnding;
   final Function(String, dynamic) onResponse;
   final Map<String, dynamic> responses;
   final Map<String, bool> requiredAnswers;
@@ -35,12 +37,14 @@ class SurveyForm extends StatelessWidget {
     required this.userId,
     this.customTheme,
     required this.currentStep,
+    required this.currentStepEnding,
     required this.isLoading,
     this.error,
     this.displayId,
     required this.estimatedTimeInSecs,
     required this.formKey,
     required this.nextStep,
+    required this.nextStepEnding,
     required this.previousStep,
     required this.onResponse,
     required this.responses,
@@ -81,7 +85,7 @@ class SurveyForm extends StatelessWidget {
       question.styleRoundness = styleRoundness(survey);
       content = Form(
         key: formKey,
-        //autovalidateMode: AutovalidateMode.onUserInteraction,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: QuestionWidget(
           question: question,
           onResponse: onResponse,
@@ -95,8 +99,8 @@ class SurveyForm extends StatelessWidget {
       nextLabel = question.buttonLabel?['default'];
       previousLabel = question.backButtonLabel?['default'];
     } else {
-      content = EndWidget(survey: survey);
-      nextLabel = 'Close';
+      content = EndWidget(ending: survey.endings[currentStepEnding]);
+      nextLabel = currentStepEnding == (survey.endings.length - 1) ? AppLocalizations.of(context)!.close : AppLocalizations.of(context)!.next;
     }
 
     return SurveyContent(

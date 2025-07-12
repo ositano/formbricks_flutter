@@ -1,5 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:reorderables/reorderables.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
@@ -26,6 +29,8 @@ class RankingQuestion extends StatefulWidget {
 class _RankingQuestionState extends State<RankingQuestion> {
   late List<String> rankedItems;
   late List<Map<String, dynamic>> choices;
+  VideoPlayerController? _videoController;
+  ChewieController? _chewieController;
 
   @override
   void initState() {
@@ -33,6 +38,49 @@ class _RankingQuestionState extends State<RankingQuestion> {
     choices = widget.question.choices ?? [];
     rankedItems = (widget.response as List?)?.cast<String>() ??
         choices.map((c) => c['id']?.toString() ?? '').toList();
+    _initializeVideo();
+  }
+
+  @override
+  void dispose() {
+    _videoController?.dispose();
+    _chewieController?.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant RankingQuestion oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.question.videoUrl != oldWidget.question.videoUrl) {
+      _initializeVideo();
+    }
+  }
+
+  void _initializeVideo() {
+    _videoController?.dispose();
+    _chewieController?.dispose();
+    _chewieController = null;
+
+    final videoUrl = widget.question.videoUrl;
+    if (videoUrl?.isNotEmpty ?? false) {
+      _videoController = VideoPlayerController.network(videoUrl!)
+        ..initialize()
+            .then((_) {
+          if (!mounted) return;
+          if (_videoController!.value.isInitialized) {
+            _chewieController = ChewieController(
+              videoPlayerController: _videoController!,
+              autoPlay: false,
+              looping: false,
+            );
+            setState(() {});
+          }
+        })
+            .catchError((error) {
+          print('Video initialization error: $error');
+        });
+    }
   }
 
   void _onReorder(int oldIndex, int newIndex) {
@@ -71,6 +119,34 @@ class _RankingQuestionState extends State<RankingQuestion> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (widget.question.imageUrl?.isNotEmpty ?? false)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: GestureDetector(child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: CachedNetworkImage(
+                    imageUrl: widget.question.imageUrl!,
+                    height: 150,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => const Center(
+                        child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator())),
+                    errorWidget: (context, url, error) =>
+                    const Icon(Icons.error),
+                  ),
+                ),
+                  onTap: () => showFullScreenImage(context, widget.question.imageUrl!),
+                ),
+              )
+            else if (_chewieController != null &&
+                _videoController?.value.isInitialized == true)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Chewie(controller: _chewieController!),
+              ),
             Text(
               translate(widget.question.headline, context) ?? '',
               style: theme.textTheme.headlineMedium ??

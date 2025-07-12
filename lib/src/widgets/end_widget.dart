@@ -1,15 +1,16 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import '../../formbricks_flutter.dart';
+import '../models/ending.dart';
 import '../utils/helper.dart';
 import 'package:video_player/video_player.dart';
 import 'package:chewie/chewie.dart';
 
 class EndWidget extends StatefulWidget {
-  final Survey survey;
+  final Ending ending;
 
   const EndWidget({
     super.key,
-    required this.survey,
+    required this.ending,
   });
 
   @override
@@ -34,16 +35,11 @@ class _EndWidgetState extends State<EndWidget> {
   }
 
   void _initializeVideo() {
-    final ending = widget.survey.endings?.firstWhere(
-          (e) => e['type'] == 'endScreen',
-      orElse: () => widget.survey.endings!.first,
-    );
-
     _videoController?.dispose();
     _chewieController?.dispose();
     _chewieController = null;
 
-    final videoUrl = ending?['videoUrl'];
+    final videoUrl = widget.ending.videoUrl;
     if (videoUrl?.isNotEmpty ?? false) {
       _videoController = VideoPlayerController.network(videoUrl!)
         ..initialize()
@@ -67,28 +63,27 @@ class _EndWidgetState extends State<EndWidget> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final ending = widget.survey.endings?.firstWhere(
-          (e) => e['type'] == 'endScreen',
-      orElse: () => widget.survey.endings!.first,
-    );
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        if (ending?['imageUrl']?.isNotEmpty ?? false)
+        if (widget.ending.imageUrl?.isNotEmpty ?? false)
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
-            child: Image.network(
-              ending?['imageUrl'],
-              fit: BoxFit.contain,
-              loadingBuilder: (context, widget, event) => SizedBox(
-                width: 20,
-                height: 20,
-                child: Center(child: CircularProgressIndicator()),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: CachedNetworkImage(
+                imageUrl: widget.ending.imageUrl!,
+                fit: BoxFit.contain,
+                placeholder: (context, url) => const Center(
+                    child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator())),
+                errorWidget: (context, url, error) =>
+                const Icon(Icons.error),
               ),
-              errorBuilder: (context, error, stackTrace) =>
-              const SizedBox.shrink(),
             ),
           )
         else if (_chewieController != null &&
@@ -100,20 +95,20 @@ class _EndWidgetState extends State<EndWidget> {
         else
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
-            child: Icon(Icons.check_circle, size: 100, color: Colors.green,),
+            child: Icon(Icons.check_circle_outline, size: 100, color: Colors.green,),
           ),
         Text(
-          translate(ending?['headline'], context) ?? "",
+          translate(widget.ending.headline, context) ?? "",
           style:
           theme.textTheme.headlineMedium ??
               const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
         ),
-        if (translate(ending?['subheader'], context)?.isNotEmpty ?? false)
+        if (translate(widget.ending.subheader, context)?.isNotEmpty ?? false)
           Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: Text(
-              translate(ending?['subheader'], context) ?? '',
+              translate(widget.ending.subheader, context) ?? '',
               style: theme.textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),

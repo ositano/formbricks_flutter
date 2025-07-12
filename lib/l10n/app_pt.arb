@@ -53,5 +53,6 @@
     "zip": "CEP",
     "country": "País",
       "response_required": "Resposta necessária",
-        "takes_less_than": "Demora menos de "
+        "takes_less_than": "Demora menos de ",
+          "close": "Perto"
 }

@@ -169,4 +169,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get takes_less_than => 'かかる時間は以下です';
+
+  @override
+  String get close => '近い';
 }

@@ -169,4 +169,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get takes_less_than => 'يستغرق أقل من ';
+
+  @override
+  String get close => 'يغلق';
 }

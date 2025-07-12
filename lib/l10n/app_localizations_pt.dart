@@ -169,4 +169,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get takes_less_than => 'Demora menos de ';
+
+  @override
+  String get close => 'Perto';
 }

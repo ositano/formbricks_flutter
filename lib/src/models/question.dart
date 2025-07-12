@@ -1,4 +1,5 @@
 
+import 'ending.dart';
 import 'logic.dart';
 
 /// Defines the survey question model.
@@ -46,6 +47,7 @@ class Question {
   final String? format;
   final List<Logic> logic;
   final String? logicFallback; // Target if logic conditions fail
+  final String? buttonUrl;
 
   double? _styleRoundness;
 
@@ -93,6 +95,7 @@ class Question {
     this.format,
     required this.logic,
     this.logicFallback,
+    this.buttonUrl
   });
 
   set styleRoundness(double roundness){
@@ -102,8 +105,6 @@ class Question {
   double get styleRoundness => _styleRoundness ?? 8.0;
 
   factory Question.fromJson(Map<String, dynamic> json) {
-    print("question: ${json}");
-
     return Question(
       id: json['id'],
       type: json['type'] == 'openText' ? 'freeText' : json['type'],
@@ -135,6 +136,7 @@ class Question {
       placeholder: json['placeholder'] != null ? Map<String, String>.from(json['placeholder']) : null,
       imageUrl: json['imageUrl'] ?? "",
       videoUrl: json['videoUrl'] ?? "",
+      buttonUrl: json['buttonUrl'] ?? '',
       charLimit: {
         if (json['max'] != null) 'range': json['max'],
         if (json['min'] != null) 'scale': json['min'],

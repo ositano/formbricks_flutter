@@ -52,6 +52,7 @@
     "state": "Jimbo",
     "zip": "Msimbo wa posta",
     "country": "Nchi",
-      "response_required": "Jibu linahitajika",
-        "takes_less_than": "Inachukua chini ya "
+    "response_required": "Jibu linahitajika",
+    "takes_less_than": "Inachukua chini ya ",
+    "close": "Funga"
 }

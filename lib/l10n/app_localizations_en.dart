@@ -169,4 +169,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get takes_less_than => 'Takes less than ';
+
+  @override
+  String get close => 'Close';
 }

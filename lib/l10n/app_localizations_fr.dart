@@ -169,4 +169,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get takes_less_than => 'Prend moins de ';
+
+  @override
+  String get close => 'Fermer';
 }

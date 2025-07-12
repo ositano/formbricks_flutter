@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
@@ -31,11 +32,18 @@ class WelcomeWidget extends StatelessWidget {
         if (survey.welcomeCard?['fileUrl'] != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
-            child: Image.network(
-              survey.welcomeCard!['fileUrl'],
+            child: CachedNetworkImage(
+              imageUrl: survey.welcomeCard!['fileUrl'],
               fit: BoxFit.fitWidth,
               height: 50,
-            ),
+              placeholder: (context, url) => const Center(
+                  child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator())),
+              errorWidget: (context, url, error) =>
+              const Icon(Icons.error),
+            )
           ),
         Text(
           translate(survey.welcomeCard?['headline'], context) ?? '',
