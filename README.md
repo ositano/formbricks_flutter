@@ -1,5 +1,13 @@
 
 # 🧠 Formbricks Flutter
+[![Pub](https://img.shields.io/pub/v/formbricks_flutter.svg)](https://pub.dartlang.org/packages/formbricks_flutter)
+
+[//]: # ([![Build]&#40;https://img.shields.io/github/actions/workflow/status/wiredashio/wiredash-sdk/nightly.yaml?branch=stable&#41;]&#40;https://github.com/wiredashio/wiredash-sdk/actions&#41;)
+[![Pub Likes](https://img.shields.io/pub/likes/formbricks_flutter)](https://pub.dev/packages/formbricks_flutter/score)
+[![Popularity](https://img.shields.io/pub/popularity/formbricks_flutter)](https://pub.dev/packages/formbricks_flutter/score)
+[![Pub points](https://img.shields.io/pub/points/formbricks_flutter)](https://pub.dev/packages/formbricks_flutter/score)
+
+[//]: # ([![Website]&#40;https://img.shields.io/badge/website-wiredash.com-blue.svg&#41;]&#40;https://wiredash.com/&#41;)
 
 **Formbricks Flutter** lets you easily integrate beautiful, customizable, in-product **micro-surveys** directly into your Flutter apps. Collect user feedback where it matters most — inside your product. 💬📲
 
@@ -7,21 +15,23 @@ Built on top of [Formbricks](https://formbricks.com) — the open-source experie
 
 ---
 
+<img width="830" alt="Wiredash Logo" src="https://github.com/wiredashio/wiredash-sdk/assets/1096485/37255958-2954-4fd4-8a43-82d3ba65a393"> <!-- 3x -->
+
 ## ✨ Features
 
-| Feature | Description |
-|--------|-------------|
-| 💬 **In-App Micro-Surveys** | Display beautiful, embeddable surveys inside your app. |
-| 🌐 **Localization Support** | Built-in support for multiple languages: `en`, `es`, `fr`, `ja`, `ar`, `pt`, `sw`, `zh`. |
-| ⚡ **Custom Triggers** | Trigger surveys based on app events or coded conditions. |
-| 🎨 **Theme Customization** | Style surveys using your app’s `ThemeData`. |
-| 🙋‍♂️ **User Targeting** | Pass `userId` and `userAttributes` to personalize surveys. |
-| 🪟 **Multiple Display Modes** | Show surveys in `fullScreen`, `dialog`, or `bottomSheet` views. |
-| 🧱 **Custom Question Widgets** | Override default widgets with your own beautiful UI. |
-| 🧠 **Smart Completion Tracking** | Prevent duplicate displays with `displayOnce` logic. |
-| ⏱ **Estimated Completion Time** | Automatically calculated time to inform users. |
-| 🔐 **Secure API Integration** | Connect with the Formbricks API using your API key and environment ID. |
-| 🧪 **Dev Mode Toggle** | Enable/disable development mode for previewing surveys. |
+| Feature | Description                                                                                                   |
+|--------|---------------------------------------------------------------------------------------------------------------|
+| 💬 **In-App Micro-Surveys** | Display beautiful, embeddable surveys inside your app.                                                        |
+| 🌐 **Localization Support** | Built-in support for multiple languages: `en`, `es`, `fr`, `ja`, `ar`, `pt`, `sw`, `zh`.                      |
+| ⚡ **Custom Triggers** | Trigger surveys based on app events or coded conditions.                                                      |
+| 🎨 **Theme Customization** | Style surveys using your app’s `ThemeData`. or use a different custom theme for it. Or use Formbricks styling |
+| 🙋‍♂️ **User Targeting** | Pass `userId` and `userAttributes` to personalize surveys.                                                    |
+| 🪟 **Multiple Display Modes** | Show surveys in `fullScreen`, `dialog`, or `bottomSheet` views.                                               |
+| 🧱 **Custom Question Widgets** | Override default widgets with your own beautiful UI.                                                          |
+| 🧠 **Smart Completion Tracking** | Prevent duplicate displays with `displayOnce` logic.                                                          |
+| ⏱ **Estimated Completion Time** | Automatically calculated time to inform users.                                                                |
+| 🔐 **Secure API Integration** | Connect with the Formbricks API using your API key and environment ID.                                        |
+| 🧪 **Dev Mode Toggle** | Enable/disable development mode for previewing surveys.                                                       |
 
 ---
 
@@ -54,7 +64,7 @@ FormbricksProvider(
   userId: 'user-123',
   userAttributes: {
     'isPremium': false,
-    'location': 'Nigeria',
+    'location': 'Abuja',
   },
   surveyDisplayMode: SurveyDisplayMode.fullScreen,
   triggers: [
@@ -86,8 +96,8 @@ You can override any survey question widget using builder overrides:
 
 ```dart
 FormbricksProvider(
-  freeTextQuestionBuilder: (context, question, onAnswer) {
-    return CustomFreeTextWidget(question: question, onAnswer: onAnswer);
+  freeTextQuestionBuilder: (key, question, onResponse, response, requiredByLogicCondition){
+    return CustomFreeTextWidget(question: question, onResponse: onResponse, response: response, requiredByLogicCondition: requiredByLogicCondition);
   },
   // Other overrides: addressQuestionBuilder, dateQuestionBuilder, etc.
   ...
