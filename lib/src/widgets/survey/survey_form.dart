@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../formbricks_flutter.dart';
 import '../../models/question.dart';
+import '../../utils/helper.dart';
 import '../end_widget.dart';
 import '../question_widget.dart';
 import '../welcome_widget.dart';
@@ -10,7 +11,7 @@ import 'components/error.dart';
 import 'components/loading.dart';
 
 class SurveyForm extends StatelessWidget {
-  final FormBricksClient client;
+  final FormbricksClient client;
   final Survey survey;
   final String userId;
   final ThemeData? customTheme;
@@ -29,6 +30,22 @@ class SurveyForm extends StatelessWidget {
   final Function(String, dynamic) onResponse;
   final Map<String, dynamic> responses;
   final Map<String, bool> requiredAnswers;
+
+  final QuestionWidgetBuilder? addressQuestionBuilder;
+  final QuestionWidgetBuilder? calQuestionBuilder;
+  final QuestionWidgetBuilder? consentQuestionBuilder;
+  final QuestionWidgetBuilder? contactInfoQuestionBuilder;
+  final QuestionWidgetBuilder? ctaQuestionBuilder;
+  final QuestionWidgetBuilder? dateQuestionBuilder;
+  final QuestionWidgetBuilder? fileUploadQuestionBuilder;
+  final QuestionWidgetBuilder? freeTextQuestionBuilder;
+  final QuestionWidgetBuilder? matrixQuestionBuilder;
+  final QuestionWidgetBuilder? multipleChoiceMultiQuestionBuilder;
+  final QuestionWidgetBuilder? multipleChoiceSingleQuestionBuilder;
+  final QuestionWidgetBuilder? npsQuestionBuilder;
+  final QuestionWidgetBuilder? pictureSelectionQuestionBuilder;
+  final QuestionWidgetBuilder? rankingQuestionBuilder;
+  final QuestionWidgetBuilder? ratingQuestionBuilder;
 
   const SurveyForm({
     super.key,
@@ -50,9 +67,24 @@ class SurveyForm extends StatelessWidget {
     required this.responses,
     required this.surveyDisplayMode,
     required this.requiredAnswers,
-    required this.showPoweredBy
-  });
+    required this.showPoweredBy,
 
+    this.addressQuestionBuilder,
+    this.calQuestionBuilder,
+    this.consentQuestionBuilder,
+    this.contactInfoQuestionBuilder,
+    this.ctaQuestionBuilder,
+    this.dateQuestionBuilder,
+    this.fileUploadQuestionBuilder,
+    this.freeTextQuestionBuilder,
+    this.matrixQuestionBuilder,
+    this.multipleChoiceMultiQuestionBuilder,
+    this.multipleChoiceSingleQuestionBuilder,
+    this.npsQuestionBuilder,
+    this.pictureSelectionQuestionBuilder,
+    this.rankingQuestionBuilder,
+    this.ratingQuestionBuilder,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -93,14 +125,35 @@ class SurveyForm extends StatelessWidget {
           surveyId: survey.id,
           userId: userId,
           response: responses[question.id],
-          requiredAnswerByLogicCondition: requiredAnswers.containsKey(question.id),
+          requiredAnswerByLogicCondition: requiredAnswers.containsKey(
+            question.id,
+          ),
+          addressQuestionBuilder: addressQuestionBuilder,
+          calQuestionBuilder: ctaQuestionBuilder,
+          consentQuestionBuilder: consentQuestionBuilder,
+          contactInfoQuestionBuilder: contactInfoQuestionBuilder,
+          ctaQuestionBuilder: ctaQuestionBuilder,
+          dateQuestionBuilder: dateQuestionBuilder,
+          fileUploadQuestionBuilder: fileUploadQuestionBuilder,
+          freeTextQuestionBuilder: freeTextQuestionBuilder,
+          matrixQuestionBuilder: matrixQuestionBuilder,
+          multipleChoiceMultiQuestionBuilder:
+              multipleChoiceMultiQuestionBuilder,
+          multipleChoiceSingleQuestionBuilder:
+              multipleChoiceSingleQuestionBuilder,
+          npsQuestionBuilder: npsQuestionBuilder,
+          pictureSelectionQuestionBuilder: pictureSelectionQuestionBuilder,
+          rankingQuestionBuilder: rankingQuestionBuilder,
+          ratingQuestionBuilder: ratingQuestionBuilder,
         ),
       );
       nextLabel = question.buttonLabel?['default'];
       previousLabel = question.backButtonLabel?['default'];
     } else {
       content = EndWidget(ending: survey.endings[currentStepEnding]);
-      nextLabel = currentStepEnding == (survey.endings.length - 1) ? AppLocalizations.of(context)!.close : AppLocalizations.of(context)!.next;
+      nextLabel = currentStepEnding == (survey.endings.length - 1)
+          ? AppLocalizations.of(context)!.close
+          : AppLocalizations.of(context)!.next;
     }
 
     return SurveyContent(

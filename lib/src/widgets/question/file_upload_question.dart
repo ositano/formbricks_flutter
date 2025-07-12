@@ -13,7 +13,7 @@ import '../../utils/helper.dart';
 class FileUploadQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
-  final FormBricksClient client;
+  final FormbricksClient client;
   final String surveyId;
   final String userId;
   final dynamic response;

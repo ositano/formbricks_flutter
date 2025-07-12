@@ -1,16 +1,3 @@
-/*
-                    "id": "jrbzg6y3u047aakmqgiugeq3",
-                    "type": "endScreen",
-                    "headline": {
-                        "default": "Thank you!"
-                    },
-                    "imageUrl": "https://app.formbricks.com/storage/cmcm0ihkk5ell0801mo8gh38i/public/timing--fid--aedcd7cd-6bda-4589-bc4c-5b051dc919e2.jpg",
-                    "videoUrl": "",
-                    "subheader": {
-                        "default": "We appreciate your feedback."
-                    }
- */
-
 /// Defines the response model for survey submissions.
 class Ending {
   final String id;

@@ -1,7 +1,7 @@
 import 'ending.dart';
 import 'question.dart';
 
-/// Defines the survey model, including questions and styling.
+/// Defines the survey model, including questions, endings and styling.
 class Survey {
   final String id;
   final String name;

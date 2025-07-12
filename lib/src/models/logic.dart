@@ -85,7 +85,6 @@ class ConditionDetail {
   });
 
   factory ConditionDetail.fromJson(Map<String, dynamic> json) {
-    print("json from condition detail: $json");
     return ConditionDetail(
       id: json['id'],
       operator: json['operator'],

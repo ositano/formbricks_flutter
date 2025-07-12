@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,24 +9,63 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../formbricks_flutter.dart';
 import 'models/question.dart';
+import 'utils/helper.dart';
 
+// TriggerManager listens for app events and decides when to display surveys
+// based on conditions like triggers, completion state, and percentage chance.
 class TriggerManager {
-  final FormBricksClient client;
+
+  // Dependencies and configuration
+  final FormbricksClient client;
   final String userId;
   final Map<String, dynamic> userAttributes;
+
+  // Tracks how many times each event has occurred
   final Map<String, int> eventCounts = {};
+
+  // Tracks whether surveys have been completed (cached locally)
   late Map<String, bool> completedSurveys = {};
+
+  // Tracks whether `initialize` has run to avoid duplicate loading
   bool _isInitialized = false;
+
+  // Optional callback when a survey is triggered
   Function(String)? onSurveyTriggered;
+
+  // Custom theming and display options
   final ThemeData? customTheme;
-  final SurveyDisplayMode surveyDisplayMode; // 'bottomSheet' or 'dialog'
+  final SurveyDisplayMode surveyDisplayMode;
   final bool showPoweredBy;
-  final StreamController<String> _eventStream =
-      StreamController<String>.broadcast();
+
+  // Handles async event tracking
+  final StreamController<String> _eventStream = StreamController<String>.broadcast();
   late StreamSubscription _eventSubscription;
-  final List<TriggerValue>? triggers; // Updated to use Trigger model
-  late final String locale; // Default locale
+
+  // List of configured app-level triggers
+  final List<TriggerValue>? triggers;
+
+  // Locale for internationalization
+  late final String locale;
+
+  // Used to show surveys in current context
   final BuildContext context;
+
+  // Optional custom question widget builders
+  final QuestionWidgetBuilder? addressQuestionBuilder;
+  final QuestionWidgetBuilder? calQuestionBuilder;
+  final QuestionWidgetBuilder? consentQuestionBuilder;
+  final QuestionWidgetBuilder? contactInfoQuestionBuilder;
+  final QuestionWidgetBuilder? ctaQuestionBuilder;
+  final QuestionWidgetBuilder? dateQuestionBuilder;
+  final QuestionWidgetBuilder? fileUploadQuestionBuilder;
+  final QuestionWidgetBuilder? freeTextQuestionBuilder;
+  final QuestionWidgetBuilder? matrixQuestionBuilder;
+  final QuestionWidgetBuilder? multipleChoiceMultiQuestionBuilder;
+  final QuestionWidgetBuilder? multipleChoiceSingleQuestionBuilder;
+  final QuestionWidgetBuilder? npsQuestionBuilder;
+  final QuestionWidgetBuilder? pictureSelectionQuestionBuilder;
+  final QuestionWidgetBuilder? rankingQuestionBuilder;
+  final QuestionWidgetBuilder? ratingQuestionBuilder;
 
   TriggerManager({
     required this.client,
@@ -40,44 +78,55 @@ class TriggerManager {
     this.triggers,
     required this.locale,
     required this.context,
+    this.addressQuestionBuilder,
+    this.calQuestionBuilder,
+    this.consentQuestionBuilder,
+    this.contactInfoQuestionBuilder,
+    this.ctaQuestionBuilder,
+    this.dateQuestionBuilder,
+    this.fileUploadQuestionBuilder,
+    this.freeTextQuestionBuilder,
+    this.matrixQuestionBuilder,
+    this.multipleChoiceMultiQuestionBuilder,
+    this.multipleChoiceSingleQuestionBuilder,
+    this.npsQuestionBuilder,
+    this.pictureSelectionQuestionBuilder,
+    this.rankingQuestionBuilder,
+    this.ratingQuestionBuilder,
   }) {
+    // Listen to incoming event stream
     _eventSubscription = _eventStream.stream.listen(_handleEvent);
   }
 
+  // Getter for current locale
   String get currentLocale => locale;
 
+  // Update locale and notify UI if needed
   void setLocale(String newLocale, {VoidCallback? onLocaleChanged}) {
-    locale = newLocale;
     if (newLocale.isEmpty) {
       throw ArgumentError('Locale cannot be empty');
     }
-    // Check if the locale is different to avoid unnecessary updates
     if (locale != newLocale) {
-      locale = newLocale; // Update the internal locale state
-
-      // Notify any registered callback to trigger a rebuild
-      if (onLocaleChanged != null) {
-        onLocaleChanged();
-      }
-
-      // Optional: Log the locale change for debugging
-      print('TriggerManager: Locale changed to $newLocale');
+      locale = newLocale;
+      onLocaleChanged?.call();
+      debugPrint('TriggerManager: Locale changed to $newLocale');
     }
   }
 
+  // Loads completed surveys from SharedPreferences
   Future<void> initialize() async {
     final prefs = await SharedPreferences.getInstance();
-    final completedSurveysJson =
-        prefs.getString('completed_surveys_$userId') ?? '{}';
+    final completedSurveysJson = prefs.getString('completed_surveys_$userId') ?? '{}';
     completedSurveys = Map<String, bool>.from(
       (jsonDecode(completedSurveysJson) as Map).map(
-        (key, value) => MapEntry(key, value as bool),
+            (key, value) => MapEntry(key, value as bool),
       ),
     );
     _isInitialized = true;
-    await _loadAndTriggerSurveys(); // Trigger survey check on app launch
+    await _loadAndTriggerSurveys(); // Immediately check for trigger
   }
 
+  // Saves updated completed survey state to SharedPreferences
   Future<void> _saveCompletedSurveys() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(
@@ -86,11 +135,7 @@ class TriggerManager {
     );
   }
 
-  bool _isPhoneDevice() {
-    final screenWidth = MediaQuery.of(context).size.width;
-    return Platform.isAndroid || Platform.isIOS && screenWidth < 600;
-  }
-
+  // Determines if a survey should be shown randomly based on displayPercentage
   bool _shouldDisplaySurvey(double? displayPercentage) {
     if (displayPercentage == null) return true;
     final random = Random().nextDouble() * 100;
@@ -98,32 +143,32 @@ class TriggerManager {
     return random <= displayPercentage;
   }
 
+  // Event handler: increments count and rechecks all surveys
   void _handleEvent(String event) async {
     eventCounts[event] = (eventCounts[event] ?? 0) + 1;
-    await _loadAndTriggerSurveys(); // Trigger check for all surveys on any event
+    await _loadAndTriggerSurveys();
   }
 
+  // Main method to fetch and decide whether to show any surveys
   Future<void> _loadAndTriggerSurveys() async {
     if (!_isInitialized) await initialize();
 
     try {
-      // Fetch all surveys based on apiKey and environmentId
-      final surveys = await client
-          .getSurveys(); // Assuming getSurveys() exists or adjust to your API call
+      final surveys = await client.getSurveys();
       for (var surveyData in surveys) {
         final survey = Survey.fromJson(surveyData);
 
-        if (survey.status != 'inProgress' ||
-            survey.environmentId != client.environmentId) {
+        // Skip surveys that are inactive or from another environment
+        if (survey.status != 'inProgress' || survey.environmentId != client.environmentId) {
           continue;
         }
-        debugPrint("pass in progress....");
-        // if (survey.displayOption == 'displayOnce' && completedSurveys[survey.id] == true) {
-        //   continue;
-        // }
-        debugPrint("pass display option....");
 
-        debugPrint("survey triggers ${survey.triggers} ....");
+        // Skip if marked completed and only supposed to display once
+        if (survey.displayOption == 'displayOnce' && completedSurveys[survey.id] == true) {
+          continue;
+        }
+
+        // Evaluate whether any trigger conditions match
         bool shouldTrigger = false;
         if (survey.triggers != null && triggers != null) {
           for (var surveyTrigger in survey.triggers!) {
@@ -132,7 +177,6 @@ class TriggerManager {
               final type = actionClass['type'] as String?;
               final name = actionClass['name'] as String?;
               final key = actionClass['key'] as String?;
-              // Match against predefined triggers
               for (var predefinedTrigger in triggers!) {
                 if (predefinedTrigger.type == TriggerType.noCode &&
                     type == 'noCode' &&
@@ -149,88 +193,40 @@ class TriggerManager {
             }
           }
         }
-        debugPrint("pass trigger checks ....");
 
-        if (survey.segment != null && survey.segment!['filters'] != null) {
-          for (var filter in survey.segment!['filters']) {
-            final resource = filter['resource'];
-            if (resource['root']['type'] == 'device' &&
-                resource['root']['deviceType'] == 'phone') {
-              if (!_isPhoneDevice()) {
-                shouldTrigger = false;
-                break;
-              }
-            }
-          }
+        // Display percentage control
+        if (!_shouldDisplaySurvey(survey.displayPercentage)) {
+          shouldTrigger = false;
         }
 
-        debugPrint(
-          "pass survey segment checks .... ${survey.displayPercentage}",
-        );
-
-        // if (!_shouldDisplaySurvey(survey.displayPercentage)) {
-        //   shouldTrigger = false;
-        // }
-
-        debugPrint("pass display percent .... $shouldTrigger");
-
+        // If it passes all checks, mark as completed and show
         if (shouldTrigger) {
           completedSurveys[survey.id] = true;
           await _saveCompletedSurveys();
           _showSurvey(survey);
-          if (onSurveyTriggered != null) {
-            onSurveyTriggered!(survey.id);
-          }
+          onSurveyTriggered?.call(survey.id);
         }
       }
     } catch (e, st) {
-      debugPrint('Error fetching surveys: $st');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to load survey: $e')));
+      debugPrint('Failed to load survey: $e, stackTrace: $st');
+      //ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to load survey: $e')));
     }
   }
 
+  // Displays the survey in the selected display mode
   void _showSurvey(Survey survey) {
     int estimatedTimeInSecs = calculateEstimatedTime(survey.questions);
+
+    // Full-screen modal
     if (surveyDisplayMode == SurveyDisplayMode.fullScreen) {
       Navigator.push(
         context,
         Platform.isIOS
-            ? CupertinoPageRoute(
-                builder: (context) => Theme(
-                  data: buildTheme(context, customTheme, survey),
-                  child: Scaffold(
-                    backgroundColor: Theme.of(context).cardColor,
-                    //backgroundColor: Color.from(alpha: 1.0000, red: 0.9490, green: 0.8902, blue: 0.8902, colorSpace: ColorSpace.sRGB),
-                    body: SurveyWidget(
-                      client: client,
-                      survey: survey,
-                      userId: userId,
-                      showPoweredBy: showPoweredBy,
-                      surveyDisplayMode: surveyDisplayMode,
-                      estimatedTimeInSecs: estimatedTimeInSecs,
-                    ),
-                  ),
-                ),
-              )
-            : MaterialPageRoute(
-                builder: (context) => Theme(
-                  data: buildTheme(context, customTheme, survey),
-                  child: Scaffold(
-                    backgroundColor: Theme.of(context).cardColor,
-                    body: SurveyWidget(
-                      client: client,
-                      survey: survey,
-                      userId: userId,
-                      showPoweredBy: showPoweredBy,
-                      surveyDisplayMode: surveyDisplayMode,
-                      estimatedTimeInSecs: estimatedTimeInSecs,
-                    ),
-                  ),
-                ),
-              ),
+            ? CupertinoPageRoute(builder: (context) => _buildSurveyScreen(survey, estimatedTimeInSecs))
+            : MaterialPageRoute(builder: (context) => _buildSurveyScreen(survey, estimatedTimeInSecs)),
       );
+
+      // Dialog mode
     } else if (surveyDisplayMode == SurveyDisplayMode.dialog) {
       showDialog(
         context: context,
@@ -239,21 +235,15 @@ class TriggerManager {
           backgroundColor: Theme.of(context).cardColor,
           titlePadding: EdgeInsets.zero,
           contentPadding: EdgeInsets.zero,
-          //insetPadding: EdgeInsets.zero,
           actionsPadding: EdgeInsets.zero,
           content: Theme(
             data: buildTheme(context, customTheme, survey),
-            child: SurveyWidget(
-              client: client,
-              survey: survey,
-              userId: userId,
-              showPoweredBy: showPoweredBy,
-              surveyDisplayMode: surveyDisplayMode,
-              estimatedTimeInSecs: estimatedTimeInSecs,
-            ),
+            child: _buildSurveyWidget(survey, estimatedTimeInSecs),
           ),
         ),
       );
+
+      // Bottom sheet mode
     } else {
       showModalBottomSheet(
         context: context,
@@ -261,53 +251,84 @@ class TriggerManager {
         backgroundColor: Theme.of(context).cardColor,
         builder: (context) => Theme(
           data: buildTheme(context, customTheme, survey),
-          child: SurveyWidget(
-            client: client,
-            survey: survey,
-            userId: userId,
-            showPoweredBy: showPoweredBy,
-            surveyDisplayMode: surveyDisplayMode,
-            estimatedTimeInSecs: estimatedTimeInSecs,
-          ),
+          child: _buildSurveyWidget(survey, estimatedTimeInSecs),
         ),
       );
     }
   }
 
+  // Builds themed full-screen survey view
+  Widget _buildSurveyScreen(Survey survey, int estimatedTimeInSecs) {
+    return Theme(
+      data: buildTheme(context, customTheme, survey),
+      child: Scaffold(
+        backgroundColor: Theme.of(context).cardColor,
+        body: _buildSurveyWidget(survey, estimatedTimeInSecs),
+      ),
+    );
+  }
+
+  // Creates the SurveyWidget with all required props and builders
+  SurveyWidget _buildSurveyWidget(Survey survey, int estimatedTimeInSecs) {
+    return SurveyWidget(
+      client: client,
+      survey: survey,
+      userId: userId,
+      showPoweredBy: showPoweredBy,
+      surveyDisplayMode: surveyDisplayMode,
+      estimatedTimeInSecs: estimatedTimeInSecs,
+      addressQuestionBuilder: addressQuestionBuilder,
+      calQuestionBuilder: ctaQuestionBuilder,
+      consentQuestionBuilder: consentQuestionBuilder,
+      contactInfoQuestionBuilder: contactInfoQuestionBuilder,
+      ctaQuestionBuilder: ctaQuestionBuilder,
+      dateQuestionBuilder: dateQuestionBuilder,
+      fileUploadQuestionBuilder: fileUploadQuestionBuilder,
+      freeTextQuestionBuilder: freeTextQuestionBuilder,
+      matrixQuestionBuilder: matrixQuestionBuilder,
+      multipleChoiceMultiQuestionBuilder: multipleChoiceMultiQuestionBuilder,
+      multipleChoiceSingleQuestionBuilder: multipleChoiceSingleQuestionBuilder,
+      npsQuestionBuilder: npsQuestionBuilder,
+      pictureSelectionQuestionBuilder: pictureSelectionQuestionBuilder,
+      rankingQuestionBuilder: rankingQuestionBuilder,
+      ratingQuestionBuilder: ratingQuestionBuilder,
+    );
+  }
+
+  // Cleanup method to be called from outside
   void dispose() {
     _eventSubscription.cancel();
     _eventStream.close();
   }
 
+  // Triggers an event manually (e.g. from UI or user interaction)
   void addEvent(String event) {
     _eventStream.add(event);
   }
 
+  // Estimation logic for timing UX progress bar or estimation
   int calculateEstimatedTime(List<Question> questions) {
     int totalSeconds = 0;
     for (var question in questions) {
       switch (question.type) {
         case 'date':
-          totalSeconds += 10; // Base time for date selection
+          totalSeconds += 10;
           break;
         case 'rating':
         case 'nps':
-          totalSeconds += 5; // Quick score selection
+          totalSeconds += 5;
           break;
         default:
-          totalSeconds += 10; // Default for unsupported types
+          totalSeconds += 10;
       }
 
-      // Add buffer time per question
-      totalSeconds += 5;
+      totalSeconds += 5; // Buffer per question
 
-      // Add extra time if required
       if (question.required ?? false) {
-        totalSeconds += 2; // Slight increase for mandatory questions
+        totalSeconds += 2; // Extra for mandatory fields
       }
     }
 
     return totalSeconds;
   }
-
 }

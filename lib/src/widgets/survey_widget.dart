@@ -3,15 +3,35 @@ import 'package:flutter/material.dart';
 import '../../formbricks_flutter.dart';
 import '../models/logic.dart';
 import '../models/question.dart';
+import '../utils/helper.dart';
 import 'survey/survey_form.dart';
 
+// Main widget that renders a full survey experience for a user.
 class SurveyWidget extends StatefulWidget {
-  final FormBricksClient client;
+
+  final FormbricksClient client;
   final Survey survey;
   final String userId;
   final int estimatedTimeInSecs;
   final SurveyDisplayMode surveyDisplayMode;
   final bool showPoweredBy;
+
+  // Optional custom question widget builders
+  final QuestionWidgetBuilder? addressQuestionBuilder;
+  final QuestionWidgetBuilder? calQuestionBuilder;
+  final QuestionWidgetBuilder? consentQuestionBuilder;
+  final QuestionWidgetBuilder? contactInfoQuestionBuilder;
+  final QuestionWidgetBuilder? ctaQuestionBuilder;
+  final QuestionWidgetBuilder? dateQuestionBuilder;
+  final QuestionWidgetBuilder? fileUploadQuestionBuilder;
+  final QuestionWidgetBuilder? freeTextQuestionBuilder;
+  final QuestionWidgetBuilder? matrixQuestionBuilder;
+  final QuestionWidgetBuilder? multipleChoiceMultiQuestionBuilder;
+  final QuestionWidgetBuilder? multipleChoiceSingleQuestionBuilder;
+  final QuestionWidgetBuilder? npsQuestionBuilder;
+  final QuestionWidgetBuilder? pictureSelectionQuestionBuilder;
+  final QuestionWidgetBuilder? rankingQuestionBuilder;
+  final QuestionWidgetBuilder? ratingQuestionBuilder;
 
   const SurveyWidget({
     super.key,
@@ -21,6 +41,21 @@ class SurveyWidget extends StatefulWidget {
     required this.estimatedTimeInSecs,
     required this.surveyDisplayMode,
     required this.showPoweredBy,
+    this.addressQuestionBuilder,
+    this.calQuestionBuilder,
+    this.consentQuestionBuilder,
+    this.contactInfoQuestionBuilder,
+    this.ctaQuestionBuilder,
+    this.dateQuestionBuilder,
+    this.fileUploadQuestionBuilder,
+    this.freeTextQuestionBuilder,
+    this.matrixQuestionBuilder,
+    this.multipleChoiceMultiQuestionBuilder,
+    this.multipleChoiceSingleQuestionBuilder,
+    this.npsQuestionBuilder,
+    this.pictureSelectionQuestionBuilder,
+    this.rankingQuestionBuilder,
+    this.ratingQuestionBuilder,
   });
 
   @override
@@ -28,19 +63,28 @@ class SurveyWidget extends StatefulWidget {
 }
 
 class SurveyWidgetState extends State<SurveyWidget> {
-  int _currentStep = -1; // -1 = welcome, 0+ = questions, questions.length >= ending
+  // Tracks current position in the survey.
+  int _currentStep = -1;
   int _currentEndingStep = 0;
 
+  // Local instance of survey to allow mutation
   late Survey survey;
-  Map<String, dynamic> responses = {}; // User responses
-  final Map<String, dynamic> _variables = {}; // Store calculated variables
+
+  // Stores user responses keyed by questionId
+  Map<String, dynamic> responses = {};
+
+  // Stores variable values used in condition evaluation or calculation
+  final Map<String, dynamic> _variables = {};
+
   bool isLoading = true;
   String? error;
   String? displayId;
   String? _currentQuestionId;
+
   final formKey = GlobalKey<FormState>();
-  final Map<String, bool> _requiredAnswers =
-      {}; // Track required answers from logic
+
+  // Tracks which question is required (based on logic conditions)
+  final Map<String, bool> _requiredAnswers = {};
 
   @override
   void initState() {
@@ -48,8 +92,10 @@ class SurveyWidgetState extends State<SurveyWidget> {
     _fetchSurvey();
     _createDisplay();
     _initializeVariables();
-    WidgetsBinding.instance.addPostFrameCallback((_){
-      if(survey.welcomeCard?['enabled'] == false){
+
+    // Skip welcome screen if disabled
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (survey.welcomeCard?['enabled'] == false) {
         setState(() => _currentStep++);
       }
     });
@@ -57,15 +103,14 @@ class SurveyWidgetState extends State<SurveyWidget> {
 
   @override
   void dispose() {
-    // Clean up if needed (e.g., cancel any ongoing requests)
     super.dispose();
   }
 
-  Future<void> _fetchSurvey() async {
+  // Loads the survey data
+  void _fetchSurvey() {
     try {
       setState(() {
-        survey = widget
-            .survey; // Assume survey is pre-loaded; adjust if fetched asynchronously
+        survey = widget.survey;
         isLoading = false;
       });
     } catch (e) {
@@ -76,6 +121,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
+  // Registers a display session for formbricks analytics/tracking
   Future<void> _createDisplay() async {
     try {
       displayId = await widget.client.createDisplay(
@@ -89,6 +135,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
+  // Callback when a user answers a question
   void _onResponse(String questionId, dynamic value) {
     setState(() {
       _currentQuestionId = questionId;
@@ -96,6 +143,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
     });
   }
 
+  // Submits the survey data to the backend
   Future<void> _submitSurvey() async {
     setState(() {
       error = null;
@@ -118,11 +166,11 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
+  // Advances to the next question, applying logic if needed
   void nextStep() {
     final form = formKey.currentState;
     form?.validate();
 
-    // Handle welcome screen
     if (_currentStep == -1 && survey.welcomeCard?['enabled'] == true) {
       setState(() => _currentStep++);
       return;
@@ -137,33 +185,27 @@ class SurveyWidgetState extends State<SurveyWidget> {
       return;
     }
 
-    // Evaluate logic
+    // Logic evaluation
     if (currentQuestion.logic.isNotEmpty) {
       bool anyLogicMatched = false;
 
       for (Logic logic in currentQuestion.logic) {
         if (_evaluateConditions(logic.conditions)) {
-          debugPrint("✅ logic condition matched");
-
           anyLogicMatched = true;
           for (var action in logic.actions) {
             _executeAction(action);
-
-            // Exit if jump occurs
-            if (action.objective == 'jumpToQuestion') {
-              return;
-            }
+            if (action.objective == 'jumpToQuestion') return;
           }
         }
       }
 
+      // Jump to fallback if no logic matched
       if (!anyLogicMatched && currentQuestion.logicFallback != null) {
-        debugPrint("↪️ logic not matched, jumping to fallback");
         _jumpToQuestion(currentQuestion.logicFallback!);
         return;
       }
 
-      // If logic evaluated but no jump occurred and no fallback, continue normally
+      // Continue normally
       if (!anyLogicMatched) {
         if (_requiredAnswers[currentQuestion.id] == true &&
             !responses.containsKey(currentQuestion.id)) {
@@ -183,7 +225,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
       return;
     }
 
-    // If no logic, validate and proceed normally
+    // No logic present, proceed normally
     if (_requiredAnswers[currentQuestion.id] == true &&
         !responses.containsKey(currentQuestion.id)) {
       form?.validate();
@@ -199,13 +241,14 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
-
+  // Moves one step back
   void previousStep() {
     if (_currentStep > 0) {
       setState(() => _currentStep--);
     }
   }
 
+  // Shows the ending screen
   void _showEnding() {
     setState(() {
       _currentStep = survey.questions.length;
@@ -213,104 +256,85 @@ class SurveyWidgetState extends State<SurveyWidget> {
     });
   }
 
-  void _endingStep(){
+  // Advances to next part of the ending screen (multi-step ending)
+  void _endingStep() {
     setState(() => _currentEndingStep++);
   }
 
+  // Initializes variables used in logic conditions and calculations
   void _initializeVariables() {
     _variables.addAll({
       for (var v in survey.variables ?? []) v['id']: v['value'],
     });
   }
 
+  // Recursively evaluates a tree of conditions
   bool _evaluateConditions(dynamic conditions) {
-    if (conditions == null) return true;
-    if (conditions.conditions.isEmpty) return true;
+    if (conditions == null || conditions.conditions.isEmpty) return true;
 
     bool result = conditions.connector == 'and';
     for (var condition in conditions.conditions) {
       bool conditionResult;
+
       if (condition is ConditionDetail) {
         final leftValue = _getOperandValue(condition.leftOperand);
         final rightValue = condition.rightOperand != null
             ? _getOperandValue(condition.rightOperand!)
             : null;
-        conditionResult = _evaluateCondition(
-          leftValue,
-          condition.operator,
-          rightValue,
-        );
+        conditionResult = _evaluateCondition(leftValue, condition.operator, rightValue);
       } else if (condition is Condition) {
         conditionResult = _evaluateConditions(condition);
       } else {
-        conditionResult = true; // Fallback for unexpected structure
+        conditionResult = true;
       }
 
-      if (conditions.connector == 'and') {
-        result = result && conditionResult;
-      } else {
-        result = result || conditionResult;
-      }
+      result = conditions.connector == 'and'
+          ? result && conditionResult
+          : result || conditionResult;
     }
+
     return result;
   }
 
+  // Resolves operand values from responses or variables
   dynamic _getOperandValue(Operand operand) {
-    if (operand.type == 'question') {
-      return responses[operand.value] ?? '';
-    } else if (operand.type == 'static') {
-      return operand.value;
-    } else if (operand.type == 'variable') {
-      return _variables[operand.value] ?? 0;
+    switch (operand.type) {
+      case 'question': return responses[operand.value] ?? '';
+      case 'static': return operand.value;
+      case 'variable': return _variables[operand.value] ?? 0;
+      default: return '';
     }
-    return '';
   }
 
+  // Applies basic comparison operators for logic conditions
   bool _evaluateCondition(dynamic left, String operator, dynamic right) {
     switch (operator) {
-      case 'equals':
-        return left == right;
-      case "equalsOneOf":
-        return (right as List).contains(left.toString());
-      case 'isLessThan':
-        return num.parse(left.toString()) < num.parse(right.toString());
-      case 'isLessThanOrEqual':
-        return num.parse(left.toString()) <= num.parse(right.toString());
-      case 'isGreaterThan':
-        return num.parse(left.toString()) > num.parse(right.toString());
-      case 'isGreaterThanOrEqual':
-        return num.parse(left.toString()) >= num.parse(right.toString());
-      case 'doesNotEqual':
-        return left != right;
-      case 'contains':
-        debugPrint("left: $left, right: $right");
-        return left.toString().contains(right.toString());
-      case 'doesNotContain':
-        return !left.toString().contains(right.toString());
-      case 'startsWith':
-        return left.toString().startsWith(right.toString());
-      case 'doesNotStartWith':
-        return !left.toString().startsWith(right.toString());
-      case 'endsWith':
-        return left.toString().endsWith(right.toString());
-      case 'doesNotEndWith':
-        return !left.toString().endsWith(right.toString());
-      case 'isSubmitted':
-        return responses.containsKey(left['value']);
-      default:
-        return false;
+      case 'equals': return left == right;
+      case 'equalsOneOf': return (right as List).contains(left.toString());
+      case 'isLessThan': return num.parse(left.toString()) < num.parse(right.toString());
+      case 'isLessThanOrEqual': return num.parse(left.toString()) <= num.parse(right.toString());
+      case 'isGreaterThan': return num.parse(left.toString()) > num.parse(right.toString());
+      case 'isGreaterThanOrEqual': return num.parse(left.toString()) >= num.parse(right.toString());
+      case 'doesNotEqual': return left != right;
+      case 'contains': return left.toString().contains(right.toString());
+      case 'doesNotContain': return !left.toString().contains(right.toString());
+      case 'startsWith': return left.toString().startsWith(right.toString());
+      case 'doesNotStartWith': return !left.toString().startsWith(right.toString());
+      case 'endsWith': return left.toString().endsWith(right.toString());
+      case 'doesNotEndWith': return !left.toString().endsWith(right.toString());
+      case 'isSubmitted': return responses.containsKey(left['value']);
+      default: return false;
     }
   }
 
+  // Executes an action from a logic block
   void _executeAction(LogicAction action) {
     switch (action.objective) {
       case 'jumpToQuestion':
         _jumpToQuestion(action.target!);
         break;
       case 'requireAnswer':
-        _requireAnswer(
-          action.target ?? action.variableId,
-        ); // Target or variableId as context
+        _requireAnswer(action.target ?? action.variableId);
         break;
       case 'calculate':
         _calculateValue(action);
@@ -318,17 +342,16 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
+  // Moves to a specific question by ID
   void _jumpToQuestion(String targetId) {
     _currentStep = survey.questions.indexWhere((q) => q.id == targetId);
-    if(_currentStep == -1){
+    if (_currentStep == -1) {
       _currentStep = survey.questions.length;
     }
-    if (mounted) {
-      setState(() {});
-    }
-    return;
+    if (mounted) setState(() {});
   }
 
+  // Evaluates a calculation and updates the variable value
   void _calculateValue(LogicAction action) {
     final variableId = action.variableId;
     if (variableId == null) return;
@@ -336,63 +359,37 @@ class SurveyWidgetState extends State<SurveyWidget> {
     dynamic leftValue = _variables[variableId] ?? 0;
     dynamic rightValue = _getOperandValue(action.value as Operand);
 
-    if (leftValue is! num || rightValue is! num) {
-      debugPrint('Invalid numeric values for calculation');
-      return;
-    }
+    if (leftValue is! num || rightValue is! num) return;
 
     num result;
     switch (action.operator) {
-      case 'Add':
-        result = leftValue + rightValue;
-        break;
-      case 'Subtract':
-        result = leftValue - rightValue;
-        break;
-      case 'Multiply':
-        result = leftValue * rightValue;
-        break;
-      case 'Divide':
-        result = rightValue != 0 ? leftValue / rightValue : leftValue;
-        break;
-      case 'Assign':
-        result = rightValue;
-        break;
-      default:
-        result = leftValue;
+      case 'add': result = leftValue + rightValue; break;
+      case 'subtract': result = leftValue - rightValue; break;
+      case 'multiply': result = leftValue * rightValue; break;
+      case 'divide': result = rightValue != 0 ? leftValue / rightValue : leftValue; break;
+      case 'assign': result = rightValue; break;
+      default: result = leftValue;
     }
     _variables[variableId] = result;
-    debugPrint('Calculated $variableId: ${_variables[variableId]}');
   }
 
+  // Marks a question as required and triggers validation
   void _requireAnswer(String? targetId) {
     final targetQuestion = survey.questions.firstWhere(
-      (q) => q.id == targetId,
+          (q) => q.id == targetId,
       orElse: () => survey.questions.firstWhere(
-        (q) =>
-            q.id ==
-            _variables.keys.firstWhere(
-              (k) => _variables[k] == targetId,
-              orElse: () => "",
-            ),
-        orElse: () => Question(
-          id: '',
-          type: '',
-          headline: {},
-          required: false,
-          logic: [],
-        ),
+            (q) => q.id == _variables.keys.firstWhere((k) => _variables[k] == targetId, orElse: () => ""),
+        orElse: () => Question(id: '', type: '', headline: {}, required: false, logic: []),
       ),
     );
     if (targetQuestion.id.isNotEmpty) {
-      // Mark as required and trigger validation
       _requiredAnswers[targetQuestion.id] = true;
-      // Trigger form validation for the specific field (requires SurveyForm integration)
       formKey.currentState?.validate();
-      setState(() {}); // Refresh UI to reflect validation state
+      setState(() {});
     }
   }
 
+  // Builds the main UI of the survey
   @override
   Widget build(BuildContext context) {
     if (isLoading) return const Center(child: CircularProgressIndicator());
@@ -414,10 +411,25 @@ class SurveyWidgetState extends State<SurveyWidget> {
         responses: responses,
         surveyDisplayMode: widget.surveyDisplayMode,
         requiredAnswers: _requiredAnswers,
-        estimatedTimeInSecs:
-            widget.estimatedTimeInSecs,
+        estimatedTimeInSecs: widget.estimatedTimeInSecs,
         currentStepEnding: _currentEndingStep,
-        nextStepEnding: _endingStep, // Pass to SurveyForm for validation
+        nextStepEnding: _endingStep,
+
+        // Custom widget builders
+        calQuestionBuilder: widget.ctaQuestionBuilder,
+        consentQuestionBuilder: widget.consentQuestionBuilder,
+        contactInfoQuestionBuilder: widget.contactInfoQuestionBuilder,
+        ctaQuestionBuilder: widget.ctaQuestionBuilder,
+        dateQuestionBuilder: widget.dateQuestionBuilder,
+        fileUploadQuestionBuilder: widget.fileUploadQuestionBuilder,
+        freeTextQuestionBuilder: widget.freeTextQuestionBuilder,
+        matrixQuestionBuilder: widget.matrixQuestionBuilder,
+        multipleChoiceMultiQuestionBuilder: widget.multipleChoiceMultiQuestionBuilder,
+        multipleChoiceSingleQuestionBuilder: widget.multipleChoiceSingleQuestionBuilder,
+        npsQuestionBuilder: widget.npsQuestionBuilder,
+        pictureSelectionQuestionBuilder: widget.pictureSelectionQuestionBuilder,
+        rankingQuestionBuilder: widget.rankingQuestionBuilder,
+        ratingQuestionBuilder: widget.ratingQuestionBuilder,
       ),
     );
   }

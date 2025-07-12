@@ -1,5 +1,4 @@
 
-import 'ending.dart';
 import 'logic.dart';
 
 /// Defines the survey question model.

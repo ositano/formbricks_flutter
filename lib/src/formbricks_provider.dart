@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import '../formbricks_flutter.dart';
+import 'utils/helper.dart';
 
-class FormBricksProvider extends StatefulWidget {
+/// A Flutter widget that provides access to the Formbricks client and configuration
+/// throughout the widget tree via an [InheritedWidget].
+class FormbricksProvider extends StatefulWidget {
   final Widget child;
-  final FormBricksClient client;
+  final FormbricksClient client;
   final String userId;
   final Map<String, dynamic> userAttributes;
   final ThemeData? customTheme;
@@ -12,7 +15,24 @@ class FormBricksProvider extends StatefulWidget {
   final List<TriggerValue>? triggers;
   final String locale;
 
-  const FormBricksProvider({
+  // Optional overrides for question widget builders
+  final QuestionWidgetBuilder? addressQuestionBuilder;
+  final QuestionWidgetBuilder? calQuestionBuilder;
+  final QuestionWidgetBuilder? consentQuestionBuilder;
+  final QuestionWidgetBuilder? contactInfoQuestionBuilder;
+  final QuestionWidgetBuilder? ctaQuestionBuilder;
+  final QuestionWidgetBuilder? dateQuestionBuilder;
+  final QuestionWidgetBuilder? fileUploadQuestionBuilder;
+  final QuestionWidgetBuilder? freeTextQuestionBuilder;
+  final QuestionWidgetBuilder? matrixQuestionBuilder;
+  final QuestionWidgetBuilder? multipleChoiceMultiQuestionBuilder;
+  final QuestionWidgetBuilder? multipleChoiceSingleQuestionBuilder;
+  final QuestionWidgetBuilder? npsQuestionBuilder;
+  final QuestionWidgetBuilder? pictureSelectionQuestionBuilder;
+  final QuestionWidgetBuilder? rankingQuestionBuilder;
+  final QuestionWidgetBuilder? ratingQuestionBuilder;
+
+  const FormbricksProvider({
     super.key,
     required this.child,
     required this.client,
@@ -23,22 +43,41 @@ class FormBricksProvider extends StatefulWidget {
     this.surveyDisplayMode = SurveyDisplayMode.fullScreen,
     this.triggers,
     this.locale = 'en',
+    this.addressQuestionBuilder,
+    this.calQuestionBuilder,
+    this.consentQuestionBuilder,
+    this.contactInfoQuestionBuilder,
+    this.ctaQuestionBuilder,
+    this.dateQuestionBuilder,
+    this.fileUploadQuestionBuilder,
+    this.freeTextQuestionBuilder,
+    this.matrixQuestionBuilder,
+    this.multipleChoiceMultiQuestionBuilder,
+    this.multipleChoiceSingleQuestionBuilder,
+    this.npsQuestionBuilder,
+    this.pictureSelectionQuestionBuilder,
+    this.rankingQuestionBuilder,
+    this.ratingQuestionBuilder,
   });
 
-  static _FormBricksProviderState? of(BuildContext context) {
-    return context.findAncestorStateOfType<_FormBricksProviderState>();
+  /// Retrieves the state of the nearest [FormbricksProvider] above the widget tree.
+  static _FormbricksProviderState? of(BuildContext context) {
+    return context.findAncestorStateOfType<_FormbricksProviderState>();
   }
 
   @override
-  State<FormBricksProvider> createState() => _FormBricksProviderState();
+  State<FormbricksProvider> createState() => _FormbricksProviderState();
 }
 
-class _FormBricksProviderState extends State<FormBricksProvider> {
+/// The state class for [FormbricksProvider] responsible for initializing and managing [TriggerManager].
+class _FormbricksProviderState extends State<FormbricksProvider> {
   late TriggerManager _triggerManager;
 
   @override
   void initState() {
     super.initState();
+
+    // Initialize the trigger manager with user, client, and UI configuration
     _triggerManager = TriggerManager(
       client: widget.client,
       userId: widget.userId,
@@ -48,20 +87,40 @@ class _FormBricksProviderState extends State<FormBricksProvider> {
       context: context,
       triggers: widget.triggers,
       locale: widget.locale,
+      addressQuestionBuilder: widget.addressQuestionBuilder,
+      calQuestionBuilder: widget.ctaQuestionBuilder,
+      consentQuestionBuilder: widget.consentQuestionBuilder,
+      contactInfoQuestionBuilder: widget.contactInfoQuestionBuilder,
+      ctaQuestionBuilder: widget.ctaQuestionBuilder,
+      dateQuestionBuilder: widget.dateQuestionBuilder,
+      fileUploadQuestionBuilder: widget.fileUploadQuestionBuilder,
+      freeTextQuestionBuilder: widget.freeTextQuestionBuilder,
+      matrixQuestionBuilder: widget.matrixQuestionBuilder,
+      multipleChoiceMultiQuestionBuilder: widget.multipleChoiceMultiQuestionBuilder,
+      multipleChoiceSingleQuestionBuilder: widget.multipleChoiceSingleQuestionBuilder,
+      npsQuestionBuilder: widget.npsQuestionBuilder,
+      pictureSelectionQuestionBuilder: widget.pictureSelectionQuestionBuilder,
+      rankingQuestionBuilder: widget.rankingQuestionBuilder,
+      ratingQuestionBuilder: widget.ratingQuestionBuilder,
     );
+
     _triggerManager.initialize();
+
+    // Optionally perform post-frame logic
     WidgetsBinding.instance.addPostFrameCallback((_) {});
   }
 
   @override
-  void didUpdateWidget(covariant FormBricksProvider oldWidget) {
+  void didUpdateWidget(covariant FormbricksProvider oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    // If the locale has changed, update TriggerManager and trigger rebuild
     if (widget.locale != oldWidget.locale) {
       _triggerManager.setLocale(
         widget.locale,
         onLocaleChanged: () {
-          WidgetsBinding.instance.addPostFrameCallback((_){
-            setState(() {}); // Trigger a rebuild when locale changes
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            setState(() {}); // Refresh UI to reflect new locale
           });
         },
       );
@@ -70,40 +129,44 @@ class _FormBricksProviderState extends State<FormBricksProvider> {
 
   @override
   void dispose() {
+    // Clean up resources when the provider is removed
     _triggerManager.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return InheritedFormBricks(
-            triggerManager: _triggerManager,
-            child: widget.child,
-          );
+    // Provide TriggerManager to widget tree
+    return InheritedFormbricks(
+      triggerManager: _triggerManager,
+      child: widget.child,
+    );
   }
 }
 
-class InheritedFormBricks extends InheritedWidget {
+/// An inherited widget used to expose the [TriggerManager] instance to the widget tree.
+class InheritedFormbricks extends InheritedWidget {
   final TriggerManager triggerManager;
 
-  const InheritedFormBricks({
+  const InheritedFormbricks({
     super.key,
     required this.triggerManager,
     required super.child,
   });
 
-  static InheritedFormBricks? of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<InheritedFormBricks>();
+  /// Retrieves the closest [InheritedFormbricks] instance in the widget tree.
+  static InheritedFormbricks? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<InheritedFormbricks>();
   }
 
+  /// Determines whether the widget should notify dependents on update.
   @override
-  bool updateShouldNotify(InheritedFormBricks oldWidget) {
+  bool updateShouldNotify(InheritedFormbricks oldWidget) {
     return triggerManager != oldWidget.triggerManager;
   }
 }
 
-// Extension for easy access in context
+/// Extension method to easily access [TriggerManager] from [BuildContext].
 extension FormbricksContext on BuildContext {
-  TriggerManager? get triggerManager =>
-      InheritedFormBricks.of(this)?.triggerManager;
+  TriggerManager? get triggerManager => InheritedFormbricks.of(this)?.triggerManager;
 }
