@@ -31,4 +31,10 @@ class TriggerValue {
     this.name,
     this.key,
   });
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return "type: ${type.name}, value: ${type == TriggerType.code ? key : name}";
+  }
 }

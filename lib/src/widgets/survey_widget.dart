@@ -15,6 +15,7 @@ class SurveyWidget extends StatefulWidget {
   final int estimatedTimeInSecs;
   final SurveyDisplayMode surveyDisplayMode;
   final bool showPoweredBy;
+  final VoidCallback? onComplete;
 
   // Optional custom question widget builders
   final QuestionWidgetBuilder? addressQuestionBuilder;
@@ -41,6 +42,7 @@ class SurveyWidget extends StatefulWidget {
     required this.estimatedTimeInSecs,
     required this.surveyDisplayMode,
     required this.showPoweredBy,
+    required this.onComplete,
     this.addressQuestionBuilder,
     this.calQuestionBuilder,
     this.consentQuestionBuilder,
@@ -88,17 +90,14 @@ class SurveyWidgetState extends State<SurveyWidget> {
 
   @override
   void initState() {
+    // Skip welcome screen if disabled
+    if (widget.survey.welcomeCard?['enabled'] == false) {
+      _currentStep++;
+    }
     super.initState();
     _fetchSurvey();
     _createDisplay();
     _initializeVariables();
-
-    // Skip welcome screen if disabled
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (survey.welcomeCard?['enabled'] == false) {
-        setState(() => _currentStep++);
-      }
-    });
   }
 
   @override
@@ -143,11 +142,23 @@ class SurveyWidgetState extends State<SurveyWidget> {
     });
   }
 
+  bool _isSubmitting = false;
+
   // Submits the survey data to the backend
   Future<void> _submitSurvey() async {
+    if (_isSubmitting) return;
+    _isSubmitting = true;
     setState(() {
       error = null;
     });
+
+    if (survey.hiddenFields?['enabled'] == true) {
+      for (var fieldId in survey.hiddenFields?['fieldIds'] ?? []) {
+        if (!responses.containsKey(fieldId)) {
+          responses[fieldId] = ''; // or any default value
+        }
+      }
+    }
 
     try {
       await widget.client.submitResponse(
@@ -155,22 +166,132 @@ class SurveyWidgetState extends State<SurveyWidget> {
         userId: widget.userId,
         data: responses,
       );
+      if (survey.autoClose != null) {
+        Future.delayed(Duration(milliseconds: survey.autoClose!), () {
+          if(mounted) {
+            widget.onComplete?.call(); // notify TriggerManager to show next
+            Navigator.of(context).maybePop();
+          }
+        });
+      }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Survey submitted successfully!')),
       );
-      Navigator.of(context).pop();
     } catch (e) {
       setState(() {
         error = e.toString();
       });
+    }finally {
+      _isSubmitting = false;
     }
   }
 
+
+  // void nextStep() {
+  //   final form = formKey.currentState;
+  //   form?.validate();
+  //
+  //   if (_currentStep == -1 && survey.welcomeCard?['enabled'] == true) {
+  //     setState(() => _currentStep++);
+  //     return;
+  //   }
+  //
+  //   final currentQuestion = survey.questions.elementAtOrNull(_currentStep);
+  //   if (currentQuestion == null) {
+  //     if (_currentStep >= survey.questions.length) {
+  //       _showEnding();
+  //       _submitSurvey();
+  //     }
+  //     return;
+  //   }
+  //
+  //   // Logic evaluation
+  //   if (currentQuestion.logic.isNotEmpty) {
+  //     bool anyLogicMatched = false;
+  //     bool hasJumpAction = false;
+  //     String? jumpTarget;
+  //
+  //     for (Logic logic in currentQuestion.logic) {
+  //       if (_evaluateConditions(logic.conditions)) {
+  //         anyLogicMatched = true;
+  //
+  //         for (var action in logic.actions) {
+  //           if (action.objective == 'jumpToQuestion') {
+  //             hasJumpAction = true;
+  //             jumpTarget = action.target;
+  //             continue; // Delay jumpToQuestion execution
+  //           } else {
+  //             _executeAction(action);
+  //           }
+  //         }
+  //       }
+  //     }
+  //
+  //     if (hasJumpAction && jumpTarget != null) {
+  //       _jumpToQuestion(jumpTarget);
+  //       return;
+  //     }
+  //
+  //     if (anyLogicMatched) {
+  //       // All logic passed but no jump — move to next if validations pass
+  //       if (_requiredAnswers[currentQuestion.id] == true &&
+  //           !responses.containsKey(currentQuestion.id)) {
+  //         form?.validate();
+  //         return;
+  //       }
+  //
+  //       if (_currentStep < survey.questions.length &&
+  //           (form?.validate() ?? false)) {
+  //         setState(() => _currentStep++);
+  //         if(_currentStep >= survey.questions.length){
+  //           _showEnding();
+  //           _submitSurvey();
+  //         }
+  //       } else if (_currentStep >= survey.questions.length) {
+  //         _submitSurvey();
+  //         _showEnding();
+  //
+  //       }
+  //       return;
+  //     }
+  //
+  //     // Jump to fallback if no logic matched
+  //     if (!anyLogicMatched && currentQuestion.logicFallback != null) {
+  //       _jumpToQuestion(currentQuestion.logicFallback!);
+  //       return;
+  //     }
+  //   }
+  //
+  //   // No logic or fallback triggered
+  //   if (_requiredAnswers[currentQuestion.id] == true &&
+  //       !responses.containsKey(currentQuestion.id)) {
+  //     form?.validate();
+  //     return;
+  //   }
+  //
+  //   if (_currentStep < survey.questions.length &&
+  //       (form?.validate() ?? false)) {
+  //     setState(() => _currentStep++);
+  //     if(_currentStep >= survey.questions.length){
+  //       _showEnding();
+  //       _submitSurvey();
+  //     }
+  //   } else if (_currentStep >= survey.questions.length) {
+  //     _showEnding();
+  //     _submitSurvey();
+  //   }
+  // }
+
+
   // Advances to the next question, applying logic if needed
+  // assumptions [there would only be one jump action in a list of actions]
+  // jump action is the only action that takes you to another question and alters the user experience
+  // require answer and calculate basically happens behind the scene
   void nextStep() {
     final form = formKey.currentState;
     form?.validate();
 
+    // Show welcome card if enabled
     if (_currentStep == -1 && survey.welcomeCard?['enabled'] == true) {
       setState(() => _currentStep++);
       return;
@@ -185,57 +306,68 @@ class SurveyWidgetState extends State<SurveyWidget> {
       return;
     }
 
-    // Logic evaluation
+    // Evaluate logic, if defined
     if (currentQuestion.logic.isNotEmpty) {
       bool anyLogicMatched = false;
+      String? jumpTarget;
 
-      for (Logic logic in currentQuestion.logic) {
+      for (final logic in currentQuestion.logic) {
         if (_evaluateConditions(logic.conditions)) {
           anyLogicMatched = true;
-          for (var action in logic.actions) {
-            _executeAction(action);
-            if (action.objective == 'jumpToQuestion') return;
+
+          for (final action in logic.actions) {
+            if (action.objective == 'jumpToQuestion') {
+              jumpTarget = action.target; // Handle jump later
+            } else {
+              _executeAction(action); // e.g., requireAnswer, calculate
+            }
           }
         }
       }
 
-      // Jump to fallback if no logic matched
-      if (!anyLogicMatched && currentQuestion.logicFallback != null) {
-        _jumpToQuestion(currentQuestion.logicFallback!);
+      // Jump action takes precedence if matched
+      if (jumpTarget != null) {
+        _jumpToQuestion(jumpTarget);
         return;
       }
 
-      // Continue normally
-      if (!anyLogicMatched) {
+      if (anyLogicMatched) {
+        // If answer is required but missing, block next step
         if (_requiredAnswers[currentQuestion.id] == true &&
             !responses.containsKey(currentQuestion.id)) {
           form?.validate();
           return;
         }
 
-        if (_currentStep < survey.questions.length &&
-            (form?.validate() ?? false)) {
-          setState(() => _currentStep++);
-        } else if (_currentStep >= survey.questions.length) {
-          _showEnding();
-          _submitSurvey();
-        }
+        _advanceToNextOrEnd();
+        return;
       }
 
-      return;
+      // No logic matched, fallback
+      if (currentQuestion.logicFallback != null) {
+        _jumpToQuestion(currentQuestion.logicFallback!);
+        return;
+      }
     }
 
-    // No logic present, proceed normally
+    // No logic to evaluate
     if (_requiredAnswers[currentQuestion.id] == true &&
         !responses.containsKey(currentQuestion.id)) {
       form?.validate();
       return;
     }
 
-    if (_currentStep < survey.questions.length &&
-        (form?.validate() ?? false)) {
+    _advanceToNextOrEnd();
+  }
+
+// Moves to the next step or finishes the survey
+  void _advanceToNextOrEnd() {
+    if ((formKey.currentState?.validate() ?? false) &&
+        _currentStep < survey.questions.length) {
       setState(() => _currentStep++);
-    } else if (_currentStep >= survey.questions.length) {
+    }
+
+    if (_currentStep >= survey.questions.length) {
       _showEnding();
       _submitSurvey();
     }
@@ -268,33 +400,46 @@ class SurveyWidgetState extends State<SurveyWidget> {
     });
   }
 
-  // Recursively evaluates a tree of conditions
+// Recursively evaluates a a tree of conditions, that can contain mixed types of condition or conditionDetail
   bool _evaluateConditions(dynamic conditions) {
-    if (conditions == null || conditions.conditions.isEmpty) return true;
+    if (conditions == null || conditions.conditions == null || conditions.conditions.isEmpty) return true;
 
     bool result = conditions.connector == 'and';
+
     for (var condition in conditions.conditions) {
       bool conditionResult;
 
-      if (condition is ConditionDetail) {
-        final leftValue = _getOperandValue(condition.leftOperand);
-        final rightValue = condition.rightOperand != null
-            ? _getOperandValue(condition.rightOperand!)
+      // Handle nested group condition (Condition)
+      if (condition is Map<String, dynamic> && condition.containsKey('conditions')) {
+        conditionResult = _evaluateConditions(Condition.fromJson(condition));
+      }
+      // Handle atomic condition (ConditionDetail)
+      else if (condition is Map<String, dynamic> && condition.containsKey('operator')) {
+        final detail = ConditionDetail.fromJson(condition);
+        final leftValue = _getOperandValue(detail.leftOperand);
+        final rightValue = detail.rightOperand != null
+            ? _getOperandValue(detail.rightOperand!)
             : null;
-        conditionResult = _evaluateCondition(leftValue, condition.operator, rightValue);
-      } else if (condition is Condition) {
-        conditionResult = _evaluateConditions(condition);
-      } else {
+        conditionResult = _evaluateCondition(detail.operator, leftValue, rightValue);
+      }
+      // Fallback true for unexpected cases
+      else {
         conditionResult = true;
       }
 
-      result = conditions.connector == 'and'
-          ? result && conditionResult
-          : result || conditionResult;
+      // Combine results using AND / OR logic
+      if (conditions.connector == 'and') {
+        result = result && conditionResult;
+        if (!result) break; // early exit for AND
+      } else {
+        result = result || conditionResult;
+        if (result) break; // early exit for OR
+      }
     }
 
     return result;
   }
+
 
   // Resolves operand values from responses or variables
   dynamic _getOperandValue(Operand operand) {
@@ -322,7 +467,14 @@ class SurveyWidgetState extends State<SurveyWidget> {
       case 'doesNotStartWith': return !left.toString().startsWith(right.toString());
       case 'endsWith': return left.toString().endsWith(right.toString());
       case 'doesNotEndWith': return !left.toString().endsWith(right.toString());
-      case 'isSubmitted': return responses.containsKey(left['value']);
+      case 'isSubmitted': // Evaluate only at the point of progressing from the specific question
+        // Make sure `left` refers to a questionId
+        if (left is String) {
+          return responses.containsKey(left);
+        } else if (left is Map && left['value'] is String) {
+          return responses.containsKey(left['value']);
+        }
+        return false;
       default: return false;
     }
   }
@@ -346,9 +498,11 @@ class SurveyWidgetState extends State<SurveyWidget> {
   void _jumpToQuestion(String targetId) {
     _currentStep = survey.questions.indexWhere((q) => q.id == targetId);
     if (_currentStep == -1) {
-      _currentStep = survey.questions.length;
+      _showEnding();
+      _submitSurvey();
+    }else {
+      if (mounted) setState(() {});
     }
-    if (mounted) setState(() {});
   }
 
   // Evaluates a calculation and updates the variable value
@@ -357,7 +511,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
     if (variableId == null) return;
 
     dynamic leftValue = _variables[variableId] ?? 0;
-    dynamic rightValue = _getOperandValue(action.value as Operand);
+    dynamic rightValue = _getOperandValue(Operand.fromJson(action.value));
 
     if (leftValue is! num || rightValue is! num) return;
 
@@ -414,7 +568,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
         estimatedTimeInSecs: widget.estimatedTimeInSecs,
         currentStepEnding: _currentEndingStep,
         nextStepEnding: _endingStep,
-
+        onComplete: widget.onComplete,
         // Custom widget builders
         calQuestionBuilder: widget.ctaQuestionBuilder,
         consentQuestionBuilder: widget.consentQuestionBuilder,

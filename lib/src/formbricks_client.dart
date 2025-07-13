@@ -48,7 +48,7 @@ class FormbricksClient {
     );
 
     // Throw if request fails
-    if (response.statusCode >= 200 && response.statusCode < 300) {
+    if (!(response.statusCode >= 200 && response.statusCode < 300)) {
       throw Exception('Failed to set user: ${response.body}');
     }
   }
@@ -137,7 +137,7 @@ class FormbricksClient {
       }),
     );
 
-    if (response.statusCode >= 200 && response.statusCode < 300) {
+    if (!(response.statusCode >= 200 && response.statusCode < 300)) {
       throw Exception('Failed to submit response: ${response.statusCode} - ${response.body}');
     }
   }

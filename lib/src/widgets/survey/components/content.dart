@@ -24,6 +24,7 @@ class SurveyContent extends StatelessWidget {
   final Function() nextStep;
   final Function(String, dynamic) onResponse;
   final dynamic response;
+  final VoidCallback? onComplete;
 
   const SurveyContent({
     super.key,
@@ -45,6 +46,7 @@ class SurveyContent extends StatelessWidget {
     required this.surveyDisplayMode,
     required this.estimatedTimeInSecs,
     required this.showPoweredBy,
+    required this.onComplete
   });
 
   @override
@@ -85,7 +87,11 @@ class SurveyContent extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          surveyDisplayMode == SurveyDisplayMode.fullScreen ? SizedBox(height: MediaQuery.of(context).padding.top + kToolbarHeight) : SizedBox.shrink(),
+          surveyDisplayMode == SurveyDisplayMode.fullScreen
+              ? SizedBox(
+                  height: MediaQuery.of(context).padding.top + kToolbarHeight,
+                )
+              : SizedBox.shrink(),
           Expanded(
             child: SingleChildScrollView(
               physics: isScrollable
@@ -107,6 +113,7 @@ class SurveyContent extends StatelessWidget {
                       nextLabel: nextLabel,
                       previousLabel: previousLabel,
                       survey: survey,
+                      onComplete: onComplete,
                     ),
                     currentStep == -1 &&
                             survey.welcomeCard?['enabled'] == true &&
@@ -144,7 +151,8 @@ class SurveyContent extends StatelessWidget {
                   child: Column(
                     children: [
                       showPoweredBy ? SurveyCopyright() : SizedBox.shrink(),
-                      SurveyProgress(progress: progress),
+                      survey.styling?['hideProgressBar'] == true
+                          ? SizedBox.shrink() :SurveyProgress(progress: progress),
                     ],
                   ),
                 ),

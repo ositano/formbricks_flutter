@@ -19,6 +19,11 @@ class Survey {
   final List<Map<String, dynamic>>? variables;
   final List<dynamic>? followUps;
   final bool? isBackButtonHidden;
+  final String? runOnDate;
+  final String? closeOnDate;
+  final Map<String, dynamic>? hiddenFields;
+  final int? autoClose;
+  final Map<String, dynamic>? singleUse;
 
   Survey({
     required this.id,
@@ -36,7 +41,13 @@ class Survey {
     required this.endings,
     this.variables,
     this.followUps,
-    this.isBackButtonHidden
+    this.isBackButtonHidden,
+
+    this.runOnDate,
+    this.closeOnDate,
+    this.hiddenFields,
+    this.autoClose,
+    this.singleUse,
   });
 
   factory Survey.fromJson(Map<String, dynamic> json) {
@@ -60,7 +71,12 @@ class Survey {
             .toList() : [],
       variables: (json['variables'] as List?)?.cast<Map<String, dynamic>>(),
       followUps: json['followUps'],
-      isBackButtonHidden: json['isBackButtonHidden']
+      isBackButtonHidden: json['isBackButtonHidden'],
+      autoClose: json['autoClose'],
+      closeOnDate: json['closeOnDate'],
+      hiddenFields: json['hiddenFields'],
+      runOnDate: json['runOnDate'],
+      singleUse: json['singleUse'],
     );
   }
 }

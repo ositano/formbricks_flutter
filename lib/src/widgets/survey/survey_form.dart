@@ -30,6 +30,7 @@ class SurveyForm extends StatelessWidget {
   final Function(String, dynamic) onResponse;
   final Map<String, dynamic> responses;
   final Map<String, bool> requiredAnswers;
+  final VoidCallback? onComplete;
 
   final QuestionWidgetBuilder? addressQuestionBuilder;
   final QuestionWidgetBuilder? calQuestionBuilder;
@@ -68,6 +69,7 @@ class SurveyForm extends StatelessWidget {
     required this.surveyDisplayMode,
     required this.requiredAnswers,
     required this.showPoweredBy,
+    required this.onComplete,
 
     this.addressQuestionBuilder,
     this.calQuestionBuilder,
@@ -171,6 +173,7 @@ class SurveyForm extends StatelessWidget {
       spacerHeight: 0,
       surveyDisplayMode: surveyDisplayMode,
       estimatedTimeInSecs: estimatedTimeInSecs,
+      onComplete: onComplete,
       child: content,
     );
   }

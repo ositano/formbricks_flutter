@@ -11,6 +11,7 @@ class SurveyButtons extends StatelessWidget{
   final Survey survey;
   final Function() previousStep;
   final Function() nextStep;
+  final VoidCallback? onComplete;
 
   const SurveyButtons({super.key,
     required this.currentStep,
@@ -19,6 +20,7 @@ class SurveyButtons extends StatelessWidget{
     required this.nextLabel,
     required this.previousLabel,
     required this.survey,
+    required this.onComplete
   });
 
 
@@ -46,7 +48,10 @@ class SurveyButtons extends StatelessWidget{
               ElevatedButton(
                 onPressed:
                 currentStep >= survey.questions.length
-                    ? () => Navigator.of(context).pop()
+                    ? () {
+                  onComplete?.call(); // notify TriggerManager to show next
+                  Navigator.of(context).pop();
+                }
                     : nextStep,
                 child: Text(nextLabel ?? AppLocalizations.of(context)!.next),
               ),

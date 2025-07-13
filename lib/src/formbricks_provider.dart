@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../formbricks_flutter.dart';
+import 'formbricks.dart';
 import 'utils/helper.dart';
 
 /// A Flutter widget that provides access to the Formbricks client and configuration
@@ -96,13 +97,18 @@ class _FormbricksProviderState extends State<FormbricksProvider> {
       fileUploadQuestionBuilder: widget.fileUploadQuestionBuilder,
       freeTextQuestionBuilder: widget.freeTextQuestionBuilder,
       matrixQuestionBuilder: widget.matrixQuestionBuilder,
-      multipleChoiceMultiQuestionBuilder: widget.multipleChoiceMultiQuestionBuilder,
-      multipleChoiceSingleQuestionBuilder: widget.multipleChoiceSingleQuestionBuilder,
+      multipleChoiceMultiQuestionBuilder:
+          widget.multipleChoiceMultiQuestionBuilder,
+      multipleChoiceSingleQuestionBuilder:
+          widget.multipleChoiceSingleQuestionBuilder,
       npsQuestionBuilder: widget.npsQuestionBuilder,
       pictureSelectionQuestionBuilder: widget.pictureSelectionQuestionBuilder,
       rankingQuestionBuilder: widget.rankingQuestionBuilder,
       ratingQuestionBuilder: widget.ratingQuestionBuilder,
     );
+
+    // Initialize Formbricks singleton
+    Formbricks().init(_triggerManager);
 
     _triggerManager.initialize();
 
@@ -113,17 +119,9 @@ class _FormbricksProviderState extends State<FormbricksProvider> {
   @override
   void didUpdateWidget(covariant FormbricksProvider oldWidget) {
     super.didUpdateWidget(oldWidget);
-
     // If the locale has changed, update TriggerManager and trigger rebuild
     if (widget.locale != oldWidget.locale) {
-      _triggerManager.setLocale(
-        widget.locale,
-        onLocaleChanged: () {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            setState(() {}); // Refresh UI to reflect new locale
-          });
-        },
-      );
+      _triggerManager.setLocale(widget.locale);
     }
   }
 
@@ -168,5 +166,6 @@ class InheritedFormbricks extends InheritedWidget {
 
 /// Extension method to easily access [TriggerManager] from [BuildContext].
 extension FormbricksContext on BuildContext {
-  TriggerManager? get triggerManager => InheritedFormbricks.of(this)?.triggerManager;
+  TriggerManager? get triggerManager =>
+      InheritedFormbricks.of(this)?.triggerManager;
 }

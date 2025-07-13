@@ -18,6 +18,7 @@ class Logic {
   }
 }
 
+/// A task that is executed when a condition is met
 class LogicAction {
   final String id;
   final String objective;
@@ -47,6 +48,7 @@ class LogicAction {
   }
 }
 
+/// A rule that determines when an action should be executed.
 class Condition {
   final String id;
   final String connector;
