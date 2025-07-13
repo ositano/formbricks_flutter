@@ -13,7 +13,7 @@ class FormbricksProvider extends StatefulWidget {
   final ThemeData? customTheme;
   final bool showPoweredBy;
   final SurveyDisplayMode surveyDisplayMode;
-  final List<TriggerValue>? triggers;
+  final List<TriggerValue> triggers;
   final String locale;
 
   // Optional overrides for question widget builders
@@ -42,7 +42,7 @@ class FormbricksProvider extends StatefulWidget {
     this.customTheme,
     this.showPoweredBy = true,
     this.surveyDisplayMode = SurveyDisplayMode.fullScreen,
-    this.triggers,
+    this.triggers = const [],
     this.locale = 'en',
     this.addressQuestionBuilder,
     this.calQuestionBuilder,

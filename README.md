@@ -104,6 +104,31 @@ FormbricksProvider(
 )
 ```
 
+
+Define user ID anywhere from your code 
+
+```dart
+  Formbricks.setUserId(String userId);
+```
+
+Optionally, define user attributes anywhere from your code
+
+```dart
+  Formbricks.setAttribute(Map<String, dynamic> attributes);
+```
+
+Optionally, set Trigger Values if you don't want to define from the app level
+
+```dart
+  Formbricks.addTriggerValues(List<TriggerValue> triggerValues);
+```
+
+Change app locale 
+
+```dart
+  Formbricks.setLocale(String locale);
+```
+
 ---
 
 ## 🧪 Supported Question Types

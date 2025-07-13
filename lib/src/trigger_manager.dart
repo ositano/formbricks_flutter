@@ -42,7 +42,7 @@ class TriggerManager {
   late StreamSubscription _eventSubscription;
 
   // List of configured app-level triggers
-  final List<TriggerValue>? triggers;
+  late List<TriggerValue> triggers;
 
   // Locale for internationalization
   late String locale;
@@ -70,12 +70,12 @@ class TriggerManager {
   TriggerManager({
     required this.client,
     required this.userId,
-    this.userAttributes = const {},
+    required this.userAttributes,
     this.onSurveyTriggered,
     this.customTheme,
     required this.surveyDisplayMode,
     required this.showPoweredBy,
-    this.triggers,
+    required this.triggers,
     required this.locale,
     required this.context,
     this.addressQuestionBuilder,
