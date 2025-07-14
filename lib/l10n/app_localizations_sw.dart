@@ -172,4 +172,28 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get close => 'Funga';
+
+  @override
+  String get first_name_required => 'Jina la kwanza linahitajika';
+
+  @override
+  String get last_name_required => 'Jina la mwisho linahitajika';
+
+  @override
+  String get company => 'Kampuni';
+
+  @override
+  String get company_required => 'Kampuni inahitajika';
+
+  @override
+  String get phone_is_required => 'Nambari ya simu inahitajika';
+
+  @override
+  String get email_required => 'Barua pepe inahitajika';
+
+  @override
+  String get first_name => 'Jina la kwanza';
+
+  @override
+  String get last_name => 'Jina la mwisho';
 }

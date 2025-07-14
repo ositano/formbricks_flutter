@@ -5,6 +5,7 @@ import 'package:video_player/video_player.dart';
 import '../../../formbricks_flutter.dart';
 import '../../models/question.dart';
 import '../../utils/helper.dart';
+import '../../../l10n/app_localizations.dart';
 
 class ContactInfoQuestion extends StatefulWidget {
   final Question question;
@@ -25,44 +26,29 @@ class ContactInfoQuestion extends StatefulWidget {
 }
 
 class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
-  late var _nameController = TextEditingController();
-  late var _emailController = TextEditingController();
-  late var _phoneController = TextEditingController();
+  late final _firstNameController = TextEditingController();
+  late final _lastNameController = TextEditingController();
+  late final _emailController = TextEditingController();
+  late final _phoneController = TextEditingController();
+  late final _companyController = TextEditingController();
 
   VideoPlayerController? _videoController;
   ChewieController? _chewieController;
 
-  bool _isInitialized = false;
-
   @override
   void initState() {
     super.initState();
-    final response = widget.response as Map<String, dynamic>? ?? {};
-    _nameController = TextEditingController();
-    _emailController = TextEditingController();
-    _phoneController = TextEditingController();
-    _isInitialized = true;
-    _updateControllerText(response);
+    _populateFields(widget.response as Map<String, dynamic>? ?? {});
     _initializeVideo();
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-    _videoController?.dispose();
-    _chewieController?.dispose();
-    super.dispose();
   }
 
   @override
   void didUpdateWidget(covariant ContactInfoQuestion oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.response != oldWidget.response) {
-      final response = widget.response as Map<String, dynamic>? ?? {};
-      _updateControllerText(response);
+      _populateFields(widget.response as Map<String, dynamic>? ?? {});
     }
+
     if (widget.question.videoUrl != oldWidget.question.videoUrl) {
       _initializeVideo();
     }
@@ -94,25 +80,23 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
     }
   }
 
-  void _updateControllerText(Map<String, dynamic> response) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _nameController.text = response['name']?.toString() ?? '';
-      _emailController.text = response['email']?.toString() ?? '';
-      _phoneController.text = response['phone']?.toString() ?? '';
-    });
+  void _populateFields(Map<String, dynamic> response) {
+    _firstNameController.text = response['firstName'] ?? '';
+    _lastNameController.text = response['lastName'] ?? '';
+    _emailController.text = response['email'] ?? '';
+    _phoneController.text = response['phone'] ?? '';
+    _companyController.text = response['company'] ?? '';
   }
 
   void _updateResponse() {
-    if (_isInitialized) {
-      final response = {
-        'name': _nameController.text,
-        'email': _emailController.text,
-        'phone': _phoneController.text,
-      };
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        widget.onResponse(widget.question.id, response);
-      });
-    }
+    final data = {
+      'firstName': _firstNameController.text,
+      'lastName': _lastNameController.text,
+      'email': _emailController.text,
+      'phone': _phoneController.text,
+      'company': _companyController.text,
+    };
+    widget.onResponse(widget.question.id, data);
   }
 
   Widget _buildField({
@@ -120,8 +104,7 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
     required bool required,
     required String label,
     required TextEditingController controller,
-    required TextInputType? textInputType,
-    required void Function() onChanged,
+    required void Function() revalidate,
   }) {
     if (!show) return const SizedBox.shrink();
     return Padding(
@@ -131,14 +114,14 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              label,
+              required ? '$label (*)' : label,
             ),
             SizedBox(height: 8.0,),
             TextFormField(
               controller: controller,
-              keyboardType: textInputType,
               onChanged: (_) {
-                onChanged();
+                _updateResponse();
+                revalidate();
               },
             ),
           ],
@@ -147,26 +130,71 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
   }
 
   @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _companyController.dispose();
+    _videoController?.dispose();
+    _chewieController?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isRequired = widget.question.required ?? false;
+    final question = widget.question;
+
+    final firstName = question.firstName ?? {};
+    final lastName = question.lastName ?? {};
+    final email = question.email ?? {};
+    final phone = question.phone ?? {};
+    final company = question.company ?? {};
 
     return FormField<bool>(
-      validator: (value) {
+      validator: (_) {
         if(widget.requiredAnswerByLogicCondition) {
           return AppLocalizations.of(context)!.response_required;
         }
-        if (isRequired &&
-            (_nameController.text.isEmpty || _phoneController.text.isEmpty || _emailController.text.isEmpty)) {
-          return AppLocalizations.of(context)!.all_fields_are_required;
+
+        if (!(question.required ?? false)) return null;
+
+        if (firstName['show'] == true &&
+            firstName['required'] == true &&
+            _firstNameController.text.trim().isEmpty) {
+          return AppLocalizations.of(context)!.first_name_required;
         }
-        final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
-        if (!emailRegex.hasMatch(_emailController.text)) {
-          return AppLocalizations.of(context)!.please_enter_valid_email;
+        if (lastName['show'] == true &&
+            lastName['required'] == true &&
+            _lastNameController.text.trim().isEmpty) {
+          return AppLocalizations.of(context)!.last_name_required;
         }
+        if (email['show'] == true &&
+            email['required'] == true &&
+            _emailController.text.trim().isEmpty) {
+          return AppLocalizations.of(context)!.email_required;
+        }
+        if(_emailController.text.isNotEmpty) {
+          final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
+          if (!emailRegex.hasMatch(_emailController.text)) {
+            return AppLocalizations.of(context)!.please_enter_valid_email;
+          }
+        }
+        if (phone['show'] == true &&
+            phone['required'] == true &&
+            _phoneController.text.trim().isEmpty) {
+          return AppLocalizations.of(context)!.phone_is_required;
+        }
+        if (company['show'] == true &&
+            company['required'] == true &&
+            _companyController.text.trim().isEmpty) {
+          return AppLocalizations.of(context)!.company_required;
+        }
+
         return null;
       },
-      builder: (FormFieldState<bool> field) {
+      builder: (field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -199,43 +227,61 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
                 child: Chewie(controller: _chewieController!),
               ),
             Text(
-            translate(widget.question.headline, context) ?? '',
-              style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              translate(question.headline, context) ?? '',
+              style: theme.textTheme.headlineMedium ??
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            if (translate(widget.question.subheader, context)?.isNotEmpty ?? false)
+            if (translate(question.subheader, context)?.isNotEmpty ?? false)
               Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 8),
                 child: Text(
-                  translate(widget.question.subheader, context) ?? '',
+                  translate(question.subheader, context) ?? '',
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
             const SizedBox(height: 16),
 
             _buildField(
-              show: true,
-              required: true,
-              label: AppLocalizations.of(context)!.name,
-              controller: _nameController,
-              onChanged: () => _updateResponse(),
-              textInputType: TextInputType.name,
+              show: firstName['show'] ?? false,
+              required: firstName['required'] ?? false,
+              //label: addressLine1['placeholder']?['default'] ?? 'Address Line 1',
+              label: translate(firstName['placeholder'], context) ?? AppLocalizations.of(context)!.first_name,
+              controller: _firstNameController,
+              revalidate: () => field.didChange,
             ),
             _buildField(
-              show: true,
-              required: true,
-              label: AppLocalizations.of(context)!.email,
+              show: lastName['show'] ?? false,
+              required: lastName['required'] ?? false,
+              //label: addressLine2['placeholder']?['default'] ?? 'Address Line 2',
+              label: translate(lastName['placeholder'], context) ?? AppLocalizations.of(context)!.last_name,
+              controller: _lastNameController,
+              revalidate: () =>  field.didChange,
+            ),
+            _buildField(
+              show: email['show'] ?? false,
+              required: email['required'] ?? false,
+              //label: city['placeholder']?['default'] ?? 'City',
+              label: translate(email['placeholder'], context) ?? AppLocalizations.of(context)!.email,
               controller: _emailController,
-              onChanged: () => _updateResponse(),
-              textInputType: TextInputType.emailAddress,
+              revalidate: () => field.didChange,
             ),
             _buildField(
-              show: true,
-              required: true,
-              label: AppLocalizations.of(context)!.phone,
+              show: phone['show'] ?? false,
+              required: phone['required'] ?? false,
+              //label: state['placeholder']?['default'] ?? 'State',
+              label: translate(phone['placeholder'], context) ?? AppLocalizations.of(context)!.phone,
               controller: _phoneController,
-              onChanged: () => _updateResponse(),
-              textInputType: TextInputType.phone,
+              revalidate: () => field.didChange,
             ),
+            _buildField(
+              show: company['show'] ?? false,
+              required: company['required'] ?? false,
+              //label: zip['placeholder']?['default'] ?? 'ZIP',
+              label: translate(company['placeholder'], context) ?? AppLocalizations.of(context)!.company,
+              controller: _companyController,
+              revalidate: () => field.didChange,
+            ),
+
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),

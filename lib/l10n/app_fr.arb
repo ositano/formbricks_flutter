@@ -54,5 +54,13 @@
     "country": "Pays",
       "response_required": "Réponse requise",
         "takes_less_than": "Prend moins de ",
-          "close": "Fermer"
+          "close": "Fermer",
+    "first_name_required": "Le prénom est requis",
+    "last_name_required": "Le nom de famille est requis",
+    "company": "Entreprise",
+    "company_required": "L'entreprise est requise",
+    "phone_is_required": "Le numéro de téléphone est requis",
+    "email_required": "L'adresse e-mail est requise",
+    "first_name": "Prénom",
+    "last_name": "Nom de famille"
 }

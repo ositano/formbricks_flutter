@@ -436,6 +436,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get close;
+
+  /// No description provided for @first_name_required.
+  ///
+  /// In en, this message translates to:
+  /// **'First Name is required'**
+  String get first_name_required;
+
+  /// No description provided for @last_name_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Name is required'**
+  String get last_name_required;
+
+  /// No description provided for @company.
+  ///
+  /// In en, this message translates to:
+  /// **'Company'**
+  String get company;
+
+  /// No description provided for @company_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Company is required'**
+  String get company_required;
+
+  /// No description provided for @phone_is_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone is required'**
+  String get phone_is_required;
+
+  /// No description provided for @email_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get email_required;
+
+  /// No description provided for @first_name.
+  ///
+  /// In en, this message translates to:
+  /// **'First Name'**
+  String get first_name;
+
+  /// No description provided for @last_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Name'**
+  String get last_name;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -54,5 +54,14 @@
     "country": "国",
       "response_required": "要対応",
         "takes_less_than": "かかる時間は以下です",
-          "close": "近い"
+          "close": "近い",
+   "first_name_required": "名は必須です",
+   "last_name_required": "姓は必須です",
+   "company": "会社",
+   "company_required": "会社は必須です",
+   "phone_is_required": "電話番号は必須です",
+   "email_required": "メールアドレスは必須です",
+   "first_name": "名",
+   "last_name": "姓"
+
 }

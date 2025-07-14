@@ -54,5 +54,13 @@
     "country": "国家",
       "response_required": "需要回应",
         "takes_less_than": "花费少于",
-          "close": "关闭"
+          "close": "关闭",
+  "first_name_required": "名字是必填项",
+  "last_name_required": "姓氏是必填项",
+  "company": "公司",
+  "company_required": "公司是必填项",
+  "phone_is_required": "电话号码是必填项",
+  "email_required": "电子邮件是必填项",
+  "first_name": "名字",
+  "last_name": "姓氏"
 }

@@ -54,5 +54,13 @@
     "country": "País",
       "response_required": "Resposta necessária",
         "takes_less_than": "Demora menos de ",
-          "close": "Perto"
+          "close": "Perto",
+  "first_name_required": "O primeiro nome é obrigatório",
+  "last_name_required": "O sobrenome é obrigatório",
+  "company": "Empresa",
+  "company_required": "A empresa é obrigatória",
+  "phone_is_required": "O telefone é obrigatório",
+  "email_required": "O e-mail é obrigatório",
+  "first_name": "Primeiro nome",
+  "last_name": "Sobrenome"
 }

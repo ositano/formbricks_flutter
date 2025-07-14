@@ -172,4 +172,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get close => 'يغلق';
+
+  @override
+  String get first_name_required => 'الاسم الأول مطلوب';
+
+  @override
+  String get last_name_required => 'اسم العائلة مطلوب';
+
+  @override
+  String get company => 'الشركة';
+
+  @override
+  String get company_required => 'الشركة مطلوبة';
+
+  @override
+  String get phone_is_required => 'رقم الهاتف مطلوب';
+
+  @override
+  String get email_required => 'البريد الإلكتروني مطلوب';
+
+  @override
+  String get first_name => 'الاسم الأول';
+
+  @override
+  String get last_name => 'اسم العائلة';
 }

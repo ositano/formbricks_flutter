@@ -54,5 +54,13 @@
   "country": "Country",
   "response_required": "Response required",
   "takes_less_than": "Takes less than ",
-  "close": "Close"
+  "close": "Close",
+  "first_name_required": "First Name is required",
+  "last_name_required": "Last Name is required",
+  "company": "Company",
+  "company_required": "Company is required",
+  "phone_is_required": "Phone is required",
+  "email_required": "Email is required",
+  "first_name": "First Name",
+  "last_name": "Last Name"
 }

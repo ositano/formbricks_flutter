@@ -145,8 +145,10 @@ class _NPSQuestionState extends State<NPSQuestion> {
                 ),
               ),
             const SizedBox(height: 24),
-            Wrap(
-              spacing: 8.0,
+            Container(
+              alignment: Alignment.center,
+              child: Wrap(
+              spacing: 2.0,
               runSpacing: 8.0,
               children: List.generate(11, (index) {
                 final isSelected = selectedIndex == index;
@@ -165,8 +167,8 @@ class _NPSQuestionState extends State<NPSQuestion> {
                     }
                   },
                   child: Container(
-                    width: 36,
-                    height: 36,
+                    width: 30,
+                    height: 30,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: isSelected ? theme.primaryColor : Colors.transparent,
@@ -183,6 +185,7 @@ class _NPSQuestionState extends State<NPSQuestion> {
                   ),
                 );
               }),
+            ),
             ),
             const SizedBox(height: 16),
             Row(

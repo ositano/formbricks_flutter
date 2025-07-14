@@ -313,6 +313,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
 
       for (final logic in currentQuestion.logic) {
         if (_evaluateConditions(logic.conditions)) {
+          debugPrint("evaluate conditions ....");
           anyLogicMatched = true;
 
           for (final action in logic.actions) {
@@ -322,6 +323,8 @@ class SurveyWidgetState extends State<SurveyWidget> {
               _executeAction(action); // e.g., requireAnswer, calculate
             }
           }
+        }else{
+          debugPrint("no conditions ....");
         }
       }
 
@@ -404,26 +407,32 @@ class SurveyWidgetState extends State<SurveyWidget> {
   bool _evaluateConditions(dynamic conditions) {
     if (conditions == null || conditions.conditions == null || conditions.conditions.isEmpty) return true;
 
+    debugPrint("condition object: ${conditions.toString()}");
     bool result = conditions.connector == 'and';
 
     for (var condition in conditions.conditions) {
       bool conditionResult;
 
+      debugPrint("condition .... ${condition.runtimeType}");
+
       // Handle nested group condition (Condition)
-      if (condition is Map<String, dynamic> && condition.containsKey('conditions')) {
-        conditionResult = _evaluateConditions(Condition.fromJson(condition));
+      if (condition is Map<String, dynamic> && condition.containsKey('conditions') || condition is Condition) {
+        debugPrint("condition .....");
+        conditionResult = _evaluateConditions(condition is Condition ? condition : Condition.fromJson(condition));
       }
       // Handle atomic condition (ConditionDetail)
-      else if (condition is Map<String, dynamic> && condition.containsKey('operator')) {
-        final detail = ConditionDetail.fromJson(condition);
+      else if (condition is Map<String, dynamic> && condition.containsKey('operator') || condition is ConditionDetail) {
+        debugPrint("operator ..... ${condition.operator}");
+        final detail = condition is ConditionDetail ? condition : ConditionDetail.fromJson(condition);
         final leftValue = _getOperandValue(detail.leftOperand);
         final rightValue = detail.rightOperand != null
             ? _getOperandValue(detail.rightOperand!)
             : null;
-        conditionResult = _evaluateCondition(detail.operator, leftValue, rightValue);
+        conditionResult = _evaluateCondition( leftValue, detail.operator, rightValue);
       }
       // Fallback true for unexpected cases
       else {
+        debugPrint("condition result .....");
         conditionResult = true;
       }
 
@@ -453,6 +462,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
 
   // Applies basic comparison operators for logic conditions
   bool _evaluateCondition(dynamic left, String operator, dynamic right) {
+    debugPrint("operator: $operator, left: $left, right: $right ");
     switch (operator) {
       case 'equals': return left == right;
       case 'equalsOneOf': return (right as List).contains(left.toString());

@@ -172,4 +172,28 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get close => '近い';
+
+  @override
+  String get first_name_required => '名は必須です';
+
+  @override
+  String get last_name_required => '姓は必須です';
+
+  @override
+  String get company => '会社';
+
+  @override
+  String get company_required => '会社は必須です';
+
+  @override
+  String get phone_is_required => '電話番号は必須です';
+
+  @override
+  String get email_required => 'メールアドレスは必須です';
+
+  @override
+  String get first_name => '名';
+
+  @override
+  String get last_name => '姓';
 }

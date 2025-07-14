@@ -172,4 +172,28 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get close => 'Cerca';
+
+  @override
+  String get first_name_required => 'El nombre es obligatorio';
+
+  @override
+  String get last_name_required => 'El apellido es obligatorio';
+
+  @override
+  String get company => 'Empresa';
+
+  @override
+  String get company_required => 'La empresa es obligatoria';
+
+  @override
+  String get phone_is_required => 'El teléfono es obligatorio';
+
+  @override
+  String get email_required => 'El correo electrónico es obligatorio';
+
+  @override
+  String get first_name => 'Nombre';
+
+  @override
+  String get last_name => 'Apellido';
 }

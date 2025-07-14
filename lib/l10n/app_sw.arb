@@ -54,5 +54,13 @@
     "country": "Nchi",
     "response_required": "Jibu linahitajika",
     "takes_less_than": "Inachukua chini ya ",
-    "close": "Funga"
+    "close": "Funga",
+  "first_name_required": "Jina la kwanza linahitajika",
+  "last_name_required": "Jina la mwisho linahitajika",
+  "company": "Kampuni",
+  "company_required": "Kampuni inahitajika",
+  "phone_is_required": "Nambari ya simu inahitajika",
+  "email_required": "Barua pepe inahitajika",
+  "first_name": "Jina la kwanza",
+  "last_name": "Jina la mwisho"
 }

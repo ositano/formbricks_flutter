@@ -172,4 +172,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get close => 'Close';
+
+  @override
+  String get first_name_required => 'First Name is required';
+
+  @override
+  String get last_name_required => 'Last Name is required';
+
+  @override
+  String get company => 'Company';
+
+  @override
+  String get company_required => 'Company is required';
+
+  @override
+  String get phone_is_required => 'Phone is required';
+
+  @override
+  String get email_required => 'Email is required';
+
+  @override
+  String get first_name => 'First Name';
+
+  @override
+  String get last_name => 'Last Name';
 }

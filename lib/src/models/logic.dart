@@ -16,6 +16,7 @@ class Logic {
           : null,
     );
   }
+
 }
 
 /// A task that is executed when a condition is met

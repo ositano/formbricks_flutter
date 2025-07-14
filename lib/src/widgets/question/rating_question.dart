@@ -152,6 +152,7 @@ class _RatingQuestionState extends State<RatingQuestion> {
         allowHalfRating: false,
         itemCount: range,
         itemSize: range > 7 ? 25 : 40,
+        glowColor: Colors.amber,
         itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
         itemBuilder: (context, index) {
           if (scale == 'smiley') {

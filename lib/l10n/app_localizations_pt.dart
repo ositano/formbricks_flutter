@@ -172,4 +172,28 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get close => 'Perto';
+
+  @override
+  String get first_name_required => 'O primeiro nome é obrigatório';
+
+  @override
+  String get last_name_required => 'O sobrenome é obrigatório';
+
+  @override
+  String get company => 'Empresa';
+
+  @override
+  String get company_required => 'A empresa é obrigatória';
+
+  @override
+  String get phone_is_required => 'O telefone é obrigatório';
+
+  @override
+  String get email_required => 'O e-mail é obrigatório';
+
+  @override
+  String get first_name => 'Primeiro nome';
+
+  @override
+  String get last_name => 'Sobrenome';
 }

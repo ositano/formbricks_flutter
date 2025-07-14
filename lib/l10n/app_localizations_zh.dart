@@ -172,4 +172,28 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get close => '关闭';
+
+  @override
+  String get first_name_required => '名字是必填项';
+
+  @override
+  String get last_name_required => '姓氏是必填项';
+
+  @override
+  String get company => '公司';
+
+  @override
+  String get company_required => '公司是必填项';
+
+  @override
+  String get phone_is_required => '电话号码是必填项';
+
+  @override
+  String get email_required => '电子邮件是必填项';
+
+  @override
+  String get first_name => '名字';
+
+  @override
+  String get last_name => '姓氏';
 }

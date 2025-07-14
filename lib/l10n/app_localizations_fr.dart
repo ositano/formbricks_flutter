@@ -172,4 +172,28 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get close => 'Fermer';
+
+  @override
+  String get first_name_required => 'Le prénom est requis';
+
+  @override
+  String get last_name_required => 'Le nom de famille est requis';
+
+  @override
+  String get company => 'Entreprise';
+
+  @override
+  String get company_required => 'L\'entreprise est requise';
+
+  @override
+  String get phone_is_required => 'Le numéro de téléphone est requis';
+
+  @override
+  String get email_required => 'L\'adresse e-mail est requise';
+
+  @override
+  String get first_name => 'Prénom';
+
+  @override
+  String get last_name => 'Nom de famille';
 }
