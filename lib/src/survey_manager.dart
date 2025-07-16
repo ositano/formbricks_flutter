@@ -11,9 +11,9 @@ import '../formbricks_flutter.dart';
 import 'models/question.dart';
 import 'utils/helper.dart';
 
-// TriggerManager listens for app events and decides when to display surveys
+// SurveyManager listens for app events and decides when to display surveys
 // based on conditions like triggers, completion state, and percentage chance.
-class TriggerManager {
+class SurveyManager {
 
   // Dependencies and configuration
   final FormbricksClient client;
@@ -67,7 +67,7 @@ class TriggerManager {
   final QuestionWidgetBuilder? rankingQuestionBuilder;
   final QuestionWidgetBuilder? ratingQuestionBuilder;
 
-  TriggerManager({
+  SurveyManager({
     required this.client,
     required this.userId,
     required this.userAttributes,
@@ -230,17 +230,17 @@ class TriggerManager {
 
   bool _matchesTrigger(Survey survey) {
     //don't show survey if there are no triggers either from the dev or Formbricks
-    bool hasDefinedTriggers = triggers != null && triggers!.isNotEmpty;
-    bool hasSystemTriggers = survey.triggers != null && survey.triggers!.isNotEmpty;
+    bool hasDefinedTriggers = triggers.isNotEmpty; //checks if triggers are defined from the user app
+    bool hasSystemTriggers = survey.triggers != null && survey.triggers!.isNotEmpty; //check if triggers are defined from formbricks interface
     bool canTrigger = hasDefinedTriggers && hasSystemTriggers;
-    if (canTrigger == false) return false;
+    if (canTrigger == false) return false; //no matches when there are no triggers
 
     final surveyTriggers = survey.triggers;
     for (final t in surveyTriggers!) {
       final actionClass = t['actionClass'];
       final surveyTrigger = TriggerValue(type: actionClass?['type'] == TriggerType.code.name ? TriggerType.code : TriggerType.noCode, name: actionClass?['name'], key: actionClass?['key']);
 
-      for (final userTrigger in triggers!) {
+      for (final userTrigger in triggers) {
         if (surveyTrigger.type == TriggerType.noCode && userTrigger.type == surveyTrigger.type && userTrigger.name == surveyTrigger.name){
           return true;
         }
@@ -307,13 +307,11 @@ class TriggerManager {
             default:
               return false;
           }
-
         case 'segment':
           final userSegment = userAttributes['segmentId'];
           if (operator == 'userIsIn') return userSegment == value;
           if (operator == 'userIsNotIn') return userSegment != value;
           return false;
-
         default:
           return false;
       }
@@ -388,7 +386,6 @@ class TriggerManager {
           content: widget,
         ),
       );
-
       // Bottom sheet mode
     } else {
       showModalBottomSheet(

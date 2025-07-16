@@ -484,6 +484,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last Name'**
   String get last_name;
+
+  /// No description provided for @click_to_upload_file.
+  ///
+  /// In en, this message translates to:
+  /// **'Click to upload files'**
+  String get click_to_upload_file;
+
+  /// No description provided for @cannot_preview_file.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot preview file'**
+  String get cannot_preview_file;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

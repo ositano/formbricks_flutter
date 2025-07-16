@@ -62,5 +62,7 @@
   "phone_is_required": "电话号码是必填项",
   "email_required": "电子邮件是必填项",
   "first_name": "名字",
-  "last_name": "姓氏"
+  "last_name": "姓氏",
+    "click_to_upload_file": "点击上传文件",
+      "cannot_preview_file": "无法预览文件"
 }

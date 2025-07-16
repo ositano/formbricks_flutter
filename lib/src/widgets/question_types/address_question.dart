@@ -2,18 +2,17 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import '../../../formbricks_flutter.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
 import '../../utils/helper.dart';
-import '../../../l10n/app_localizations.dart';
 
-class ContactInfoQuestion extends StatefulWidget {
+class AddressQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
   final bool requiredAnswerByLogicCondition;
 
-  const ContactInfoQuestion({
+  const AddressQuestion({
     super.key,
     required this.question,
     required this.onResponse,
@@ -22,16 +21,16 @@ class ContactInfoQuestion extends StatefulWidget {
   });
 
   @override
-  State<ContactInfoQuestion> createState() => _ContactInfoQuestionState();
+  State<AddressQuestion> createState() => _AddressQuestionState();
 }
 
-class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
-  late final _firstNameController = TextEditingController();
-  late final _lastNameController = TextEditingController();
-  late final _emailController = TextEditingController();
-  late final _phoneController = TextEditingController();
-  late final _companyController = TextEditingController();
-
+class _AddressQuestionState extends State<AddressQuestion> {
+  late final _addressLine1Controller = TextEditingController();
+  late final _addressLine2Controller = TextEditingController();
+  late final _cityController = TextEditingController();
+  late final _stateController = TextEditingController();
+  late final _zipController = TextEditingController();
+  late final _countryController = TextEditingController();
   VideoPlayerController? _videoController;
   ChewieController? _chewieController;
 
@@ -43,7 +42,7 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
   }
 
   @override
-  void didUpdateWidget(covariant ContactInfoQuestion oldWidget) {
+  void didUpdateWidget(covariant AddressQuestion oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.response != oldWidget.response) {
       _populateFields(widget.response as Map<String, dynamic>? ?? {});
@@ -81,20 +80,22 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
   }
 
   void _populateFields(Map<String, dynamic> response) {
-    _firstNameController.text = response['firstName'] ?? '';
-    _lastNameController.text = response['lastName'] ?? '';
-    _emailController.text = response['email'] ?? '';
-    _phoneController.text = response['phone'] ?? '';
-    _companyController.text = response['company'] ?? '';
+    _addressLine1Controller.text = response['addressLine1'] ?? '';
+    _addressLine2Controller.text = response['addressLine2'] ?? '';
+    _cityController.text = response['city'] ?? '';
+    _stateController.text = response['state'] ?? '';
+    _zipController.text = response['zip'] ?? '';
+    _countryController.text = response['country'] ?? '';
   }
 
   void _updateResponse() {
     final data = {
-      'firstName': _firstNameController.text,
-      'lastName': _lastNameController.text,
-      'email': _emailController.text,
-      'phone': _phoneController.text,
-      'company': _companyController.text,
+      'addressLine1': _addressLine1Controller.text,
+      'addressLine2': _addressLine2Controller.text,
+      'city': _cityController.text,
+      'state': _stateController.text,
+      'zip': _zipController.text,
+      'country': _countryController.text,
     };
     widget.onResponse(widget.question.id, data);
   }
@@ -108,34 +109,35 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
   }) {
     if (!show) return const SizedBox.shrink();
     return Padding(
-        padding: const EdgeInsets.only(bottom: 8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              required ? '$label (*)' : label,
-            ),
-            SizedBox(height: 8.0,),
-            TextFormField(
-              controller: controller,
-              onChanged: (_) {
-                _updateResponse();
-                revalidate();
-              },
-            ),
-          ],
-        )
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            required ? '$label *' : label,
+          ),
+          SizedBox(height: 4.0,),
+          TextFormField(
+            controller: controller,
+            onChanged: (_) {
+              _updateResponse();
+              revalidate();
+            },
+          ),
+        ],
+      )
     );
   }
 
   @override
   void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-    _companyController.dispose();
+    _addressLine1Controller.dispose();
+    _addressLine2Controller.dispose();
+    _cityController.dispose();
+    _stateController.dispose();
+    _zipController.dispose();
+    _countryController.dispose();
     _videoController?.dispose();
     _chewieController?.dispose();
     super.dispose();
@@ -146,11 +148,12 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
     final theme = Theme.of(context);
     final question = widget.question;
 
-    final firstName = question.firstName ?? {};
-    final lastName = question.lastName ?? {};
-    final email = question.email ?? {};
-    final phone = question.phone ?? {};
-    final company = question.company ?? {};
+    final addressLine1 = question.addressLine1 ?? {};
+    final addressLine2 = question.addressLine2 ?? {};
+    final city = question.city ?? {};
+    final state = question.state ?? {};
+    final zip = question.zip ?? {};
+    final country = question.country ?? {};
 
     return FormField<bool>(
       validator: (_) {
@@ -160,36 +163,35 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
 
         if (!(question.required ?? false)) return null;
 
-        if (firstName['show'] == true &&
-            firstName['required'] == true &&
-            _firstNameController.text.trim().isEmpty) {
-          return AppLocalizations.of(context)!.first_name_required;
+        if (addressLine1['show'] == true &&
+            addressLine1['required'] == true &&
+            _addressLine1Controller.text.trim().isEmpty) {
+          return AppLocalizations.of(context)!.address1_required;
         }
-        if (lastName['show'] == true &&
-            lastName['required'] == true &&
-            _lastNameController.text.trim().isEmpty) {
-          return AppLocalizations.of(context)!.last_name_required;
+        if (addressLine2['show'] == true &&
+            addressLine2['required'] == true &&
+            _addressLine2Controller.text.trim().isEmpty) {
+          return AppLocalizations.of(context)!.address2_required;
         }
-        if (email['show'] == true &&
-            email['required'] == true &&
-            _emailController.text.trim().isEmpty) {
-          return AppLocalizations.of(context)!.email_required;
+        if (city['show'] == true &&
+            city['required'] == true &&
+            _cityController.text.trim().isEmpty) {
+          return AppLocalizations.of(context)!.city_required;
         }
-        if(_emailController.text.isNotEmpty) {
-          final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
-          if (!emailRegex.hasMatch(_emailController.text)) {
-            return AppLocalizations.of(context)!.please_enter_valid_email;
-          }
+        if (state['show'] == true &&
+            state['required'] == true &&
+            _stateController.text.trim().isEmpty) {
+          return AppLocalizations.of(context)!.state_required;
         }
-        if (phone['show'] == true &&
-            phone['required'] == true &&
-            _phoneController.text.trim().isEmpty) {
-          return AppLocalizations.of(context)!.phone_is_required;
+        if (zip['show'] == true &&
+            zip['required'] == true &&
+            _zipController.text.trim().isEmpty) {
+          return AppLocalizations.of(context)!.zip_required;
         }
-        if (company['show'] == true &&
-            company['required'] == true &&
-            _companyController.text.trim().isEmpty) {
-          return AppLocalizations.of(context)!.company_required;
+        if (country['show'] == true &&
+            country['required'] == true &&
+            _countryController.text.trim().isEmpty) {
+          return AppLocalizations.of(context)!.country_required;
         }
 
         return null;
@@ -242,43 +244,51 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
             const SizedBox(height: 16),
 
             _buildField(
-              show: firstName['show'] ?? false,
-              required: firstName['required'] ?? false,
+              show: addressLine1['show'] ?? false,
+              required: addressLine1['required'] ?? false,
               //label: addressLine1['placeholder']?['default'] ?? 'Address Line 1',
-              label: translate(firstName['placeholder'], context) ?? AppLocalizations.of(context)!.first_name,
-              controller: _firstNameController,
+              label: translate(addressLine1['placeholder'], context) ?? AppLocalizations.of(context)!.address_line_1,
+              controller: _addressLine1Controller,
               revalidate: () => field.didChange,
             ),
             _buildField(
-              show: lastName['show'] ?? false,
-              required: lastName['required'] ?? false,
+              show: addressLine2['show'] ?? false,
+              required: addressLine2['required'] ?? false,
               //label: addressLine2['placeholder']?['default'] ?? 'Address Line 2',
-              label: translate(lastName['placeholder'], context) ?? AppLocalizations.of(context)!.last_name,
-              controller: _lastNameController,
+              label: translate(addressLine2['placeholder'], context) ?? AppLocalizations.of(context)!.address_line_2,
+              controller: _addressLine2Controller,
               revalidate: () =>  field.didChange,
             ),
             _buildField(
-              show: email['show'] ?? false,
-              required: email['required'] ?? false,
+              show: city['show'] ?? false,
+              required: city['required'] ?? false,
               //label: city['placeholder']?['default'] ?? 'City',
-              label: translate(email['placeholder'], context) ?? AppLocalizations.of(context)!.email,
-              controller: _emailController,
+              label: translate(city['placeholder'], context) ?? AppLocalizations.of(context)!.city,
+              controller: _cityController,
               revalidate: () => field.didChange,
             ),
             _buildField(
-              show: phone['show'] ?? false,
-              required: phone['required'] ?? false,
+              show: state['show'] ?? false,
+              required: state['required'] ?? false,
               //label: state['placeholder']?['default'] ?? 'State',
-              label: translate(phone['placeholder'], context) ?? AppLocalizations.of(context)!.phone,
-              controller: _phoneController,
+              label: translate(state['placeholder'], context) ?? AppLocalizations.of(context)!.state,
+              controller: _stateController,
               revalidate: () => field.didChange,
             ),
             _buildField(
-              show: company['show'] ?? false,
-              required: company['required'] ?? false,
+              show: zip['show'] ?? false,
+              required: zip['required'] ?? false,
               //label: zip['placeholder']?['default'] ?? 'ZIP',
-              label: translate(company['placeholder'], context) ?? AppLocalizations.of(context)!.company,
-              controller: _companyController,
+              label: translate(zip['placeholder'], context) ?? AppLocalizations.of(context)!.zip,
+              controller: _zipController,
+                revalidate: () => field.didChange,
+            ),
+            _buildField(
+              show: country['show'] ?? false,
+              required: country['required'] ?? false,
+              //label: country['placeholder']?['default'] ?? 'Country',
+              label: translate(country['placeholder'], context) ?? AppLocalizations.of(context)!.country,
+              controller: _countryController,
               revalidate: () => field.didChange,
             ),
 

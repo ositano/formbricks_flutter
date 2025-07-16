@@ -69,6 +69,10 @@ class SurveyWidgetState extends State<SurveyWidget> {
   int _currentStep = -1;
   int _currentEndingStep = 0;
 
+  // Track visited question IDs
+  final List<String> _visitedQuestionIds = [];
+
+
   // Local instance of survey to allow mutation
   late Survey survey;
 
@@ -306,6 +310,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
       return;
     }
 
+    _trackVisit(currentQuestion.id);
     // Evaluate logic, if defined
     if (currentQuestion.logic.isNotEmpty) {
       bool anyLogicMatched = false;
@@ -313,7 +318,6 @@ class SurveyWidgetState extends State<SurveyWidget> {
 
       for (final logic in currentQuestion.logic) {
         if (_evaluateConditions(logic.conditions)) {
-          debugPrint("evaluate conditions ....");
           anyLogicMatched = true;
 
           for (final action in logic.actions) {
@@ -323,8 +327,6 @@ class SurveyWidgetState extends State<SurveyWidget> {
               _executeAction(action); // e.g., requireAnswer, calculate
             }
           }
-        }else{
-          debugPrint("no conditions ....");
         }
       }
 
@@ -376,6 +378,27 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
+  // Record the question ID if it hasn't already been recorded as the last entry in the list.
+  void _trackVisit(String questionId) {
+    if (_visitedQuestionIds.isEmpty || _visitedQuestionIds.last != questionId) {
+      _visitedQuestionIds.add(questionId);
+    }
+  }
+
+  void goBack() {
+    if (_visitedQuestionIds.length > 1) {
+      _visitedQuestionIds.removeLast(); // remove current
+      final previousId = _visitedQuestionIds.last;
+
+      final index = survey.questions.indexWhere((q) => q.id == previousId);
+      if (index != -1) {
+        setState(() => _currentStep = index);
+      }
+    } else if (_visitedQuestionIds.length == 1 && survey.welcomeCard?['enabled'] == true) {
+      setState(() => _currentStep = -1); // Back to welcome
+    }
+  }
+
   // Moves one step back
   void previousStep() {
     if (_currentStep > 0) {
@@ -407,22 +430,17 @@ class SurveyWidgetState extends State<SurveyWidget> {
   bool _evaluateConditions(dynamic conditions) {
     if (conditions == null || conditions.conditions == null || conditions.conditions.isEmpty) return true;
 
-    debugPrint("condition object: ${conditions.toString()}");
     bool result = conditions.connector == 'and';
 
     for (var condition in conditions.conditions) {
       bool conditionResult;
 
-      debugPrint("condition .... ${condition.runtimeType}");
-
       // Handle nested group condition (Condition)
       if (condition is Map<String, dynamic> && condition.containsKey('conditions') || condition is Condition) {
-        debugPrint("condition .....");
         conditionResult = _evaluateConditions(condition is Condition ? condition : Condition.fromJson(condition));
       }
       // Handle atomic condition (ConditionDetail)
       else if (condition is Map<String, dynamic> && condition.containsKey('operator') || condition is ConditionDetail) {
-        debugPrint("operator ..... ${condition.operator}");
         final detail = condition is ConditionDetail ? condition : ConditionDetail.fromJson(condition);
         final leftValue = _getOperandValue(detail.leftOperand);
         final rightValue = detail.rightOperand != null
@@ -432,7 +450,6 @@ class SurveyWidgetState extends State<SurveyWidget> {
       }
       // Fallback true for unexpected cases
       else {
-        debugPrint("condition result .....");
         conditionResult = true;
       }
 
@@ -462,7 +479,6 @@ class SurveyWidgetState extends State<SurveyWidget> {
 
   // Applies basic comparison operators for logic conditions
   bool _evaluateCondition(dynamic left, String operator, dynamic right) {
-    debugPrint("operator: $operator, left: $left, right: $right ");
     switch (operator) {
       case 'equals': return left == right;
       case 'equalsOneOf': return (right as List).contains(left.toString());
@@ -511,6 +527,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
       _showEnding();
       _submitSurvey();
     }else {
+      _trackVisit(targetId);
       if (mounted) setState(() {});
     }
   }
@@ -561,6 +578,9 @@ class SurveyWidgetState extends State<SurveyWidget> {
 
     return Container(
       color: Theme.of(context).cardColor,
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SurveyForm(
         client: widget.client,
         userId: widget.userId,
@@ -569,7 +589,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
         formKey: formKey,
         showPoweredBy: widget.showPoweredBy,
         nextStep: nextStep,
-        previousStep: previousStep,
+        previousStep: goBack,
         onResponse: _onResponse,
         survey: survey,
         responses: responses,

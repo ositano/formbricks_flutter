@@ -62,5 +62,7 @@
   "phone_is_required": "Phone is required",
   "email_required": "Email is required",
   "first_name": "First Name",
-  "last_name": "Last Name"
+  "last_name": "Last Name",
+  "click_to_upload_file": "Click to upload files",
+  "cannot_preview_file": "Cannot preview file"
 }

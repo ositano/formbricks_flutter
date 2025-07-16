@@ -78,7 +78,6 @@ ThemeData buildTheme(BuildContext context, ThemeData? customTheme, Survey survey
     primaryColor: brandColor,
     cardColor: cardBackgroundColor,
     scaffoldBackgroundColor: cardBackgroundColor,
-
     cardTheme: baseTheme.cardTheme.copyWith(
       color: cardBackgroundColor,
       shape: RoundedRectangleBorder(

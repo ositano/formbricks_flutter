@@ -86,6 +86,7 @@ class SurveyContent extends StatelessWidget {
       height: height,
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           surveyDisplayMode == SurveyDisplayMode.fullScreen
               ? SizedBox(

@@ -196,4 +196,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get last_name => 'Nom de famille';
+
+  @override
+  String get click_to_upload_file => 'Cliquez pour télécharger des fichiers';
+
+  @override
+  String get cannot_preview_file => 'Impossible d’apercevoir le fichier';
 }

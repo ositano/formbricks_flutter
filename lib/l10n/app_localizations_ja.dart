@@ -196,4 +196,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get last_name => '姓';
+
+  @override
+  String get click_to_upload_file => 'クリックしてファイルをアップロードします';
+
+  @override
+  String get cannot_preview_file => 'ファイルをプレビューできません';
 }

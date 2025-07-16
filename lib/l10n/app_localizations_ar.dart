@@ -196,4 +196,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get last_name => 'اسم العائلة';
+
+  @override
+  String get click_to_upload_file => 'انقر لتحميل الملفات';
+
+  @override
+  String get cannot_preview_file => 'لا يمكن معاينة الملف';
 }

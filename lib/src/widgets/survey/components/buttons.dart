@@ -37,6 +37,9 @@ class SurveyButtons extends StatelessWidget{
               onPressed: previousStep,
               child: Text(previousLabel ?? AppLocalizations.of(context)!.back),
             ),
+          if(currentStep > 0 && survey.isBackButtonHidden == true)
+            SizedBox.shrink(),
+
           if (nextLabel != null)
             if (currentStep == -1 ||
                 (currentStep > -1 &&
@@ -51,8 +54,7 @@ class SurveyButtons extends StatelessWidget{
                     ? () {
                   onComplete?.call(); // notify TriggerManager to show next
                   Navigator.of(context).pop();
-                }
-                    : nextStep,
+                } : nextStep,
                 child: Text(nextLabel ?? AppLocalizations.of(context)!.next),
               ),
         ],

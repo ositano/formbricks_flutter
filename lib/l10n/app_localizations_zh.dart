@@ -196,4 +196,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get last_name => '姓氏';
+
+  @override
+  String get click_to_upload_file => '点击上传文件';
+
+  @override
+  String get cannot_preview_file => '无法预览文件';
 }

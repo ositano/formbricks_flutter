@@ -196,4 +196,10 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get last_name => 'Jina la mwisho';
+
+  @override
+  String get click_to_upload_file => 'Bofya ili kupakia faili';
+
+  @override
+  String get cannot_preview_file => 'Haiwezi kuonyesha faili kabla';
 }

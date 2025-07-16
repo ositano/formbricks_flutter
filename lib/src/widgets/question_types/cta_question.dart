@@ -20,7 +20,7 @@ class CTAQuestion extends StatefulWidget {
     required this.question,
     required this.onResponse,
     this.response,
-    required this.requiredAnswerByLogicCondition
+    required this.requiredAnswerByLogicCondition,
   });
 
   @override
@@ -65,19 +65,19 @@ class _CTAQuestionState extends State<CTAQuestion> {
       _videoController = VideoPlayerController.network(videoUrl!)
         ..initialize()
             .then((_) {
-          if (!mounted) return;
-          if (_videoController!.value.isInitialized) {
-            _chewieController = ChewieController(
-              videoPlayerController: _videoController!,
-              autoPlay: false,
-              looping: false,
-            );
-            setState(() {});
-          }
-        })
+              if (!mounted) return;
+              if (_videoController!.value.isInitialized) {
+                _chewieController = ChewieController(
+                  videoPlayerController: _videoController!,
+                  autoPlay: false,
+                  looping: false,
+                );
+                setState(() {});
+              }
+            })
             .catchError((error) {
-          print('Video initialization error: $error');
-        });
+              print('Video initialization error: $error');
+            });
     }
   }
 
@@ -99,8 +99,10 @@ class _CTAQuestionState extends State<CTAQuestion> {
 
     return FormField<bool>(
       validator: (value) => widget.requiredAnswerByLogicCondition
-        ? AppLocalizations.of(context)!.response_required
-        : (isRequired && value != true ? AppLocalizations.of(context)!.please_take_action : null),
+          ? AppLocalizations.of(context)!.response_required
+          : (isRequired && value != true
+                ? AppLocalizations.of(context)!.please_take_action
+                : null),
       builder: (FormFieldState<bool> field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,23 +110,27 @@ class _CTAQuestionState extends State<CTAQuestion> {
             if (widget.question.imageUrl?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
-                child: GestureDetector(child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: CachedNetworkImage(
-                    imageUrl: widget.question.imageUrl!,
-                    height: 150,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => const Center(
+                child: GestureDetector(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.question.imageUrl!,
+                      height: 150,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const Center(
                         child: SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator())),
-                    errorWidget: (context, url, error) =>
-                    const Icon(Icons.error),
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
                   ),
-                ),
-                  onTap: () => showFullScreenImage(context, widget.question.imageUrl!),
+                  onTap: () =>
+                      showFullScreenImage(context, widget.question.imageUrl!),
                 ),
               )
             else if (_chewieController != null &&
@@ -134,12 +140,17 @@ class _CTAQuestionState extends State<CTAQuestion> {
                 child: Chewie(controller: _chewieController!),
               ),
             Text(
-                translate(widget.question.headline, context) ?? '',
-                style: theme.textTheme.headlineMedium ?? const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              translate(widget.question.headline, context) ?? '',
+              style:
+                  theme.textTheme.headlineMedium ??
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
             if (translate(widget.question.html, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: HtmlWidget(translate(widget.question.html, context) ?? ''),
+                child: HtmlWidget(
+                  translate(widget.question.html, context) ?? '',
+                ),
               ),
             const SizedBox(height: 16),
             Row(
@@ -150,22 +161,35 @@ class _CTAQuestionState extends State<CTAQuestion> {
                     _openLink();
                     field.didChange(true); // Validate
                   },
-                  child: Text(translate(widget.question.buttonLabel, context) ?? AppLocalizations.of(context)!.action),
+                  child: Text(
+                    translate(widget.question.buttonLabel, context) ??
+                        AppLocalizations.of(context)!.action,
+                  ),
                 ),
                 if (widget.question.dismissButtonLabel?['default'] != null)
                   TextButton(
                     onPressed: () {
-                      widget.onResponse(widget.question.id, false);
-                      Navigator.of(context).pop(); // Skip and close
+                      setState(() {
+                        performedAction = true;
+                        widget.onResponse(widget.question.id, false);
+                      });
+                      field.didChange(true);
+                      //Navigator.of(context).pop(); // Skip and close
                     },
-                    child: Text(translate(widget.question.dismissButtonLabel, context) ?? AppLocalizations.of(context)!.skip),
+                    child: Text(
+                      translate(widget.question.dismissButtonLabel, context) ??
+                          AppLocalizations.of(context)!.skip,
+                    ),
                   ),
               ],
             ),
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: Text(field.errorText!, style: TextStyle(color: theme.colorScheme.error)),
+                child: Text(
+                  field.errorText!,
+                  style: TextStyle(color: theme.colorScheme.error),
+                ),
               ),
           ],
         );

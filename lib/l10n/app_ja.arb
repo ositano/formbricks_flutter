@@ -62,6 +62,8 @@
    "phone_is_required": "電話番号は必須です",
    "email_required": "メールアドレスは必須です",
    "first_name": "名",
-   "last_name": "姓"
+   "last_name": "姓",
+     "click_to_upload_file": "クリックしてファイルをアップロードします",
+       "cannot_preview_file": "ファイルをプレビューできません"
 
 }

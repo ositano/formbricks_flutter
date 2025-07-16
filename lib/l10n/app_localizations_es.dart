@@ -196,4 +196,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get last_name => 'Apellido';
+
+  @override
+  String get click_to_upload_file => 'Haga clic para cargar archivos';
+
+  @override
+  String get cannot_preview_file => 'No se puede previsualizar el archivo';
 }

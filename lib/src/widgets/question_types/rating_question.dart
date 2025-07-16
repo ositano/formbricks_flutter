@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../../formbricks_flutter.dart';
@@ -19,7 +20,7 @@ class RatingQuestion extends StatefulWidget {
     required this.question,
     required this.onResponse,
     this.response,
-    required this.requiredAnswerByLogicCondition
+    required this.requiredAnswerByLogicCondition,
   });
 
   @override
@@ -64,38 +65,47 @@ class _RatingQuestionState extends State<RatingQuestion> {
       _videoController = VideoPlayerController.network(videoUrl!)
         ..initialize()
             .then((_) {
-          if (!mounted) return;
-          if (_videoController!.value.isInitialized) {
-            _chewieController = ChewieController(
-              videoPlayerController: _videoController!,
-              autoPlay: false,
-              looping: false,
-            );
-            setState(() {});
-          }
-        })
+              if (!mounted) return;
+              if (_videoController!.value.isInitialized) {
+                _chewieController = ChewieController(
+                  videoPlayerController: _videoController!,
+                  autoPlay: false,
+                  looping: false,
+                );
+                setState(() {});
+              }
+            })
             .catchError((error) {
-          print('Video initialization error: $error');
-        });
+              print('Video initialization error: $error');
+            });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final range = int.tryParse(widget.question.inputConfig?['range']?.toString() ?? '5') ?? 5; //3,4,6,7,10
-    final scale = widget.question.inputConfig?['scale'] ?? 'star'; // 'star', 'smiley', 'number'
+    final range =
+        int.tryParse(
+          widget.question.inputConfig?['range']?.toString() ?? '5',
+        ) ??
+        5; //3,4,6,7,10
+    final scale =
+        widget.question.inputConfig?['scale'] ??
+        'star'; // 'star', 'smiley', 'number'
     final isRequired = widget.question.required ?? false;
-
-
 
     IconData getSmileyIcon(int index, int range) {
       final smileys = [
-        Icons.sentiment_very_dissatisfied,
-        Icons.sentiment_dissatisfied,
-        Icons.sentiment_neutral,
-        Icons.sentiment_satisfied,
-        Icons.sentiment_very_satisfied,
+        LineAwesomeIcons.sad_cry, // 1 - Very sad
+        LineAwesomeIcons.sad_tear, // 2 - Sad
+        LineAwesomeIcons.frown, // 3 - Disappointed
+        LineAwesomeIcons.frown_open, // 4 - Unhappy
+        LineAwesomeIcons.meh, // 5 - Neutral
+        LineAwesomeIcons.smile, // 6 - Slightly positive
+        LineAwesomeIcons.grin, // 7 - Happy
+        LineAwesomeIcons.grin_alt, // 8 - Very happy
+        LineAwesomeIcons.grin_squint, // 9 - Excited
+        LineAwesomeIcons.grin_tears, // 10 - Extremely happy
       ];
       // Map current index to smiley range
       double normalized = index / (range - 1); // between 0.0 and 1.0
@@ -118,9 +128,14 @@ class _RatingQuestionState extends State<RatingQuestion> {
                 field.didChange(selectedRating);
                 widget.onResponse(widget.question.id, value);
 
-                final formState = context.findAncestorStateOfType<SurveyWidgetState>()?.formKey.currentState;
+                final formState = context
+                    .findAncestorStateOfType<SurveyWidgetState>()
+                    ?.formKey
+                    .currentState;
                 if (formState?.validate() ?? false) {
-                  context.findAncestorStateOfType<SurveyWidgetState>()?.nextStep();
+                  context
+                      .findAncestorStateOfType<SurveyWidgetState>()
+                      ?.nextStep();
                 }
               },
               child: Container(
@@ -153,10 +168,14 @@ class _RatingQuestionState extends State<RatingQuestion> {
         itemCount: range,
         itemSize: range > 7 ? 25 : 40,
         glowColor: Colors.amber,
-        itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+        itemPadding: EdgeInsets.symmetric(horizontal: range > 7 ? 2.0 : 4.0),
         itemBuilder: (context, index) {
           if (scale == 'smiley') {
-            return Icon(getSmileyIcon(index, range), color: theme.primaryColor, size: 36);
+            return Icon(
+              getSmileyIcon(index, range),
+              color: theme.primaryColor,
+              size: range > 7 ? 25 : 40,
+            );
           }
           return Icon(Icons.star, color: theme.primaryColor);
         },
@@ -165,7 +184,10 @@ class _RatingQuestionState extends State<RatingQuestion> {
           field.didChange(rating);
           widget.onResponse(widget.question.id, rating.toInt());
 
-          final formState = context.findAncestorStateOfType<SurveyWidgetState>()?.formKey.currentState;
+          final formState = context
+              .findAncestorStateOfType<SurveyWidgetState>()
+              ?.formKey
+              .currentState;
           if (formState?.validate() ?? false) {
             context.findAncestorStateOfType<SurveyWidgetState>()?.nextStep();
           }
@@ -177,8 +199,8 @@ class _RatingQuestionState extends State<RatingQuestion> {
       validator: (value) => widget.requiredAnswerByLogicCondition
           ? AppLocalizations.of(context)!.response_required
           : (isRequired && (selectedRating == null || selectedRating == 0)
-          ? AppLocalizations.of(context)!.please_select_rating
-          : null),
+                ? AppLocalizations.of(context)!.please_select_rating
+                : null),
       builder: (FormFieldState<double> field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -186,23 +208,27 @@ class _RatingQuestionState extends State<RatingQuestion> {
             if (widget.question.imageUrl?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
-                child: GestureDetector(child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: CachedNetworkImage(
-                    imageUrl: widget.question.imageUrl!,
-                    height: 150,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => const Center(
+                child: GestureDetector(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.question.imageUrl!,
+                      height: 150,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const Center(
                         child: SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator())),
-                    errorWidget: (context, url, error) =>
-                    const Icon(Icons.error),
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
                   ),
-                ),
-                  onTap: () => showFullScreenImage(context, widget.question.imageUrl!),
+                  onTap: () =>
+                      showFullScreenImage(context, widget.question.imageUrl!),
                 ),
               )
             else if (_chewieController != null &&
@@ -213,10 +239,12 @@ class _RatingQuestionState extends State<RatingQuestion> {
               ),
             Text(
               translate(widget.question.headline, context) ?? '',
-              style: theme.textTheme.headlineMedium ??
+              style:
+                  theme.textTheme.headlineMedium ??
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            if (translate(widget.question.subheader, context)?.isNotEmpty ?? false)
+            if (translate(widget.question.subheader, context)?.isNotEmpty ??
+                false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
@@ -245,7 +273,10 @@ class _RatingQuestionState extends State<RatingQuestion> {
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: Text(field.errorText!, style: TextStyle(color: theme.colorScheme.error)),
+                child: Text(
+                  field.errorText!,
+                  style: TextStyle(color: theme.colorScheme.error),
+                ),
               ),
           ],
         );

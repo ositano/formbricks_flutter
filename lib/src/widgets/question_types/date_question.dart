@@ -1,18 +1,19 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:video_player/video_player.dart';
-import '../../../l10n/app_localizations.dart';
+import '../../../formbricks_flutter.dart';
 import '../../models/question.dart';
 import '../../utils/helper.dart';
 
-class MultipleChoiceMulti extends StatefulWidget {
+class DateQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
   final bool requiredAnswerByLogicCondition;
 
-  const MultipleChoiceMulti({
+  const DateQuestion({
     super.key,
     required this.question,
     required this.onResponse,
@@ -21,32 +22,46 @@ class MultipleChoiceMulti extends StatefulWidget {
   });
 
   @override
-  State<MultipleChoiceMulti> createState() => _MultipleChoiceMultiState();
+  State<DateQuestion> createState() => _DateQuestionState();
 }
 
-class _MultipleChoiceMultiState extends State<MultipleChoiceMulti> {
-  List<String> selectedOptions = [];
+class _DateQuestionState extends State<DateQuestion> {
+  DateTime? selectedDate;
+  late final DateFormat formatter;
+  late final TextEditingController _controller;
   VideoPlayerController? _videoController;
   ChewieController? _chewieController;
 
   @override
   void initState() {
     super.initState();
-    selectedOptions = widget.response as List<String>? ?? [];
+    formatter = DateFormat(widget.question.format ?? 'yyyy-MM-dd');
+    selectedDate = _parseDate(widget.response);
+    _controller = TextEditingController(text: widget.response);
     _initializeVideo();
   }
 
   @override
   void dispose() {
+    _controller.dispose();
     _videoController?.dispose();
     _chewieController?.dispose();
     super.dispose();
   }
 
   @override
-  void didUpdateWidget(covariant MultipleChoiceMulti oldWidget) {
+  void didUpdateWidget(covariant DateQuestion oldWidget) {
     super.didUpdateWidget(oldWidget);
 
+    final newDate = _parseDate(widget.response);
+    if (newDate != null && newDate != selectedDate) {
+      selectedDate = newDate;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _controller.text = formatter.format(newDate);
+        }
+      });
+    }
     if (widget.question.videoUrl != oldWidget.question.videoUrl) {
       _initializeVideo();
     }
@@ -78,17 +93,65 @@ class _MultipleChoiceMultiState extends State<MultipleChoiceMulti> {
     }
   }
 
+  DateTime? _parseDate(dynamic input) {
+    if (input is DateTime) return input;
+    if (input is String && input.isNotEmpty) {
+      try {
+        return DateFormat(
+          widget.question.format ?? 'yyyy-MM-dd',
+        ).parseStrict(input);
+      } catch (_) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  Future<void> _pickDate(FormFieldState<bool> field) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate ?? DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+        builder: (context, child) {
+          return Theme(
+            data: ThemeData.light().copyWith(
+                colorScheme: ColorScheme.light(
+                    onPrimary: Theme.of(context).cardColor, // selected text color
+                    onSurface: Theme.of(context).textTheme.headlineMedium!.color!, // default text color
+                    primary: Theme.of(context).primaryColor // circle color
+                ),
+            ),
+            child: child!,
+          );
+        }
+    );
+
+    if (picked != null && mounted) {
+      setState(() {
+        selectedDate = picked;
+        _controller.text = formatter.format(picked);
+      });
+
+      widget.onResponse(widget.question.id, formatter.format(picked));
+      field.didChange(true); // only trigger after valid input
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final options = widget.question.inputConfig?['choices'] as List<dynamic>? ?? [];
-    final isRequired = widget.question.required ?? false;
+    final q = widget.question;
+    final isRequired = q.required ?? false;
 
     return FormField<bool>(
-      validator: (value) => widget.requiredAnswerByLogicCondition
-        ? AppLocalizations.of(context)!.response_required
-        : (isRequired && selectedOptions.isEmpty
-          ? AppLocalizations.of(context)!.please_select_option
+      key: ValueKey(q.id),
+      initialValue: selectedDate != null,
+      validator: (_) => widget.requiredAnswerByLogicCondition
+    ? AppLocalizations.of(context)!.response_required
+        : (isRequired && selectedDate == null
+          ? AppLocalizations.of(context)!.please_select_date
           : null),
       builder: (field) {
         return Column(
@@ -123,73 +186,49 @@ class _MultipleChoiceMultiState extends State<MultipleChoiceMulti> {
                 child: Chewie(controller: _chewieController!),
               ),
             Text(
-              translate(widget.question.headline, context) ?? '',
-              style: theme.textTheme.headlineMedium ??
+              translate(q.headline, context) ?? '',
+              style:
+                  theme.textTheme.headlineMedium ??
                   const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
-            if (translate(widget.question.subheader, context)?.isNotEmpty ?? false)
+            if (translate(q.subheader, context)?.isNotEmpty ?? false)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  translate(widget.question.subheader, context) ?? '',
+                  translate(q.subheader, context) ?? "",
                   style: theme.textTheme.bodyMedium,
                 ),
               ),
             const SizedBox(height: 16),
-            ...options.map((option) {
-              final optionId = option['id']?.toString();
-              final label = translate(option['label'], context)?.toString() ?? '';
-              final isSelected = selectedOptions.contains(optionId);
-
-              if (optionId == null) return const SizedBox.shrink();
-
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    if (isSelected) {
-                      selectedOptions.remove(optionId);
-                    } else {
-                      selectedOptions.add(optionId);
-                    }
-                    widget.onResponse(widget.question.id, selectedOptions);
-                    field.didChange(true);
-                  });
-                },
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: isSelected
-                          ? theme.primaryColor
-                          : theme.inputDecorationTheme.enabledBorder!.borderSide.color,
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                    color: theme.inputDecorationTheme.fillColor,
-                  ),
+            GestureDetector(
+              onTap: () => _pickDate(field),
+              child: Container(
+                height: 100,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: theme.inputDecorationTheme.fillColor,
+                  border: Border.all(color: theme.textTheme.headlineMedium!.color ?? Colors.black12, width: 1.0),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Center(
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        isSelected
-                            ? Icons.check_box
-                            : Icons.check_box_outline_blank,
-                        color: isSelected
-                            ? theme.primaryColor
-                            : theme.unselectedWidgetColor,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          label,
-                          style: theme.textTheme.bodyMedium
+                      Icon(Icons.calendar_month, color: Theme.of(context).iconTheme.color),
+                      const SizedBox(width: 8),
+                      Text(
+                        selectedDate != null
+                            ? formatter.format(selectedDate!)
+                            : AppLocalizations.of(context)!.select_date,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
                         ),
                       ),
                     ],
                   ),
                 ),
-              );
-            }),
+              ),
+            ),
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),

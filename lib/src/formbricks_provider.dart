@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../formbricks_flutter.dart';
-import 'formbricks.dart';
 import 'utils/helper.dart';
 
 /// A Flutter widget that provides access to the Formbricks client and configuration
@@ -70,16 +69,16 @@ class FormbricksProvider extends StatefulWidget {
   State<FormbricksProvider> createState() => _FormbricksProviderState();
 }
 
-/// The state class for [FormbricksProvider] responsible for initializing and managing [TriggerManager].
+/// The state class for [FormbricksProvider] responsible for initializing and managing [SurveyManager].
 class _FormbricksProviderState extends State<FormbricksProvider> {
-  late TriggerManager _triggerManager;
+  late SurveyManager _surveyManager;
 
   @override
   void initState() {
     super.initState();
 
-    // Initialize the trigger manager with user, client, and UI configuration
-    _triggerManager = TriggerManager(
+    // Initialize the survey manager with user, client, and UI configuration
+    _surveyManager = SurveyManager(
       client: widget.client,
       userId: widget.userId,
       userAttributes: widget.userAttributes,
@@ -108,47 +107,44 @@ class _FormbricksProviderState extends State<FormbricksProvider> {
     );
 
     // Initialize Formbricks singleton
-    Formbricks().init(_triggerManager);
+    Formbricks().init(_surveyManager);
 
-    _triggerManager.initialize();
-
-    // Optionally perform post-frame logic
-    WidgetsBinding.instance.addPostFrameCallback((_) {});
+    _surveyManager.initialize();
   }
 
   @override
   void didUpdateWidget(covariant FormbricksProvider oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // If the locale has changed, update TriggerManager and trigger rebuild
+    // If the locale has changed, update SurveyManager and trigger rebuild
     if (widget.locale != oldWidget.locale) {
-      _triggerManager.setLocale(widget.locale);
+      _surveyManager.setLocale(widget.locale);
     }
   }
 
   @override
   void dispose() {
     // Clean up resources when the provider is removed
-    _triggerManager.dispose();
+    _surveyManager.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Provide TriggerManager to widget tree
+    // Provide SurveyManager to widget tree
     return InheritedFormbricks(
-      triggerManager: _triggerManager,
+      surveyManager: _surveyManager,
       child: widget.child,
     );
   }
 }
 
-/// An inherited widget used to expose the [TriggerManager] instance to the widget tree.
+/// An inherited widget used to expose the [SurveyManager] instance to the widget tree.
 class InheritedFormbricks extends InheritedWidget {
-  final TriggerManager triggerManager;
+  final SurveyManager surveyManager;
 
   const InheritedFormbricks({
     super.key,
-    required this.triggerManager,
+    required this.surveyManager,
     required super.child,
   });
 
@@ -160,12 +156,12 @@ class InheritedFormbricks extends InheritedWidget {
   /// Determines whether the widget should notify dependents on update.
   @override
   bool updateShouldNotify(InheritedFormbricks oldWidget) {
-    return triggerManager != oldWidget.triggerManager;
+    return surveyManager != oldWidget.surveyManager;
   }
 }
 
-/// Extension method to easily access [TriggerManager] from [BuildContext].
+/// Extension method to easily access [SurveyManager] from [BuildContext].
 extension FormbricksContext on BuildContext {
-  TriggerManager? get triggerManager =>
-      InheritedFormbricks.of(this)?.triggerManager;
+  SurveyManager? get surveyManager =>
+      InheritedFormbricks.of(this)?.surveyManager;
 }

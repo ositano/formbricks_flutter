@@ -196,4 +196,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get last_name => 'Sobrenome';
+
+  @override
+  String get click_to_upload_file => 'Clique para fazer upload de ficheiros';
+
+  @override
+  String get cannot_preview_file => 'Não é possível visualizar o arquivo';
 }

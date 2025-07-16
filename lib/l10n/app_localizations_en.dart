@@ -196,4 +196,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get last_name => 'Last Name';
+
+  @override
+  String get click_to_upload_file => 'Click to upload files';
+
+  @override
+  String get cannot_preview_file => 'Cannot preview file';
 }

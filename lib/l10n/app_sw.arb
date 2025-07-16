@@ -62,5 +62,7 @@
   "phone_is_required": "Nambari ya simu inahitajika",
   "email_required": "Barua pepe inahitajika",
   "first_name": "Jina la kwanza",
-  "last_name": "Jina la mwisho"
+  "last_name": "Jina la mwisho",
+    "click_to_upload_file": "Bofya ili kupakia faili",
+      "cannot_preview_file": "Haiwezi kuonyesha faili kabla"
 }

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:formbricks_flutter/src/utils/extensions.dart';
 
+import '../../formbricks_flutter.dart';
 import '../models/question.dart';
 
 /// Signature definition for question widget builders.
@@ -10,13 +11,16 @@ import '../models/question.dart';
 /// - [onResponse] is the callback function to handle the user response.
 /// - [response] is the current response value, if any.
 /// - [requiredAnswerByLogicCondition] indicates whether the answer is required due to logic conditions.
-typedef QuestionWidgetBuilder = Widget Function(
-    Key? key,
-    Question question,
-    Function(String, dynamic) onResponse,
-    dynamic response,
-    bool requiredAnswerByLogicCondition,
-    );
+typedef QuestionWidgetBuilder =
+    Widget Function(
+      Key? key,
+      Question question,
+      Function(String, dynamic) onResponse,
+      dynamic response,
+      bool requiredAnswerByLogicCondition, {
+      FormbricksClient? formbricksClient,
+      String? surveyId,
+    });
 
 /// Helper function to translate a map of localized strings
 /// based on the current context's locale.
@@ -26,7 +30,7 @@ String? translate(Map<String, dynamic>? map, BuildContext context) {
 }
 
 /// Opens a full-screen modal to show a zoomed-in version of an image from the given [imageUrl].
-/// 
+///
 /// Uses [CachedNetworkImage] for efficient loading, with loading and error states handled.
 void showFullScreenImage(BuildContext context, String imageUrl) {
   Navigator.push(
@@ -42,9 +46,9 @@ void showFullScreenImage(BuildContext context, String imageUrl) {
                 imageUrl: imageUrl,
                 fit: BoxFit.contain,
                 placeholder: (context, url) =>
-                const Center(child: CircularProgressIndicator()),
+                    const Center(child: CircularProgressIndicator()),
                 errorWidget: (context, url, error) =>
-                const Center(child: Icon(Icons.error)),
+                    const Center(child: Icon(Icons.error)),
               ),
             ),
             // Back button positioned at the top-left

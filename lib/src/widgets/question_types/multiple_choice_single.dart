@@ -6,13 +6,13 @@ import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
 import '../../utils/helper.dart';
 
-class MultipleChoiceSingle extends StatefulWidget {
+class MultipleChoiceSingleQuestion extends StatefulWidget {
   final Question question;
   final Function(String, dynamic) onResponse;
   final dynamic response;
   final bool requiredAnswerByLogicCondition;
 
-  const MultipleChoiceSingle({
+  const MultipleChoiceSingleQuestion({
     super.key,
     required this.question,
     required this.onResponse,
@@ -21,10 +21,10 @@ class MultipleChoiceSingle extends StatefulWidget {
   });
 
   @override
-  State<MultipleChoiceSingle> createState() => _MultipleChoiceSingleState();
+  State<MultipleChoiceSingleQuestion> createState() => _MultipleChoiceSingleQuestionState();
 }
 
-class _MultipleChoiceSingleState extends State<MultipleChoiceSingle> {
+class _MultipleChoiceSingleQuestionState extends State<MultipleChoiceSingleQuestion> {
   String? selectedOption;
   VideoPlayerController? _videoController;
   ChewieController? _chewieController;
@@ -44,7 +44,7 @@ class _MultipleChoiceSingleState extends State<MultipleChoiceSingle> {
   }
 
   @override
-  void didUpdateWidget(covariant MultipleChoiceSingle oldWidget) {
+  void didUpdateWidget(covariant MultipleChoiceSingleQuestion oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (widget.question.videoUrl != oldWidget.question.videoUrl) {

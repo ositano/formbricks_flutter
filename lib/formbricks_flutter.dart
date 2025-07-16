@@ -1,5 +1,5 @@
-export 'src/formbricks_client.dart';
-export 'src/trigger_manager.dart';
+export 'src/api/formbricks_client.dart';
+export 'src/survey_manager.dart';
 export 'src/formbricks_provider.dart';
 export 'src/formbricks.dart';
 export 'src/models/survey.dart';

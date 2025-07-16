@@ -62,5 +62,7 @@
   "phone_is_required": "رقم الهاتف مطلوب",
   "email_required": "البريد الإلكتروني مطلوب",
   "first_name": "الاسم الأول",
-  "last_name": "اسم العائلة"
+  "last_name": "اسم العائلة",
+    "click_to_upload_file": "انقر لتحميل الملفات",
+      "cannot_preview_file": "لا يمكن معاينة الملف"
 }
