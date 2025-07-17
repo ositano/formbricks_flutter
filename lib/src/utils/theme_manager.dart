@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import '../../formbricks_flutter.dart';
 
@@ -142,17 +144,38 @@ ThemeData buildTheme(BuildContext context, ThemeData? customTheme, Survey survey
     progressIndicatorTheme: ProgressIndicatorThemeData(
       color: brandColor,
     ),
+    extensions: <ThemeExtension<dynamic>>[
+      MyCustomTheme(
+        styleRoundness: roundness,
+      ),
+    ],
   );
 }
 
-/// Utility function to get the roundness value from a survey's styling config.
-/// Returns `8.0` by default if no override is specified.
-double styleRoundness(Survey survey) {
-  final formBricksStyling = survey.styling ?? {};
 
-  if (!(formBricksStyling['overwriteThemeStyling'] == true)) {
-    return 8.0;
+
+/// Extending theme class to get the roundness value from a survey's styling config.
+/// Returns `8.0` by default if no override is specified.
+@immutable
+class MyCustomTheme extends ThemeExtension<MyCustomTheme> {
+  final double? styleRoundness;
+
+  const MyCustomTheme({
+    this.styleRoundness,
+  });
+
+  @override
+  MyCustomTheme copyWith({double? styleRoundness}) {
+    return MyCustomTheme(
+      styleRoundness: styleRoundness ?? this.styleRoundness,
+    );
   }
 
-  return double.tryParse('${formBricksStyling['roundness']}') ?? 8.0;
+  @override
+  MyCustomTheme lerp(ThemeExtension<MyCustomTheme>? other, double t) {
+    if (other is! MyCustomTheme) return this;
+    return MyCustomTheme(
+      styleRoundness: lerpDouble(styleRoundness, other.styleRoundness, t),
+    );
+  }
 }

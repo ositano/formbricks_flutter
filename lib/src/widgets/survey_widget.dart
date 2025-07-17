@@ -14,7 +14,6 @@ class SurveyWidget extends StatefulWidget {
   final String userId;
   final int estimatedTimeInSecs;
   final SurveyDisplayMode surveyDisplayMode;
-  final bool showPoweredBy;
   final VoidCallback? onComplete;
 
   // Optional custom question widget builders
@@ -41,7 +40,6 @@ class SurveyWidget extends StatefulWidget {
     required this.userId,
     required this.estimatedTimeInSecs,
     required this.surveyDisplayMode,
-    required this.showPoweredBy,
     required this.onComplete,
     this.addressQuestionBuilder,
     this.calQuestionBuilder,
@@ -587,7 +585,6 @@ class SurveyWidgetState extends State<SurveyWidget> {
         currentStep: _currentStep,
         isLoading: isLoading,
         formKey: formKey,
-        showPoweredBy: widget.showPoweredBy,
         nextStep: nextStep,
         previousStep: goBack,
         onResponse: _onResponse,

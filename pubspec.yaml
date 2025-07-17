@@ -34,6 +34,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  build_runner: ^2.4.15
+  mockito: ^5.4.6
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -80,4 +82,5 @@ flutter_intl:
     - lib/l10n/app_ja.arb
     - lib/l10n/app_pt.arb
     - lib/l10n/app_sw.arb
+    - lib/l10n/app_de.arb
   output_dir: lib/generated

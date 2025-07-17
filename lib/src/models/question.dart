@@ -48,8 +48,6 @@ class Question {
   final String? logicFallback; // Target if logic conditions fail
   final String? buttonUrl;
 
-  double? _styleRoundness;
-
   Question({
     required this.id,
     required this.type,
@@ -97,11 +95,6 @@ class Question {
     this.buttonUrl
   });
 
-  set styleRoundness(double roundness){
-    _styleRoundness = roundness;
-  }
-
-  double get styleRoundness => _styleRoundness ?? 8.0;
 
   factory Question.fromJson(Map<String, dynamic> json) {
     return Question(

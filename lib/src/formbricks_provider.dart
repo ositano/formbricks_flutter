@@ -10,7 +10,6 @@ class FormbricksProvider extends StatefulWidget {
   final String userId;
   final Map<String, dynamic> userAttributes;
   final ThemeData? customTheme;
-  final bool showPoweredBy;
   final SurveyDisplayMode surveyDisplayMode;
   final List<TriggerValue> triggers;
   final String locale;
@@ -39,7 +38,6 @@ class FormbricksProvider extends StatefulWidget {
     required this.userId,
     this.userAttributes = const {},
     this.customTheme,
-    this.showPoweredBy = true,
     this.surveyDisplayMode = SurveyDisplayMode.fullScreen,
     this.triggers = const [],
     this.locale = 'en',
@@ -83,7 +81,6 @@ class _FormbricksProviderState extends State<FormbricksProvider> {
       userId: widget.userId,
       userAttributes: widget.userAttributes,
       surveyDisplayMode: widget.surveyDisplayMode,
-      showPoweredBy: widget.showPoweredBy,
       context: context,
       triggers: widget.triggers,
       locale: widget.locale,

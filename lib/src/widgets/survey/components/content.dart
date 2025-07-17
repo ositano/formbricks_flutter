@@ -19,7 +19,6 @@ class SurveyContent extends StatelessWidget {
   final Survey survey;
   final SurveyDisplayMode surveyDisplayMode;
   final int estimatedTimeInSecs;
-  final bool showPoweredBy;
   final Function() previousStep;
   final Function() nextStep;
   final Function(String, dynamic) onResponse;
@@ -45,7 +44,6 @@ class SurveyContent extends StatelessWidget {
     required this.child,
     required this.surveyDisplayMode,
     required this.estimatedTimeInSecs,
-    required this.showPoweredBy,
     required this.onComplete
   });
 
@@ -151,7 +149,7 @@ class SurveyContent extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Column(
                     children: [
-                      showPoweredBy ? SurveyCopyright() : SizedBox.shrink(),
+                      survey.styling?['isLogoHidden'] == true ? SizedBox.shrink() : SurveyCopyright(),
                       survey.styling?['hideProgressBar'] == true
                           ? SizedBox.shrink() :SurveyProgress(progress: progress),
                     ],

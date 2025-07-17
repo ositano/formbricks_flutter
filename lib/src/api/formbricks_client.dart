@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import '_base_request.dart';
 
@@ -95,6 +96,7 @@ class FormbricksClient {
     required Map<String, dynamic> data,
     bool finished = true,
   }) async {
+    debugPrint("responses: $data");
     final url = Uri.parse('$apiHost/api/v1/client/$environmentId/responses');
     final body = {
       'surveyId': surveyId,

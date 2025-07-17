@@ -23,7 +23,6 @@ class SurveyForm extends StatelessWidget {
   final String? displayId;
   final GlobalKey<FormState> formKey;
   final SurveyDisplayMode surveyDisplayMode;
-  final bool showPoweredBy;
   final Function() previousStep;
   final Function() nextStep;
   final Function() nextStepEnding;
@@ -68,7 +67,6 @@ class SurveyForm extends StatelessWidget {
     required this.responses,
     required this.surveyDisplayMode,
     required this.requiredAnswers,
-    required this.showPoweredBy,
     required this.onComplete,
 
     this.addressQuestionBuilder,
@@ -116,7 +114,6 @@ class SurveyForm extends StatelessWidget {
       nextLabel = survey.welcomeCard!['buttonLabel']['default'] ?? 'Next';
     } else if (currentStep < survey.questions.length) {
       question = survey.questions[currentStep];
-      question.styleRoundness = styleRoundness(survey);
       content = Form(
         key: formKey,
         autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -167,7 +164,6 @@ class SurveyForm extends StatelessWidget {
       previousLabel: previousLabel,
       onResponse: onResponse,
       survey: survey,
-      showPoweredBy: showPoweredBy,
       response: responses[question?.id],
       contentHeight: MediaQuery.of(context).size.height,
       spacerHeight: 0,

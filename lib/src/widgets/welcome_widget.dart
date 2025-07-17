@@ -36,10 +36,11 @@ class WelcomeWidget extends StatelessWidget {
               imageUrl: survey.welcomeCard!['fileUrl'],
               fit: BoxFit.fitWidth,
               height: 50,
-              placeholder: (context, url) => const SizedBox(
+              placeholder: (context, url) => const Center(
+                  child: SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator()),
+                      child: CircularProgressIndicator())),
               errorWidget: (context, url, error) =>
               const Icon(Icons.error),
             )

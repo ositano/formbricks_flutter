@@ -166,7 +166,7 @@ class _RatingQuestionState extends State<RatingQuestion> {
         minRating: 1,
         allowHalfRating: false,
         itemCount: range,
-        itemSize: range > 7 ? 25 : 40,
+        itemSize: range > 6 ? range == 7 ? 30 :25 : 40,
         glowColor: Colors.amber,
         itemPadding: EdgeInsets.symmetric(horizontal: range > 7 ? 2.0 : 4.0),
         itemBuilder: (context, index) {

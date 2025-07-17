@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import '../../../formbricks_flutter.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
 import '../../utils/helper.dart';
@@ -147,13 +148,16 @@ class _MultipleChoiceSingleQuestionState extends State<MultipleChoiceSingleQuest
 
               if (optionId == null) return const SizedBox.shrink();
 
-              final isSelected = selectedOption == optionId;
+              //final isSelected = selectedOption == optionId;
+              final isSelected = selectedOption == label;
 
               return GestureDetector(
                 onTap: () {
                   setState(() {
-                    selectedOption = optionId;
-                    widget.onResponse(widget.question.id, optionId);
+                    //selectedOption = optionId;
+                    selectedOption = label;
+                    //widget.onResponse(widget.question.id, optionId);
+                    widget.onResponse(widget.question.id, label);
                     field.didChange(true);
                   });
                 },
@@ -167,7 +171,7 @@ class _MultipleChoiceSingleQuestionState extends State<MultipleChoiceSingleQuest
                           : theme.inputDecorationTheme.enabledBorder!.borderSide.color,
                       width: 2,
                     ),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(theme.extension<MyCustomTheme>()!.styleRoundness!),
                     color: theme.inputDecorationTheme.fillColor,
                   ),
                   child: Row(

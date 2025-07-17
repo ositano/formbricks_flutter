@@ -22,7 +22,7 @@ Built on top of [Formbricks](https://formbricks.com) — the open-source experie
 | Feature | Description                                                                                                   |
 |--------|---------------------------------------------------------------------------------------------------------------|
 | 💬 **In-App Micro-Surveys** | Display beautiful, embeddable surveys inside your app.                                                        |
-| 🌐 **Localization Support** | Built-in support for multiple languages: `en`, `es`, `fr`, `ja`, `ar`, `pt`, `sw`, `zh`.                      |
+| 🌐 **Localization Support** | Built-in support for multiple languages: `en`, `es`, `de`, `fr`, `ja`, `ar`, `pt`, `sw`, `zh`.                |
 | ⚡ **Custom Triggers** | Trigger surveys based on app events or coded conditions.                                                      |
 | 🎨 **Theme Customization** | Style surveys using your app’s `ThemeData`. or use a different custom theme for it. Or use Formbricks styling |
 | 🙋‍♂️ **User Targeting** | Pass `userId` and `userAttributes` to personalize surveys.                                                    |
@@ -54,7 +54,6 @@ Wrap your app (or section of it) with the `FormbricksProvider`:
 
 ```dart
 FormbricksProvider(
-  showPoweredBy: true,
   client: FormbricksClient(
     apiHost: 'https://app.formbricks.com',
     environmentId: 'your-env-id',
@@ -134,13 +133,21 @@ Gets the currently active locale.
 ## 🧪 Supported Question Types
 
 Formbricks currently supports the following input types:
+- 📍 `address`
+- 📅 `cal`
+- ✅ `consent`
+- 👤 `contact`
+- 🪄 `cta`
 - 📅 `date`
-- ⭐️ `rating`, `nps`
-- 📝 `freeText`, `contactInfo`, `consent`
-- 🔘 `multipleChoiceSingle`
+- 📁 `file upload`
+- 📝 `freeText`
+- 📊 `matrix`
 - 🧩 `multipleChoiceMulti`
-- 🪪 `address`
-- 🪄 `cta`, `matrix`, `fileUpload`, `ranking`, `pictureSelection`, `calculation`
+- 🔘 `multipleChoiceSingle`
+- 📈 `nps`
+- 🖼️ `pictureSelection`
+- 🔢 `ranking`
+- ⭐️ `rating`
 
 And **you can override any of them** for full control.
 

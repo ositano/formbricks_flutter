@@ -105,6 +105,7 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
     required String label,
     required TextEditingController controller,
     required void Function() revalidate,
+    required TextInputType? keyboardType
   }) {
     if (!show) return const SizedBox.shrink();
     return Padding(
@@ -123,6 +124,8 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
                 _updateResponse();
                 revalidate();
               },
+              textInputAction: TextInputAction.next,
+              keyboardType: keyboardType ?? TextInputType.text,
             ),
           ],
         )
@@ -244,42 +247,42 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
             _buildField(
               show: firstName['show'] ?? false,
               required: firstName['required'] ?? false,
-              //label: addressLine1['placeholder']?['default'] ?? 'Address Line 1',
               label: translate(firstName['placeholder'], context) ?? AppLocalizations.of(context)!.first_name,
               controller: _firstNameController,
               revalidate: () => field.didChange,
+              keyboardType: TextInputType.text
             ),
             _buildField(
               show: lastName['show'] ?? false,
               required: lastName['required'] ?? false,
-              //label: addressLine2['placeholder']?['default'] ?? 'Address Line 2',
               label: translate(lastName['placeholder'], context) ?? AppLocalizations.of(context)!.last_name,
               controller: _lastNameController,
               revalidate: () =>  field.didChange,
+                keyboardType: TextInputType.text
             ),
             _buildField(
               show: email['show'] ?? false,
               required: email['required'] ?? false,
-              //label: city['placeholder']?['default'] ?? 'City',
               label: translate(email['placeholder'], context) ?? AppLocalizations.of(context)!.email,
               controller: _emailController,
               revalidate: () => field.didChange,
+                keyboardType: TextInputType.emailAddress
             ),
             _buildField(
               show: phone['show'] ?? false,
               required: phone['required'] ?? false,
-              //label: state['placeholder']?['default'] ?? 'State',
               label: translate(phone['placeholder'], context) ?? AppLocalizations.of(context)!.phone,
               controller: _phoneController,
               revalidate: () => field.didChange,
+                keyboardType: TextInputType.phone
             ),
             _buildField(
               show: company['show'] ?? false,
               required: company['required'] ?? false,
-              //label: zip['placeholder']?['default'] ?? 'ZIP',
               label: translate(company['placeholder'], context) ?? AppLocalizations.of(context)!.company,
               controller: _companyController,
               revalidate: () => field.didChange,
+                keyboardType: TextInputType.text
             ),
 
             if (field.hasError)

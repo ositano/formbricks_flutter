@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import '../../../formbricks_flutter.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../models/question.dart';
 import '../../utils/helper.dart';
@@ -139,7 +140,8 @@ class _MultipleChoiceMultiQuestionState extends State<MultipleChoiceMultiQuestio
             ...options.map((option) {
               final optionId = option['id']?.toString();
               final label = translate(option['label'], context)?.toString() ?? '';
-              final isSelected = selectedOptions.contains(optionId);
+              //final isSelected = selectedOptions.contains(optionId);
+              final isSelected = selectedOptions.contains(label);
 
               if (optionId == null) return const SizedBox.shrink();
 
@@ -147,9 +149,9 @@ class _MultipleChoiceMultiQuestionState extends State<MultipleChoiceMultiQuestio
                 onTap: () {
                   setState(() {
                     if (isSelected) {
-                      selectedOptions.remove(optionId);
+                      selectedOptions.remove(label);
                     } else {
-                      selectedOptions.add(optionId);
+                      selectedOptions.add(label);
                     }
                     widget.onResponse(widget.question.id, selectedOptions);
                     field.didChange(true);
@@ -165,7 +167,7 @@ class _MultipleChoiceMultiQuestionState extends State<MultipleChoiceMultiQuestio
                           : theme.inputDecorationTheme.enabledBorder!.borderSide.color,
                       width: 2,
                     ),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(theme.extension<MyCustomTheme>()!.styleRoundness!),
                     color: theme.inputDecorationTheme.fillColor,
                   ),
                   child: Row(

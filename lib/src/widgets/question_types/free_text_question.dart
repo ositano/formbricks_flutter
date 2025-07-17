@@ -176,8 +176,7 @@ class _FreeTextQuestionState extends State<FreeTextQuestion> {
             TextFormField(
               controller: _controller,
               decoration: InputDecoration(
-                labelText: translate(question.placeholder, context) ?? AppLocalizations.of(context)!.type_answer_here,
-                border: const OutlineInputBorder(),
+                hintText: translate(question.placeholder, context) ?? AppLocalizations.of(context)!.type_answer_here,
                 labelStyle: theme.textTheme.bodyMedium,
               ),
               maxLines: question.longAnswer == true ? null : 1,
@@ -190,6 +189,7 @@ class _FreeTextQuestionState extends State<FreeTextQuestion> {
                     'email': TextInputType.emailAddress,
                   }[question.inputType] ??
                   TextInputType.text,
+              textInputAction: TextInputAction.next,
               onChanged: (value) {
                 _currentValue = value;
                 widget.onResponse(widget.question.id, value.trim());

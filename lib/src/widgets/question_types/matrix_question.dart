@@ -96,11 +96,11 @@ class _MatrixQuestionState extends State<MatrixQuestion> {
 
 
   void _updateSelections() {
-    final responseMap = widget.response is Map<String, dynamic> ? widget.response as Map<String, dynamic> : {};
-    final questionResponse = responseMap[widget.question.id];
-    selections = questionResponse is Map<String, String>
-        ? Map<String, String>.from(questionResponse)
-        : {};
+    selections = widget.response is Map<String, String> ? widget.response as Map<String, String> : {};
+    //final questionResponse = responseMap[widget.question.id];
+    // selections = questionResponse is Map<String, String>
+    //     ? Map<String, String>.from(questionResponse)
+    //     : {};
   }
 
   List<Map<String, String>> _shuffleRows(List<Map<String, String>> rows) {
@@ -241,10 +241,11 @@ class _MatrixQuestionState extends State<MatrixQuestion> {
                             onChanged: (value) {
                               setState(() {
                                 selections[rowLabel] = value!;
-                                final updatedResponse = {
-                                  widget.question.id: Map<String, String>.from(selections),
-                                };
-                                widget.onResponse(widget.question.id, updatedResponse);
+                                widget.onResponse(widget.question.id, selections);
+                                // final updatedResponse = {
+                                //   widget.question.id: Map<String, String>.from(selections),
+                                // };
+                                // widget.onResponse(widget.question.id, updatedResponse);
                                 WidgetsBinding.instance.addPostFrameCallback((_) {
                                   field.didChange(true);
                                 });
@@ -256,8 +257,6 @@ class _MatrixQuestionState extends State<MatrixQuestion> {
                     ],
                   );
                 }),
-
-
               ],
             ),
             if (field.hasError)

@@ -24,6 +24,7 @@ class Survey {
   final Map<String, dynamic>? hiddenFields;
   final int? autoClose;
   final Map<String, dynamic>? singleUse;
+  final Map<String, dynamic>? projectOverwrites;
 
   Survey({
     required this.id,
@@ -42,7 +43,7 @@ class Survey {
     this.variables,
     this.followUps,
     this.isBackButtonHidden,
-
+    this.projectOverwrites,
     this.runOnDate,
     this.closeOnDate,
     this.hiddenFields,
@@ -66,9 +67,9 @@ class Survey {
       displayPercentage: json['displayPercentage']?.toDouble(),
       segment: json['segment'],
       welcomeCard: json['welcomeCard'],
-        endings: json['endings'] != null ? (json['endings'] as List)
-            .map((q) => Ending.fromJson(q))
-            .toList() : [],
+      endings: json['endings'] != null
+          ? (json['endings'] as List).map((q) => Ending.fromJson(q)).toList()
+          : [],
       variables: (json['variables'] as List?)?.cast<Map<String, dynamic>>(),
       followUps: json['followUps'],
       isBackButtonHidden: json['isBackButtonHidden'],
@@ -77,6 +78,7 @@ class Survey {
       hiddenFields: json['hiddenFields'],
       runOnDate: json['runOnDate'],
       singleUse: json['singleUse'],
+      projectOverwrites: json['projectOverwrites'],
     );
   }
 }

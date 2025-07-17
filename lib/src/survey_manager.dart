@@ -35,10 +35,9 @@ class SurveyManager {
   // Custom theming and display options
   final ThemeData? customTheme;
   final SurveyDisplayMode surveyDisplayMode;
-  final bool showPoweredBy;
 
   // Handles async event tracking
-  final StreamController<String> _eventStream = StreamController<String>.broadcast();
+  final StreamController<TriggerValue> _eventStream = StreamController<TriggerValue>.broadcast();
   late StreamSubscription _eventSubscription;
 
   // List of configured app-level triggers
@@ -74,7 +73,6 @@ class SurveyManager {
     this.onSurveyTriggered,
     this.customTheme,
     required this.surveyDisplayMode,
-    required this.showPoweredBy,
     required this.triggers,
     required this.locale,
     required this.context,
@@ -117,13 +115,14 @@ class SurveyManager {
   }
 
   // Triggers an event manually (e.g. from UI or user interaction)
-  void addEvent(String event) {
+  void addEvent(TriggerValue event) {
     _eventStream.add(event);
   }
 
   // Event handler: increments count and rechecks all surveys
-  void _handleEvent(String event) async {
-    eventCounts[event] = (eventCounts[event] ?? 0) + 1;
+  void _handleEvent(TriggerValue event) async {
+    eventCounts[event.type == TriggerType.code ? event.key! : event.name!] = (eventCounts[event.type == TriggerType.code ? event.key! : event.name!] ?? 0) + 1;
+    triggers.add(event);
     await _loadAndTriggerSurveys();
   }
 
@@ -377,7 +376,7 @@ class SurveyManager {
     } else if (surveyDisplayMode == SurveyDisplayMode.dialog) {
       showDialog(
         context: context,
-        barrierDismissible: false,
+        barrierDismissible: survey.projectOverwrites?['clickOutsideClose'] ?? false,
         builder: (context) => AlertDialog(
           backgroundColor: Theme.of(context).cardColor,
           titlePadding: EdgeInsets.zero,
@@ -390,7 +389,7 @@ class SurveyManager {
     } else {
       showModalBottomSheet(
         context: context,
-        isDismissible: false,
+        isDismissible: survey.projectOverwrites?['clickOutsideClose'] ?? false,
         backgroundColor: Theme.of(context).cardColor,
         builder: (context) => widget,
       );
@@ -415,7 +414,6 @@ class SurveyManager {
       client: client,
       survey: survey,
       userId: userId,
-      showPoweredBy: showPoweredBy,
       surveyDisplayMode: surveyDisplayMode,
       estimatedTimeInSecs: estimatedTimeInSecs,
       addressQuestionBuilder: addressQuestionBuilder,
@@ -437,7 +435,7 @@ class SurveyManager {
     );
   }
 
-  // Estimation logic for timing UX progress bar or estimation
+  // Estimation logic for timing questions
   int calculateEstimatedTime(List<Question> questions) {
     int total = 0;
     for (final q in questions) {
