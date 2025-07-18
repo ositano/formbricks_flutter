@@ -157,7 +157,7 @@ class SurveyManager {
   }
 
   // Determines if a survey should be shown randomly based on displayPercentage
-  bool _shouldDisplaySurvey(double? displayPercentage) {
+  bool shouldDisplaySurvey(double? displayPercentage) {
     if (displayPercentage == null) return true;
     final random = Random().nextDouble() * 100;
     return random <= displayPercentage;
@@ -176,7 +176,7 @@ class SurveyManager {
         if (survey.environmentId != client.environmentId || survey.status != 'inProgress') continue;
 
         //skip surveys that are not within the desired date range
-        if (!_isWithinDateRange(survey)) continue;
+        if (!isWithinDateRange(survey)) continue;
 
         final isCompleted = completedSurveys[survey.id] == true;
 
@@ -187,13 +187,13 @@ class SurveyManager {
         if (survey.displayOption == 'displayOnce' && isCompleted) continue;
 
         // Evaluate whether any trigger conditions match
-        if(_matchesTrigger(survey) == false) continue;
+        if(matchesTrigger(survey) == false) continue;
 
 
         bool shouldTrigger = true;
         // Segment filter matching
         if (survey.segment != null) {
-          shouldTrigger = _matchesSegment(survey);
+          shouldTrigger = matchesSegment(survey);
         }
 
         // Display percentage control
@@ -216,7 +216,7 @@ class SurveyManager {
     }
   }
 
-  bool _isWithinDateRange(Survey survey) {
+  bool isWithinDateRange(Survey survey) {
     final now = DateTime.now();
     final runOn = DateTime.tryParse(survey.runOnDate ?? '');
     final closeOn = DateTime.tryParse(survey.closeOnDate ?? '');
@@ -227,7 +227,7 @@ class SurveyManager {
     return true;
   }
 
-  bool _matchesTrigger(Survey survey) {
+  bool matchesTrigger(Survey survey) {
     //don't show survey if there are no triggers either from the dev or Formbricks
     bool hasDefinedTriggers = triggers.isNotEmpty; //checks if triggers are defined from the user app
     bool hasSystemTriggers = survey.triggers != null && survey.triggers!.isNotEmpty; //check if triggers are defined from formbricks interface
@@ -251,7 +251,7 @@ class SurveyManager {
     return false;
   }
 
-  bool _matchesSegment(Survey survey) {
+  bool matchesSegment(Survey survey) {
     final filters = survey.segment?['filters'] ?? [];
     return _evaluateSegmentFilters(filters);
   }
@@ -342,14 +342,14 @@ class SurveyManager {
     final survey = _displayQueue.removeAt(0);
     _queuedSurveyIds.remove(survey.id);
 
-    await _showSurveyAsync(survey); // wait for survey to complete
+    await showSurveyAsync(survey); // wait for survey to complete
     _isSurveyDisplaying = false;
     _processSurveyQueue(); // move to next
   }
 
 
   // Displays the survey in the selected display mode
-  Future<void> _showSurveyAsync(Survey survey) async{
+  Future<void> showSurveyAsync(Survey survey) async{
     onSurveyTriggered?.call(survey.id);
     int estimatedTimeInSecs = calculateEstimatedTime(survey.questions);
 

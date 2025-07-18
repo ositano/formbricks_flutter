@@ -9,7 +9,7 @@
 
 [//]: # ([![Website]&#40;https://img.shields.io/badge/website-wiredash.com-blue.svg&#41;]&#40;https://wiredash.com/&#41;)
 
-**Formbricks Flutter** lets you easily integrate beautiful, customizable, in-product **micro-surveys** directly into your Flutter apps. Collect user feedback where it matters most — inside your product. 💬📲
+**Formbricks Flutter** lets you easily integrate beautiful, customizable, in-product formbricks **micro-surveys** directly into your Flutter apps. Collect user feedback where it matters most — inside your product. 💬📲
 
 Built on top of [Formbricks](https://formbricks.com) — the open-source experience management platform — this SDK offers all the flexibility you need to launch surveys, collect analytics, and adapt the UI to match your brand. 🎯
 
@@ -19,19 +19,19 @@ Built on top of [Formbricks](https://formbricks.com) — the open-source experie
 
 ## ✨ Features
 
-| Feature | Description                                                                                                   |
-|--------|---------------------------------------------------------------------------------------------------------------|
-| 💬 **In-App Micro-Surveys** | Display beautiful, embeddable surveys inside your app.                                                        |
-| 🌐 **Localization Support** | Built-in support for multiple languages: `en`, `es`, `de`, `fr`, `ja`, `ar`, `pt`, `sw`, `zh`.                |
-| ⚡ **Custom Triggers** | Trigger surveys based on app events or coded conditions.                                                      |
-| 🎨 **Theme Customization** | Style surveys using your app’s `ThemeData`. or use a different custom theme for it. Or use Formbricks styling |
-| 🙋‍♂️ **User Targeting** | Pass `userId` and `userAttributes` to personalize surveys.                                                    |
-| 🪟 **Multiple Display Modes** | Show surveys in `fullScreen`, `dialog`, or `bottomSheet` views.                                               |
-| 🧱 **Custom Question Widgets** | Override default widgets with your own beautiful UI.                                                          |
-| 🧠 **Smart Completion Tracking** | Prevent duplicate displays with `displayOnce` logic.                                                          |
-| ⏱ **Estimated Completion Time** | Automatically calculated time to inform users.                                                                |
-| 🔐 **Secure API Integration** | Connect with the Formbricks API using your API key and environment ID.                                        |
-| 🧪 **Dev Mode Toggle** | Enable/disable development mode for previewing surveys.                                                       |
+| Feature | Description                                                                                                  |
+|--------|--------------------------------------------------------------------------------------------------------------|
+| 💬 **In-App Micro-Surveys** | Display beautiful, embeddable surveys inside your app.                                                       |
+| 🌐 **Localization Support** | Built-in support for multiple languages: `en`, `es`, `de`, `fr`, `ja`, `ar`, `pt`, `sw`, `zh`.               |
+| ⚡ **Custom Triggers** | Trigger surveys based on app events or coded conditions.                                                     |
+| 🎨 **Theme Customization** | Use Formbricks styling or Style surveys using your app’s `ThemeData`. or use a different custom theme for it |
+| 🙋‍♂️ **User Targeting** | Pass `userId` and `userAttributes` to personalize surveys.                                                   |
+| 🪟 **Multiple Display Modes** | Show surveys in `fullScreen`, `dialog`, or `bottomSheet` views.                                              |
+| 🧱 **Custom Question Widgets** | Override default widgets with your own beautiful UI.                                                         |
+| 🧠 **Smart Completion Tracking** | Prevent duplicate displays with `displayOnce` logic.                                                         |
+| ⏱ **Estimated Completion Time** | Automatically calculated time to inform users.                                                               |
+| 🔐 **Secure API Integration** | Connect with the Formbricks API using your API key and environment ID.                                       |
+| 🧪 **Dev Mode Toggle** | Enable/disable development mode for previewing surveys.                                                      |
 
 ---
 

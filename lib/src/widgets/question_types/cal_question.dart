@@ -35,7 +35,7 @@ class _CalQuestionState extends State<CalQuestion> {
   @override
   void initState() {
     super.initState();
-    isScheduled = widget.response == true;
+    isScheduled = (widget.response as String?) == "clicked" ? true : false;
     _initializeVideo();
   }
 
@@ -87,7 +87,7 @@ class _CalQuestionState extends State<CalQuestion> {
       await launch(url);
       setState(() {
         isScheduled = true;
-        widget.onResponse(widget.question.id, true);
+        widget.onResponse(widget.question.id, isScheduled ? "clicked" : "dismissed");
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

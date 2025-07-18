@@ -145,48 +145,112 @@ class _NPSQuestionState extends State<NPSQuestion> {
                 ),
               ),
             const SizedBox(height: 24),
-            Container(
-              alignment: Alignment.center,
-              child: Wrap(
-              spacing: 2.0,
-              runSpacing: 8.0,
-              children: List.generate(11, (index) {
-                final isSelected = selectedIndex == index;
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedIndex = index;
-                      _hasInteracted = true;
-                    });
-                    field.didChange(index);
-                    widget.onResponse(widget.question.id, index);
 
-                    final formState = context.findAncestorStateOfType<SurveyWidgetState>()?.formKey.currentState;
-                    if (formState?.validate() ?? false) {
-                      context.findAncestorStateOfType<SurveyWidgetState>()?.nextStep();
-                    }
-                  },
-                  child: Container(
-                    width: 30,
-                    height: 30,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: isSelected ? theme.primaryColor : Colors.transparent,
-                      border: Border.all(color: isSelected ? theme.primaryColor : Colors.grey),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      '$index',
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : theme.textTheme.bodyMedium?.color,
-                        fontWeight: FontWeight.w500,
+            // 2D Grid of NPS choices (0–10)
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(11, (index) {
+                  final isSelected = selectedIndex == index;
+
+                  BorderRadius borderRadius = BorderRadius.zero;
+                  if (index == 0) {
+                    borderRadius = BorderRadius.only(
+                      topLeft: Radius.circular(theme.extension<MyCustomTheme>()!.styleRoundness!),
+                      bottomLeft: Radius.circular(theme.extension<MyCustomTheme>()!.styleRoundness!),
+                    );
+                  } else if (index == 10) {
+                    borderRadius = BorderRadius.only(
+                      topRight: Radius.circular(theme.extension<MyCustomTheme>()!.styleRoundness!),
+                      bottomRight: Radius.circular(theme.extension<MyCustomTheme>()!.styleRoundness!),
+                    );
+                  }
+
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedIndex = index;
+                        _hasInteracted = true;
+                      });
+                      field.didChange(index);
+                      widget.onResponse(widget.question.id, index);
+
+                      final formState = context.findAncestorStateOfType<SurveyWidgetState>()?.formKey.currentState;
+                      if (formState?.validate() ?? false) {
+                        context.findAncestorStateOfType<SurveyWidgetState>()?.nextStep();
+                      }
+                    },
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: isSelected ? theme.primaryColor : Colors.transparent,
+                        border: Border.all(
+                          color: theme.primaryColor,
+                          width: 1,
+                        ),
+                        borderRadius: borderRadius,
+                      ),
+                      child: Text(
+                        '$index',
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : theme.textTheme.bodyMedium?.color,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-                  ),
-                );
-              }),
+                  );
+                }),
+              ),
             ),
-            ),
+
+
+            // Container(
+            //   alignment: Alignment.center,
+            //   child: Wrap(
+            //   spacing: 2.0,
+            //   runSpacing: 8.0,
+            //   children: List.generate(11, (index) {
+            //     final isSelected = selectedIndex == index;
+            //     return GestureDetector(
+            //       onTap: () {
+            //         setState(() {
+            //           selectedIndex = index;
+            //           _hasInteracted = true;
+            //         });
+            //         field.didChange(index);
+            //         widget.onResponse(widget.question.id, index);
+            //
+            //         final formState = context.findAncestorStateOfType<SurveyWidgetState>()?.formKey.currentState;
+            //         if (formState?.validate() ?? false) {
+            //           context.findAncestorStateOfType<SurveyWidgetState>()?.nextStep();
+            //         }
+            //       },
+            //       child: Container(
+            //         width: 30,
+            //         height: 30,
+            //         alignment: Alignment.center,
+            //         decoration: BoxDecoration(
+            //           color: isSelected ? theme.primaryColor : Colors.transparent,
+            //           border: Border.all(color: isSelected ? theme.primaryColor : Colors.grey),
+            //           borderRadius: BorderRadius.circular(6),
+            //         ),
+            //         child: Text(
+            //           '$index',
+            //           style: TextStyle(
+            //             color: isSelected ? Colors.white : theme.textTheme.bodyMedium?.color,
+            //             fontWeight: FontWeight.w500,
+            //           ),
+            //         ),
+            //       ),
+            //     );
+            //   }),
+            // ),
+            // ),
+
+
+
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -35,7 +35,7 @@ class _CTAQuestionState extends State<CTAQuestion> {
   @override
   void initState() {
     super.initState();
-    performedAction = widget.response as bool? ?? false;
+    performedAction = (widget.response as String?) == "clicked" ? true : false;
     _initializeVideo();
   }
 
@@ -87,7 +87,7 @@ class _CTAQuestionState extends State<CTAQuestion> {
       await launch(url);
       setState(() {
         performedAction = true;
-        widget.onResponse(widget.question.id, true);
+        widget.onResponse(widget.question.id, performedAction ? "clicked" : "dismissed");
       });
     }
   }
@@ -171,7 +171,7 @@ class _CTAQuestionState extends State<CTAQuestion> {
                     onPressed: () {
                       setState(() {
                         performedAction = true;
-                        widget.onResponse(widget.question.id, false);
+                        widget.onResponse(widget.question.id, performedAction ? "clicked" : "dismissed");
                       });
                       field.didChange(true);
                       //Navigator.of(context).pop(); // Skip and close

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../formbricks_flutter.dart';
@@ -176,9 +177,11 @@ class SurveyWidgetState extends State<SurveyWidget> {
           }
         });
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Survey submitted successfully!')),
-      );
+      if(kDebugMode) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Survey submitted successfully!')),
+        );
+      }
     } catch (e) {
       setState(() {
         error = e.toString();
@@ -187,102 +190,6 @@ class SurveyWidgetState extends State<SurveyWidget> {
       _isSubmitting = false;
     }
   }
-
-
-  // void nextStep() {
-  //   final form = formKey.currentState;
-  //   form?.validate();
-  //
-  //   if (_currentStep == -1 && survey.welcomeCard?['enabled'] == true) {
-  //     setState(() => _currentStep++);
-  //     return;
-  //   }
-  //
-  //   final currentQuestion = survey.questions.elementAtOrNull(_currentStep);
-  //   if (currentQuestion == null) {
-  //     if (_currentStep >= survey.questions.length) {
-  //       _showEnding();
-  //       _submitSurvey();
-  //     }
-  //     return;
-  //   }
-  //
-  //   // Logic evaluation
-  //   if (currentQuestion.logic.isNotEmpty) {
-  //     bool anyLogicMatched = false;
-  //     bool hasJumpAction = false;
-  //     String? jumpTarget;
-  //
-  //     for (Logic logic in currentQuestion.logic) {
-  //       if (_evaluateConditions(logic.conditions)) {
-  //         anyLogicMatched = true;
-  //
-  //         for (var action in logic.actions) {
-  //           if (action.objective == 'jumpToQuestion') {
-  //             hasJumpAction = true;
-  //             jumpTarget = action.target;
-  //             continue; // Delay jumpToQuestion execution
-  //           } else {
-  //             _executeAction(action);
-  //           }
-  //         }
-  //       }
-  //     }
-  //
-  //     if (hasJumpAction && jumpTarget != null) {
-  //       _jumpToQuestion(jumpTarget);
-  //       return;
-  //     }
-  //
-  //     if (anyLogicMatched) {
-  //       // All logic passed but no jump — move to next if validations pass
-  //       if (_requiredAnswers[currentQuestion.id] == true &&
-  //           !responses.containsKey(currentQuestion.id)) {
-  //         form?.validate();
-  //         return;
-  //       }
-  //
-  //       if (_currentStep < survey.questions.length &&
-  //           (form?.validate() ?? false)) {
-  //         setState(() => _currentStep++);
-  //         if(_currentStep >= survey.questions.length){
-  //           _showEnding();
-  //           _submitSurvey();
-  //         }
-  //       } else if (_currentStep >= survey.questions.length) {
-  //         _submitSurvey();
-  //         _showEnding();
-  //
-  //       }
-  //       return;
-  //     }
-  //
-  //     // Jump to fallback if no logic matched
-  //     if (!anyLogicMatched && currentQuestion.logicFallback != null) {
-  //       _jumpToQuestion(currentQuestion.logicFallback!);
-  //       return;
-  //     }
-  //   }
-  //
-  //   // No logic or fallback triggered
-  //   if (_requiredAnswers[currentQuestion.id] == true &&
-  //       !responses.containsKey(currentQuestion.id)) {
-  //     form?.validate();
-  //     return;
-  //   }
-  //
-  //   if (_currentStep < survey.questions.length &&
-  //       (form?.validate() ?? false)) {
-  //     setState(() => _currentStep++);
-  //     if(_currentStep >= survey.questions.length){
-  //       _showEnding();
-  //       _submitSurvey();
-  //     }
-  //   } else if (_currentStep >= survey.questions.length) {
-  //     _showEnding();
-  //     _submitSurvey();
-  //   }
-  // }
 
 
   // Advances to the next question, applying logic if needed
@@ -572,7 +479,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) return const Center(child: CircularProgressIndicator());
-    if (error != null) return Center(child: Text('Error: $error'));
+    if (error != null && kDebugMode) return Center(child: Text('Error: $error'));
 
     return Container(
       color: Theme.of(context).cardColor,

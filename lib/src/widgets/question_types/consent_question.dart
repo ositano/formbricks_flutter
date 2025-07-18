@@ -32,7 +32,7 @@ class _ConsentQuestionState extends State<ConsentQuestion> {
   @override
   void initState() {
     super.initState();
-    consented = (widget.response as String?) == "yes" ? true : false;
+    consented = (widget.response as String?) == "accepted" ? true : false;
     _initializeVideo();
   }
 
@@ -136,7 +136,7 @@ class _ConsentQuestionState extends State<ConsentQuestion> {
               onTap: () {
                 setState(() {
                   consented = !consented;
-                  widget.onResponse(widget.question.id, consented ? "Yes" : "No");
+                  widget.onResponse(widget.question.id, consented ? "accepted" : "dismissed");
                   field.didChange(true);
                 });
               },
@@ -159,7 +159,7 @@ class _ConsentQuestionState extends State<ConsentQuestion> {
                       onChanged: (value) {
                         setState(() {
                           consented = value ?? false;
-                          widget.onResponse(widget.question.id, consented ? "Yes" : "No");
+                          widget.onResponse(widget.question.id, consented ? "accepted" : "dismissed");
                           field.didChange(true);
                         });
                       },

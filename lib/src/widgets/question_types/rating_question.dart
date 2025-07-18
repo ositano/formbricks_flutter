@@ -170,11 +170,23 @@ class _RatingQuestionState extends State<RatingQuestion> {
         glowColor: Colors.amber,
         itemPadding: EdgeInsets.symmetric(horizontal: range > 7 ? 2.0 : 4.0),
         itemBuilder: (context, index) {
+
+          Color getSmileyColor(int index, int range) {
+            final ratio = index / (range - 1);
+            if (ratio < 0.4) {
+              return const Color(0xFF8B0000); // Pitch/Dark Red
+            } else if (ratio < 0.6) {
+              return Colors.grey.shade600;
+            } else {
+              return Colors.amberAccent.shade100;
+            }
+          }
+
           if (scale == 'smiley') {
             return Icon(
               getSmileyIcon(index, range),
-              color: theme.primaryColor,
-              size: range > 7 ? 25 : 40,
+              color: getSmileyColor(index, range),
+              size: range > 6 ? range == 7 ? 30 :25 : 40,
             );
           }
           return Icon(Icons.star, color: theme.primaryColor);
