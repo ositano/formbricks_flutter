@@ -1,5 +1,5 @@
 
-# 🧠 Formbricks Flutter
+# Formbricks Flutter
 [![Pub](https://img.shields.io/pub/v/formbricks_flutter.svg)](https://pub.dartlang.org/packages/formbricks_flutter)
 
 [//]: # ([![Build]&#40;https://img.shields.io/github/actions/workflow/status/wiredashio/wiredash-sdk/nightly.yaml?branch=stable&#41;]&#40;https://github.com/wiredashio/wiredash-sdk/actions&#41;)
