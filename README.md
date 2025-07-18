@@ -19,19 +19,19 @@ Built on top of [Formbricks](https://formbricks.com) — the open-source experie
 
 ## ✨ Features
 
-| Feature | Description                                                                                                  |
-|--------|--------------------------------------------------------------------------------------------------------------|
-| 💬 **In-App Micro-Surveys** | Display beautiful, embeddable surveys inside your app.                                                       |
-| 🌐 **Localization Support** | Built-in support for multiple languages: `en`, `es`, `de`, `fr`, `ja`, `ar`, `pt`, `sw`, `zh`.               |
-| ⚡ **Custom Triggers** | Trigger surveys based on app events or coded conditions.                                                     |
-| 🎨 **Theme Customization** | Use Formbricks styling or Style surveys using your app’s `ThemeData`. or use a different custom theme for it |
-| 🙋‍♂️ **User Targeting** | Pass `userId` and `userAttributes` to personalize surveys.                                                   |
-| 🪟 **Multiple Display Modes** | Show surveys in `fullScreen`, `dialog`, or `bottomSheet` views.                                              |
-| 🧱 **Custom Question Widgets** | Override default widgets with your own beautiful UI.                                                         |
-| 🧠 **Smart Completion Tracking** | Prevent duplicate displays with `displayOnce` logic.                                                         |
-| ⏱ **Estimated Completion Time** | Automatically calculated time to inform users.                                                               |
-| 🔐 **Secure API Integration** | Connect with the Formbricks API using your API key and environment ID.                                       |
-| 🧪 **Dev Mode Toggle** | Enable/disable development mode for previewing surveys.                                                      |
+| Feature | Description                                                                                                             |
+|--------|-------------------------------------------------------------------------------------------------------------------------|
+| 💬 **In-App Micro-Surveys** | Display beautiful, embeddable surveys inside your app.                                                                  |
+| 🌐 **Localization Support** | Built-in support for multiple languages: `en`, `es`, `de`, `fr`, `ja`, `ar`, `pt`, `sw`, `zh`.                          |
+| ⚡ **Custom Triggers** | Trigger surveys based on app events or coded conditions.                                                                |
+| 🎨 **Theme Customization** | Use Formbricks styling or fallback to Style surveys using your app’s `ThemeData`. or use a different custom theme for it |
+| 🙋‍♂️ **User Targeting** | Pass `userId` and `userAttributes` to personalize surveys.                                                              |
+| 🪟 **Multiple Display Modes** | Show surveys in `fullScreen`, `dialog`, or `bottomSheet` views.                                                         |
+| 🧱 **Custom Question Widgets** | Override default widgets with your own beautiful UI.                                                                    |
+| 🧠 **Smart Completion Tracking** | Prevent duplicate displays with `displayOnce` logic.                                                                    |
+| ⏱ **Estimated Completion Time** | Automatically calculated time to inform users.                                                                          |
+| 🔐 **Secure API Integration** | Connect with the Formbricks API using your API key and environment ID.                                                  |
+| 🧪 **Dev Mode Toggle** | Enable/disable development mode for previewing surveys.                                                                 |
 
 ---
 
