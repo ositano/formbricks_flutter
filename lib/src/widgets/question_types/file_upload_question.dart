@@ -44,7 +44,7 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
   void initState() {
     super.initState();
     fileUrls = (widget.response as List<dynamic>?)?.cast<String>() ?? [];
-    imageFileUrls = fileUrls.where(_isImageFile).toList();
+    imageFileUrls = fileUrls.where(_isFileAllowed).toList();
     _initializeVideo();
   }
 
@@ -69,9 +69,10 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
     _chewieController = null;
 
     final videoUrl = widget.question.videoUrl;
-    if (videoUrl?.isNotEmpty ?? false) {
-      _videoController = VideoPlayerController.network(videoUrl!)
-        ..initialize().then((_) {
+    if (videoUrl != null && videoUrl.isNotEmpty) {
+      _videoController = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
+        ..initialize()
+            .then((_) {
           if (!mounted) return;
           if (_videoController!.value.isInitialized) {
             _chewieController = ChewieController(
@@ -81,16 +82,17 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
             );
             setState(() {});
           }
-        }).catchError((error) {
-          print('Video initialization error: $error');
+        })
+            .catchError((error) {
+          debugPrint('Video initialization error: $error');
         });
     }
   }
 
-  bool _isImageFile(String? url) {
+  bool _isFileAllowed(String? url) {
     if (url == null) return false;
     final ext = url.split('.').last.toLowerCase();
-    return ['png', 'jpg', 'jpeg', 'webp', 'gif'].contains(ext);
+    return (widget.question.allowedFileExtensions ?? ['pdf', 'png', 'jpg', 'jpeg']).contains(ext);
   }
 
   Future<void> _pickAndUploadFile() async {
@@ -98,7 +100,7 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
       allowMultiple: widget.question.allowMultipleFiles ?? false,
       type: FileType.custom,
       allowedExtensions: widget.question.allowedFileExtensions?.cast<String>() ??
-          ['pdf', 'png', 'jpeg'],
+          ['pdf', 'png', 'jpg', 'jpeg'],
     );
 
     if (result != null && result.files.isNotEmpty) {
@@ -128,7 +130,7 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
 
           if (url != null) {
             urls.add(url);
-            if (_isImageFile(url)) imageUrls.add(url);
+            if (_isFileAllowed(url)) imageUrls.add(url);
           }
         }
 
@@ -194,10 +196,24 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: Chewie(controller: _chewieController!),
               ),
-            Text(
-              translate(widget.question.headline, context) ?? '',
-              style: theme.textTheme.headlineMedium ??
-                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: Text(
+                  translate(widget.question.headline, context) ?? '',
+                  style: theme.textTheme.headlineMedium ??
+                      const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                ),
+                widget.question.required == true || widget.requiredAnswerByLogicCondition == true ? const SizedBox.shrink() :
+                Text(
+                  AppLocalizations.of(context)!.optional,
+                  textAlign: TextAlign.end,
+                  style: theme.textTheme.headlineSmall ??
+                      const TextStyle(fontSize: 14, fontWeight: FontWeight.w300),
+                ),
+              ],
             ),
             if (translate(widget.question.subheader, context)?.isNotEmpty ??
                 false)
@@ -266,14 +282,14 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
                   spacing: 12,
                   runSpacing: 12,
                   children: fileUrls.map((url) {
-                    final isImage = _isImageFile(url);
+                    final isImage = _isFileAllowed(url);
                     return Stack(
                       alignment: Alignment.topRight,
                       children: [
                         GestureDetector(
                           onTap: () {
                             if (isImage) {
-                              showFullScreenImage(context, url!);
+                              showFullScreenImage(context, url);
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(AppLocalizations.of(context)!.cannot_preview_file)),

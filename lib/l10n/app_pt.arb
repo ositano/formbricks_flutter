@@ -64,5 +64,6 @@
   "first_name": "Primeiro nome",
   "last_name": "Sobrenome",
     "click_to_upload_file": "Clique para fazer upload de ficheiros",
-      "cannot_preview_file": "Não é possível visualizar o arquivo"
+      "cannot_preview_file": "Não é possível visualizar o arquivo",
+        "optional": "Opcional"
 }

@@ -200,7 +200,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
     final form = formKey.currentState;
     form?.validate();
 
-    // Show welcome card if enabled
+    // Show questions if welcome card is enabled
     if (_currentStep == -1 && survey.welcomeCard?['enabled'] == true) {
       setState(() => _currentStep++);
       return;
@@ -384,6 +384,16 @@ class SurveyWidgetState extends State<SurveyWidget> {
 
   // Applies basic comparison operators for logic conditions
   bool _evaluateCondition(dynamic left, String operator, dynamic right) {
+
+    //Picks the left id for comparison for multiple choice and pictureSelection questions
+    final currentQuestion = survey.questions.elementAtOrNull(_currentStep);
+    if(currentQuestion?.type == 'multipleChoiceSingle' || currentQuestion?.type == 'multipleChoiceMulti' || currentQuestion?.type == 'pictureSelection'){
+      String? choiceId = getIdFromChoices(currentQuestion?.choices ?? [], left, currentQuestion?.type == 'pictureSelection');
+      if(choiceId != null) {
+        left = choiceId;
+      }
+    }
+
     switch (operator) {
       case 'equals': return left == right;
       case 'equalsOneOf': return (right as List).contains(left.toString());
@@ -408,6 +418,25 @@ class SurveyWidgetState extends State<SurveyWidget> {
         return false;
       default: return false;
     }
+  }
+
+  // Extracts ID from choices of MultipleChoice questions
+  String? getIdFromChoices(List<Map<String, dynamic>> choices, String value, bool isPictureSelection) {
+    if(isPictureSelection){
+      for (final choice in choices) {
+        if (choice['imageUrl'] == value) {
+          return choice['id'];
+        }
+      }
+      return null;
+    }else{
+      for (final choice in choices) {
+        if (translate(choice['label'], context) == value) {
+          return choice['id'];
+        }
+      }
+      return null;
+    } // Return null if no match found
   }
 
   // Executes an action from a logic block

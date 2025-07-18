@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../models/ending.dart';
 import '../utils/helper.dart';
 import 'package:video_player/video_player.dart';
@@ -7,10 +8,16 @@ import 'package:chewie/chewie.dart';
 
 class EndWidget extends StatefulWidget {
   final Ending ending;
+  final bool showCloseButton;
+  final VoidCallback? onComplete;
+  final String? nextLabel;
 
   const EndWidget({
     super.key,
     required this.ending,
+    required this.showCloseButton,
+    required this.onComplete,
+    required this.nextLabel,
   });
 
   @override
@@ -44,19 +51,19 @@ class _EndWidgetState extends State<EndWidget> {
       _videoController = VideoPlayerController.network(videoUrl!)
         ..initialize()
             .then((_) {
-          if (!mounted) return;
-          if (_videoController!.value.isInitialized) {
-            _chewieController = ChewieController(
-              videoPlayerController: _videoController!,
-              autoPlay: false,
-              looping: false,
-            );
-            setState(() {});
-          }
-        })
+              if (!mounted) return;
+              if (_videoController!.value.isInitialized) {
+                _chewieController = ChewieController(
+                  videoPlayerController: _videoController!,
+                  autoPlay: false,
+                  looping: false,
+                );
+                setState(() {});
+              }
+            })
             .catchError((error) {
-          print('Video initialization error: $error');
-        });
+              print('Video initialization error: $error');
+            });
     }
   }
 
@@ -77,12 +84,13 @@ class _EndWidgetState extends State<EndWidget> {
                 imageUrl: widget.ending.imageUrl!,
                 fit: BoxFit.contain,
                 placeholder: (context, url) => const Center(
-                    child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator())),
-                errorWidget: (context, url, error) =>
-                const Icon(Icons.error),
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
               ),
             ),
           )
@@ -95,12 +103,16 @@ class _EndWidgetState extends State<EndWidget> {
         else
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
-            child: Icon(Icons.check_circle_outline, size: 100, color: Colors.green,),
+            child: Icon(
+              Icons.check_circle_outline,
+              size: 100,
+              color: Colors.green,
+            ),
           ),
         Text(
           translate(widget.ending.headline, context) ?? "",
           style:
-          theme.textTheme.headlineMedium ??
+              theme.textTheme.headlineMedium ??
               const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
         ),
@@ -114,6 +126,22 @@ class _EndWidgetState extends State<EndWidget> {
             ),
           ),
         const SizedBox(height: 16),
+
+        widget.showCloseButton
+            ? Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    widget.onComplete
+                        ?.call(); // notify TriggerManager to show next
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    widget.nextLabel ?? AppLocalizations.of(context)!.close,
+                  ),
+                ),
+              )
+            : const SizedBox.shrink(),
       ],
     );
   }

@@ -202,4 +202,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get cannot_preview_file => 'لا يمكن معاينة الملف';
+
+  @override
+  String get optional => 'اختياري';
 }

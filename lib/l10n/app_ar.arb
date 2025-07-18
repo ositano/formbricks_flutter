@@ -64,5 +64,6 @@
   "first_name": "الاسم الأول",
   "last_name": "اسم العائلة",
     "click_to_upload_file": "انقر لتحميل الملفات",
-      "cannot_preview_file": "لا يمكن معاينة الملف"
+      "cannot_preview_file": "لا يمكن معاينة الملف",
+        "optional": "اختياري"
 }

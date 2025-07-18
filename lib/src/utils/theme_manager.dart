@@ -108,6 +108,7 @@ ThemeData buildTheme(BuildContext context, ThemeData? customTheme, Survey survey
 
     textTheme: baseTheme.textTheme.copyWith(
       headlineMedium: baseTheme.textTheme.headlineMedium?.copyWith(color: questionColor),
+      headlineSmall: baseTheme.textTheme.headlineMedium?.copyWith(color: questionColor, fontWeight: FontWeight.w300),
       bodyMedium: baseTheme.textTheme.bodyMedium?.copyWith(color: questionColor),
       bodySmall: baseTheme.textTheme.bodySmall?.copyWith(color: questionColor),
     ),

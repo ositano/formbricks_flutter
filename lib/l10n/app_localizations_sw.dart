@@ -202,4 +202,7 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get cannot_preview_file => 'Haiwezi kuonyesha faili kabla';
+
+  @override
+  String get optional => 'Hiari';
 }

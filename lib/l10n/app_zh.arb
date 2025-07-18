@@ -64,5 +64,6 @@
   "first_name": "名字",
   "last_name": "姓氏",
     "click_to_upload_file": "点击上传文件",
-      "cannot_preview_file": "无法预览文件"
+      "cannot_preview_file": "无法预览文件",
+        "optional": "可选"
 }

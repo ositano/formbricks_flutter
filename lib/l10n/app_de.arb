@@ -64,5 +64,6 @@
   "first_name": "Vorname",
   "last_name": "Nachname",
   "click_to_upload_file": "Klicken Sie hier, um Dateien hochzuladen",
-  "cannot_preview_file": "Datei kann nicht angezeigt werden"
+  "cannot_preview_file": "Datei kann nicht angezeigt werden",
+    "optional": "Optional"
 }

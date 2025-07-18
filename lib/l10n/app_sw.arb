@@ -64,5 +64,6 @@
   "first_name": "Jina la kwanza",
   "last_name": "Jina la mwisho",
     "click_to_upload_file": "Bofya ili kupakia faili",
-      "cannot_preview_file": "Haiwezi kuonyesha faili kabla"
+      "cannot_preview_file": "Haiwezi kuonyesha faili kabla",
+        "optional": "Hiari"
 }

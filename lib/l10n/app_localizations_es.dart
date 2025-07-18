@@ -202,4 +202,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get cannot_preview_file => 'No se puede previsualizar el archivo';
+
+  @override
+  String get optional => 'Opcional';
 }

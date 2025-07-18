@@ -202,4 +202,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get cannot_preview_file => 'ファイルをプレビューできません';
+
+  @override
+  String get optional => 'オプション';
 }

@@ -149,10 +149,16 @@ class SurveyForm extends StatelessWidget {
       nextLabel = question.buttonLabel?['default'];
       previousLabel = question.backButtonLabel?['default'];
     } else {
-      content = EndWidget(ending: survey.endings[currentStepEnding]);
+
       nextLabel = currentStepEnding == (survey.endings.length - 1)
           ? AppLocalizations.of(context)!.close
           : AppLocalizations.of(context)!.next;
+
+      content = EndWidget(
+        ending: survey.endings[currentStepEnding],
+        showCloseButton: currentStepEnding == (survey.endings.length - 1),
+        onComplete: onComplete,
+        nextLabel: nextLabel );
     }
 
     return SurveyContent(

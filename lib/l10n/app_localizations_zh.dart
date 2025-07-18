@@ -202,4 +202,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get cannot_preview_file => '无法预览文件';
+
+  @override
+  String get optional => '可选';
 }

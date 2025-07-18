@@ -498,6 +498,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cannot preview file'**
   String get cannot_preview_file;
+
+  /// No description provided for @optional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get optional;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

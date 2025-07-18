@@ -60,8 +60,8 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
     _chewieController = null;
 
     final videoUrl = widget.question.videoUrl;
-    if (videoUrl?.isNotEmpty ?? false) {
-      _videoController = VideoPlayerController.network(videoUrl!)
+    if (videoUrl != null && videoUrl.isNotEmpty) {
+      _videoController = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
         ..initialize()
             .then((_) {
           if (!mounted) return;
@@ -75,7 +75,7 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
           }
         })
             .catchError((error) {
-          print('Video initialization error: $error');
+          debugPrint('Video initialization error: $error');
         });
     }
   }
@@ -229,10 +229,24 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
                 padding: const EdgeInsets.only(bottom: 16.0),
                 child: Chewie(controller: _chewieController!),
               ),
-            Text(
-              translate(question.headline, context) ?? '',
-              style: theme.textTheme.headlineMedium ??
-                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: Text(
+                  translate(widget.question.headline, context) ?? '',
+                  style: theme.textTheme.headlineMedium ??
+                      const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                ),
+                widget.question.required == true || widget.requiredAnswerByLogicCondition == true ? const SizedBox.shrink() :
+                Text(
+                  AppLocalizations.of(context)!.optional,
+                  textAlign: TextAlign.end,
+                  style: theme.textTheme.headlineSmall ??
+                      const TextStyle(fontSize: 14, fontWeight: FontWeight.w300),
+                ),
+              ],
             ),
             if (translate(question.subheader, context)?.isNotEmpty ?? false)
               Padding(

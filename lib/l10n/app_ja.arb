@@ -64,6 +64,7 @@
    "first_name": "名",
    "last_name": "姓",
      "click_to_upload_file": "クリックしてファイルをアップロードします",
-       "cannot_preview_file": "ファイルをプレビューできません"
+       "cannot_preview_file": "ファイルをプレビューできません",
+         "optional": "オプション"
 
 }

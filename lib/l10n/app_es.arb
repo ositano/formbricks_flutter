@@ -64,5 +64,6 @@
   "first_name": "Nombre",
   "last_name": "Apellido",
     "click_to_upload_file": "Haga clic para cargar archivos",
-      "cannot_preview_file": "No se puede previsualizar el archivo"
+      "cannot_preview_file": "No se puede previsualizar el archivo",
+        "optional": "Opcional"
 }

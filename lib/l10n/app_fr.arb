@@ -64,5 +64,6 @@
     "first_name": "Prénom",
     "last_name": "Nom de famille",
       "click_to_upload_file": "Cliquez pour télécharger des fichiers",
-        "cannot_preview_file": "Impossible d’apercevoir le fichier"
+        "cannot_preview_file": "Impossible d’apercevoir le fichier",
+          "optional": "Optionnel"
 }
