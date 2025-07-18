@@ -15,7 +15,7 @@ Built on top of [Formbricks](https://formbricks.com) — the open-source experie
 
 ---
 
-<img width="830" alt="Wiredash Logo" src="https://github.com/wiredashio/wiredash-sdk/assets/1096485/37255958-2954-4fd4-8a43-82d3ba65a393"> <!-- 3x -->
+<img width="830" alt="Formbricks_flutter_screenshot" src="https://github.com/ositano/formbricks_flutter/blob/master/screenshot.png">
 
 ## ✨ Features
 
