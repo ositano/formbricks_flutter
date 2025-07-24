@@ -2,72 +2,113 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+
+import '../models/environment/environment_data_holder.dart';
+import '../models/user/user_response_data.dart';
 import '_base_request.dart';
 
-/// A client for interacting with the Formbricks Public & Management API.
+/// A singleton client for interacting with the Formbricks Public & Management API.
 class FormbricksClient {
-  final String apiHost;
+  final String appUrl;
   final String environmentId;
   final String apiKey;
   final bool isDev;
+  final bool useV2;
 
   String? _userId;
   Map<String, dynamic>? _userAttributes;
 
-  FormbricksClient({
-    required this.apiHost,
+  static FormbricksClient? _instance;
+
+  /// Internal constructor for singleton pattern.
+  FormbricksClient._internal({
+    required this.appUrl,
     required this.environmentId,
     required this.apiKey,
     this.isDev = true,
+    this.useV2 = false,
   });
 
-  /// Returns the base API URL, using `/dev` if in development mode.
-  String get baseUrl => isDev ? '$apiHost/dev' : apiHost;
+  /// Factory constructor for ensuring only one instance is created.
+  factory FormbricksClient({
+    required String appUrl,
+    required String environmentId,
+    required String apiKey,
+    bool isDev = true,
+    bool useV2 = false,
+  }) {
+    _instance ??= FormbricksClient._internal(
+      appUrl: appUrl,
+      environmentId: environmentId,
+      apiKey: apiKey,
+      isDev: isDev,
+      useV2: useV2,
+    );
+    return _instance!;
+  }
 
-  /// Registers or updates a user with optional attributes.
-  Future<void> setUser(String userId, {Map<String, dynamic>? attributes}) async {
+  /// Returns the current instance, or throws if not initialized.
+  static FormbricksClient get instance {
+    if (_instance == null) {
+      throw Exception("FormbricksClient has not been initialized.");
+    }
+    return _instance!;
+  }
+
+  /// Builds the base API URL depending on the environment (dev or prod).
+  String get baseUrl => isDev ? '$appUrl/dev' : appUrl;
+
+  /// Selects the API version (v1 or v2).
+  String get version => useV2 ? 'v2' : 'v1';
+
+  /// Registers or updates a user on Formbricks with optional custom attributes.
+  Future<UserResponseData?> createUser(String userId, {Map<String, dynamic>? attributes}) async {
     _userId = userId;
     _userAttributes = attributes ?? {};
 
-    final url = Uri.parse('$baseUrl/api/v1/management/people/$_userId');
-    final response = await baseRequest.put(
+    final url = Uri.parse('$baseUrl/api/$version/client/$environmentId/user');
+
+    final response = await baseRequest.post(
       url,
       headers: {
         'Authorization': 'Bearer $apiKey',
         'Content-Type': 'application/json',
       },
-      body: jsonEncode({'attributes': _userAttributes}),
+      body: jsonEncode({'userId': _userId , 'attributes': _userAttributes}),
     );
 
-    if (!(response.statusCode >= 200 && response.statusCode < 300)){
-      throw Exception('Failed to set user: ${response.body}');
+    if (response.statusCode >= 200 && response.statusCode < 300){
+      return UserResponseData.fromJson(jsonDecode(response.body)['data']);
     }
+    throw Exception('Failed to create user: ${response.toString()}');
   }
 
-  /// Fetches all surveys available in the environment.
-  Future<List<Map<String, dynamic>>> getSurveys() async {
-    final url = Uri.parse('$apiHost/api/v1/management/surveys');
+  /// Fetches environment configuration and metadata from the API.
+  Future<EnvironmentDataHolder?> getEnvironmentData() async {
+    final url = Uri.parse('$baseUrl/api/$version/client/$environmentId/environment');
     final response = await baseRequest.get(
       url,
       headers: {'x-api-key': apiKey},
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300){
-      final data = jsonDecode(response.body)['data'] as List;
-      return data.cast<Map<String, dynamic>>();
+      var originalResponseJson = jsonDecode(response.body);
+      return EnvironmentDataHolder.fromJson({
+        "data": originalResponseJson['data'],
+        "originalResponseMap": originalResponseJson
+      });
     }
-    throw Exception('Failed to fetch surveys: ${response.statusCode} - ${response.body}');
+    throw Exception('Failed to fetch environment data: ${response.statusCode} - ${response.body}');
   }
 
-  /// Creates a display session for a survey.
+  /// Creates a new survey display session for tracking visibility and interaction.
   Future<String> createDisplay({
     required String surveyId,
     required String userId,
     String? responseId,
   }) async {
-    final url = Uri.parse('$apiHost/api/v1/client/$environmentId/displays');
+    final url = Uri.parse('$baseUrl/api/$version/client/$environmentId/displays');
     final body = {
       'surveyId': surveyId,
       'userId': userId,
@@ -89,7 +130,7 @@ class FormbricksClient {
     throw Exception('Failed to create display: ${response.statusCode} - ${response.body}');
   }
 
-  /// Submits a survey response.
+  /// Submits the user's survey responses to Formbricks.
   Future<void> submitResponse({
     required String surveyId,
     required String userId,
@@ -97,7 +138,8 @@ class FormbricksClient {
     bool finished = true,
   }) async {
     debugPrint("responses: $data");
-    final url = Uri.parse('$apiHost/api/v1/client/$environmentId/responses');
+
+    final url = Uri.parse('$baseUrl/api/$version/client/$environmentId/responses');
     final body = {
       'surveyId': surveyId,
       'userId': userId,
@@ -119,7 +161,7 @@ class FormbricksClient {
     }
   }
 
-  /// Uploads a file and returns its final URL.
+  /// Uploads a file to Formbricks storage system. Handles both S3 and fallback (local) uploads.
   Future<String> uploadFile({
     required String name,
     required String mime,
@@ -131,8 +173,8 @@ class FormbricksClient {
       throw Exception('Invalid file upload parameters.');
     }
 
-    // Step 1: Request signed upload metadata
-    final metadataUrl = Uri.parse('$apiHost/api/v1/client/$environmentId/storage');
+    // Request upload metadata from Formbricks
+    final metadataUrl = Uri.parse('$baseUrl/api/$version/client/$environmentId/storage');
     final metadataPayload = {
       'fileName': name,
       'fileType': mime,
@@ -157,13 +199,10 @@ class FormbricksClient {
     final updatedFileName = metadata['updatedFileName'];
     final signingData = metadata['signingData'];
 
-    // Step 2: Perform upload (multipart or base64)
+    // S3 Presigned Upload
     if (presignedFields != null) {
-      // Multipart S3-style upload
       final request = MultipartRequest('POST', Uri.parse(signedUrl));
-      presignedFields.forEach((key, value) {
-        request.fields[key] = value;
-      });
+      presignedFields.forEach((key, value) => request.fields[key] = value);
 
       final fileBytes = await File(filePath).readAsBytes();
       final media = mime.split('/');
@@ -176,6 +215,7 @@ class FormbricksClient {
 
       final response = await baseRequest.multipart(request);
       debugPrint("sent up till here .... ${response.statusCode}");
+
       if (!(response.statusCode >= 200 && response.statusCode < 300)) {
         final error = response.body;
         if (error.contains("EntityTooLarge")) {
@@ -183,8 +223,9 @@ class FormbricksClient {
         }
         throw Exception("Upload failed: $error");
       }
-    } else {
-      // Local upload via base64 fallback
+    }
+    // Local upload fallback (base64)
+    else {
       final fileBase64 = base64Encode(await File(filePath).readAsBytes());
       final localUploadPayload = {
         "fileBase64String": fileBase64,

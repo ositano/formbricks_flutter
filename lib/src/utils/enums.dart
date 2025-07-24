@@ -1,15 +1,18 @@
-/// Specifies the application environment mode.
-/// - [dev]: Used for development and testing.
-/// - [prod]: Used for production deployment.
+/// Specifies the environment the app is running in.
+///
+/// - [dev]: Development environment for testing and debugging.
+/// - [prod]: Production environment for live deployment.
 enum AppMode { dev, prod }
 
-/// Defines how a survey should be displayed in the UI.
-/// - [dialog]: Shows the survey in a standard alert dialog.
-/// - [bottomSheetModal]: Shows the survey as a bottom sheet modal.
-/// - [fullScreen]: Displays the survey using a full-screen takeover.
-enum SurveyDisplayMode { dialog, bottomSheetModal, fullScreen }
+/// Specifies the platform where the survey will be launched.
+///
+/// - [inApp]: Surveys are displayed within the app interface using flutter classes.
+/// - [web]: Surveys are opened in a webview.
+enum SurveyPlatform { inApp, webView }
 
-/// Represents the type of trigger that initiates a survey or form.
-/// - [noCode]: Triggered via configuration (no code required).
-/// - [code]: Triggered programmatically in code.
-enum TriggerType { noCode, code }
+/// Specifies how the survey UI is presented to the user.
+///
+/// - [dialog]: Displays the survey in a modal dialog box.
+/// - [bottomSheetModal]: Displays the survey in a draggable bottom sheet.
+/// - [fullScreen]: Displays the survey in a full-screen view.
+enum SurveyDisplayMode { dialog, bottomSheetModal, fullScreen }

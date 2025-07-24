@@ -1,64 +1,50 @@
 import 'package:flutter/material.dart';
 import '../formbricks_flutter.dart';
-import 'utils/helper.dart';
+import 'formbricks_flutter_config.dart';
 
 /// A Flutter widget that provides access to the Formbricks client and configuration
 /// throughout the widget tree via an [InheritedWidget].
+///
+/// This is the entry point for setting up Formbricks in your app.
+/// It initializes survey and user managers and provides them to descendant widgets.
 class FormbricksProvider extends StatefulWidget {
+  /// The child widget to which Formbricks context will be provided.
   final Widget child;
-  final FormbricksClient client;
-  final String userId;
-  final Map<String, dynamic> userAttributes;
-  final ThemeData? customTheme;
-  final SurveyDisplayMode surveyDisplayMode;
-  final List<TriggerValue> triggers;
-  final String locale;
 
-  // Optional overrides for question widget builders
-  final QuestionWidgetBuilder? addressQuestionBuilder;
-  final QuestionWidgetBuilder? calQuestionBuilder;
-  final QuestionWidgetBuilder? consentQuestionBuilder;
-  final QuestionWidgetBuilder? contactInfoQuestionBuilder;
-  final QuestionWidgetBuilder? ctaQuestionBuilder;
-  final QuestionWidgetBuilder? dateQuestionBuilder;
-  final QuestionWidgetBuilder? fileUploadQuestionBuilder;
-  final QuestionWidgetBuilder? freeTextQuestionBuilder;
-  final QuestionWidgetBuilder? matrixQuestionBuilder;
-  final QuestionWidgetBuilder? multipleChoiceMultiQuestionBuilder;
-  final QuestionWidgetBuilder? multipleChoiceSingleQuestionBuilder;
-  final QuestionWidgetBuilder? npsQuestionBuilder;
-  final QuestionWidgetBuilder? pictureSelectionQuestionBuilder;
-  final QuestionWidgetBuilder? rankingQuestionBuilder;
-  final QuestionWidgetBuilder? ratingQuestionBuilder;
+  /// The Formbricks client instance responsible for network communication.
+  final FormbricksClient client;
+
+  /// The display mode to use when showing in-app surveys.
+  final SurveyDisplayMode surveyDisplayMode;
+
+  /// The platform type for survey display (in-app or web).
+  final SurveyPlatform surveyPlatform;
+
+  /// Whether to check for new surveys on app restart.
+  final bool checkForNewSurveysOnRestart;
+
+  /// The user ID to associate with the current session.
+  final String? userId;
+
+  /// The preferred language for survey localization.
+  final String? language;
+
+  /// Custom configuration including theming and question widget overrides.
+  final FormbricksFlutterConfig? formbricksFlutterConfig;
 
   const FormbricksProvider({
     super.key,
     required this.child,
     required this.client,
-    required this.userId,
-    this.userAttributes = const {},
-    this.customTheme,
     this.surveyDisplayMode = SurveyDisplayMode.fullScreen,
-    this.triggers = const [],
-    this.locale = 'en',
-    this.addressQuestionBuilder,
-    this.calQuestionBuilder,
-    this.consentQuestionBuilder,
-    this.contactInfoQuestionBuilder,
-    this.ctaQuestionBuilder,
-    this.dateQuestionBuilder,
-    this.fileUploadQuestionBuilder,
-    this.freeTextQuestionBuilder,
-    this.matrixQuestionBuilder,
-    this.multipleChoiceMultiQuestionBuilder,
-    this.multipleChoiceSingleQuestionBuilder,
-    this.npsQuestionBuilder,
-    this.pictureSelectionQuestionBuilder,
-    this.rankingQuestionBuilder,
-    this.ratingQuestionBuilder,
+    this.surveyPlatform = SurveyPlatform.inApp,
+    this.checkForNewSurveysOnRestart = false,
+    this.userId,
+    this.language = 'default',
+    this.formbricksFlutterConfig,
   });
 
-  /// Retrieves the state of the nearest [FormbricksProvider] above the widget tree.
+  /// Retrieves the state of the nearest [FormbricksProvider] above in the widget tree.
   static _FormbricksProviderState? of(BuildContext context) {
     return context.findAncestorStateOfType<_FormbricksProviderState>();
   }
@@ -67,98 +53,106 @@ class FormbricksProvider extends StatefulWidget {
   State<FormbricksProvider> createState() => _FormbricksProviderState();
 }
 
-/// The state class for [FormbricksProvider] responsible for initializing and managing [SurveyManager].
+/// The state class for [FormbricksProvider] responsible for initializing and managing [SurveyManager] and [UserManager].
 class _FormbricksProviderState extends State<FormbricksProvider> {
   late SurveyManager _surveyManager;
+  late UserManager _userManager;
 
   @override
   void initState() {
     super.initState();
 
-    // Initialize the survey manager with user, client, and UI configuration
+    // Initialize the survey manager with the necessary configuration.
     _surveyManager = SurveyManager(
       client: widget.client,
-      userId: widget.userId,
-      userAttributes: widget.userAttributes,
       surveyDisplayMode: widget.surveyDisplayMode,
+      surveyPlatform: widget.surveyPlatform,
       context: context,
-      triggers: widget.triggers,
-      locale: widget.locale,
-      addressQuestionBuilder: widget.addressQuestionBuilder,
-      calQuestionBuilder: widget.ctaQuestionBuilder,
-      consentQuestionBuilder: widget.consentQuestionBuilder,
-      contactInfoQuestionBuilder: widget.contactInfoQuestionBuilder,
-      ctaQuestionBuilder: widget.ctaQuestionBuilder,
-      dateQuestionBuilder: widget.dateQuestionBuilder,
-      fileUploadQuestionBuilder: widget.fileUploadQuestionBuilder,
-      freeTextQuestionBuilder: widget.freeTextQuestionBuilder,
-      matrixQuestionBuilder: widget.matrixQuestionBuilder,
-      multipleChoiceMultiQuestionBuilder:
-          widget.multipleChoiceMultiQuestionBuilder,
-      multipleChoiceSingleQuestionBuilder:
-          widget.multipleChoiceSingleQuestionBuilder,
-      npsQuestionBuilder: widget.npsQuestionBuilder,
-      pictureSelectionQuestionBuilder: widget.pictureSelectionQuestionBuilder,
-      rankingQuestionBuilder: widget.rankingQuestionBuilder,
-      ratingQuestionBuilder: widget.ratingQuestionBuilder,
+      formbricksFlutterConfig: widget.formbricksFlutterConfig,
     );
 
-    // Initialize Formbricks singleton
-    Formbricks().init(_surveyManager);
+    // Initialize and configure the user manager.
+    _userManager = UserManager();
+    if (widget.userId != null && widget.userId!.isNotEmpty) {
+      _userManager.setUserId(widget.userId!);
+    }
+    if (widget.language != null && widget.language!.isNotEmpty) {
+      _userManager.setLanguage(widget.language!);
+    }
 
-    _surveyManager.initialize();
+    // Register user and survey managers in the Formbricks singleton.
+    Formbricks().init(
+      _userManager,
+      _surveyManager,
+      widget.checkForNewSurveysOnRestart,
+    );
   }
 
   @override
   void didUpdateWidget(covariant FormbricksProvider oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // If the locale has changed, update SurveyManager and trigger rebuild
-    if (widget.locale != oldWidget.locale) {
-      _surveyManager.setLocale(widget.locale);
+
+    // Update language if it has changed and is not null.
+    if (widget.language != oldWidget.language && widget.language != null) {
+      _userManager.setLanguage(widget.language!);
     }
   }
 
   @override
   void dispose() {
-    // Clean up resources when the provider is removed
-    _surveyManager.dispose();
+    // You can dispose surveyManager if needed in future to release resources.
+    // _surveyManager.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Provide SurveyManager to widget tree
+    // Provide [SurveyManager] and [UserManager] to the widget tree using an inherited widget.
     return InheritedFormbricks(
       surveyManager: _surveyManager,
+      userManager: _userManager,
       child: widget.child,
     );
   }
 }
 
-/// An inherited widget used to expose the [SurveyManager] instance to the widget tree.
+/// An [InheritedWidget] that makes the [SurveyManager] and [UserManager] available
+/// to the widget subtree.
+///
+/// This allows descendant widgets to access survey and user data.
 class InheritedFormbricks extends InheritedWidget {
+  /// The active survey manager used for handling survey logic and display.
   final SurveyManager surveyManager;
+
+  /// The user manager responsible for identifying and managing user data.
+  final UserManager userManager;
 
   const InheritedFormbricks({
     super.key,
     required this.surveyManager,
+    required this.userManager,
     required super.child,
   });
 
-  /// Retrieves the closest [InheritedFormbricks] instance in the widget tree.
+  /// Retrieves the nearest instance of [InheritedFormbricks] in the widget tree.
   static InheritedFormbricks? of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<InheritedFormbricks>();
   }
 
-  /// Determines whether the widget should notify dependents on update.
+  /// Determines whether the widget should notify its dependents
+  /// when [surveyManager] changes.
   @override
   bool updateShouldNotify(InheritedFormbricks oldWidget) {
     return surveyManager != oldWidget.surveyManager;
   }
 }
 
-/// Extension method to easily access [SurveyManager] from [BuildContext].
+/// Extension method on [BuildContext] to provide convenient access to
+/// [SurveyManager] and [UserManager] from anywhere in the widget tree.
 extension FormbricksContext on BuildContext {
-  SurveyManager? get surveyManager =>
-      InheritedFormbricks.of(this)?.surveyManager;
+  /// Returns the nearest [SurveyManager] from the widget tree.
+  SurveyManager? get surveyManager => InheritedFormbricks.of(this)?.surveyManager;
+
+  /// Returns the nearest [UserManager] from the widget tree.
+  UserManager? get userManager => InheritedFormbricks.of(this)?.userManager;
 }

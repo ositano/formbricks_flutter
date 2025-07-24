@@ -1,5 +1,5 @@
 name: formbricks_flutter
-description: "A Flutter package for rendering and managing all Formbricks survey types in flutter apps. #Formbricks #NPS #promoter score #survey"
+description: "Formbricks Flutter SDK. \n#Formbricks #NPS #promoter score #survey"
 version: 0.0.1
 homepage:
 
@@ -16,11 +16,11 @@ dependencies:
   intl: ^0.20.2 #For date formatting
   flutter_localizations:
     sdk: flutter
+  collection: ^1.19.1
   cached_network_image: ^3.4.1 #For picture selection
   reorderables: ^0.6.0 #For ranking questions
   url_launcher: any
   shared_preferences: any
-  card_stack_widget: ^0.1.6
   flutter_widget_from_html: ^0.16.0
   pretty_http_logger: ^1.0.5
   chewie: ^1.12.1
@@ -28,6 +28,10 @@ dependencies:
   dotted_border: ^3.1.0
   line_awesome_flutter: ^3.0.1
   mime_type: ^1.0.1
+  youtube_player_flutter: ^9.1.1
+  webview_flutter: ^4.13.0
+  logger: ^2.6.1
+  json_annotation: ^4.9.0
 
 
 dev_dependencies:
@@ -35,6 +39,7 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
   build_runner: ^2.4.15
+  json_serializable: ^6.10.0
   mockito: ^5.4.6
 
 # For information on the generic Dart part of this file, see the

@@ -61,15 +61,7 @@ FormbricksProvider(
     isDev: false,
   ),
   userId: 'user-123',
-  userAttributes: {
-    'isPremium': false,
-    'location': 'Abuja',
-  },
   surveyDisplayMode: SurveyDisplayMode.fullScreen,
-  triggers: [
-    TriggerValue(type: TriggerType.noCode, name: 'Green Farmers'),
-    TriggerValue(type: TriggerType.code, key: 'myapp_users'),
-  ],
   customTheme: ThemeData(
     primaryColor: Colors.teal,
     textTheme: const TextTheme(

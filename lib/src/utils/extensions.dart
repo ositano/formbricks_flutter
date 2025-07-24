@@ -7,13 +7,13 @@ import '../../formbricks_flutter.dart';
 extension QuestionLocalization on Map<String, dynamic>? {
   /// Returns the localized string for the current app locale.
   ///
-  /// It fetches the [locale] from the [SurveyManager] using
+  /// It fetches the [locale] from the [UserManager] using
   /// the [InheritedFormbricks] context. If the specific locale key
   /// is not available in the map, it falls back to `'default'`.
   /// If neither is found, it returns an empty string.
   String tr(BuildContext context) {
-    final surveyManager = InheritedFormbricks.of(context)?.surveyManager;
-    final targetLocale = surveyManager?.locale ?? 'en';
+    final surveyManager = InheritedFormbricks.of(context)?.userManager;
+    final targetLocale = surveyManager?.language ?? 'en';
     return this?[targetLocale] ?? this?['default'] ?? '';
   }
 }
@@ -27,8 +27,8 @@ extension MapLocalization on Map<String, String>? {
   /// then falls back to `'default'`, and finally returns an empty string
   /// if neither exists.
   String tr(BuildContext context) {
-    final surveyManager = InheritedFormbricks.of(context)?.surveyManager;
-    final targetLocale = surveyManager?.locale ?? 'en';
+    final surveyManager = InheritedFormbricks.of(context)?.userManager;
+    final targetLocale = surveyManager?.language ?? 'en';
     return this?[targetLocale] ?? this?['default'] ?? '';
   }
 }

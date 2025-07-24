@@ -1,10 +1,10 @@
 export 'src/api/formbricks_client.dart';
-export 'src/survey_manager.dart';
+export 'src/manager/survey_manager.dart';
+export 'src/manager/user_manager.dart';
 export 'src/formbricks_provider.dart';
 export 'src/formbricks.dart';
-export 'src/models/survey.dart';
-export 'src/models/trigger.dart';
-export 'src/widgets/survey_widget.dart';
+export 'src/models/environment/survey.dart';
+export 'src/survey/flutter/survey_widget.dart';
 export 'src/utils/enums.dart';
 export 'src/utils/theme_manager.dart';
 export 'l10n/app_localizations.dart';
