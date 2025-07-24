@@ -1,5 +1,5 @@
 
-# Formbricks Flutter
+# Formbricks Flutter SDK
 [![Pub](https://img.shields.io/pub/v/formbricks_flutter.svg)](https://pub.dartlang.org/packages/formbricks_flutter)
 
 [//]: # ([![Build]&#40;https://img.shields.io/github/actions/workflow/status/wiredashio/wiredash-sdk/nightly.yaml?branch=stable&#41;]&#40;https://github.com/wiredashio/wiredash-sdk/actions&#41;)
@@ -103,17 +103,17 @@ Define user ID anywhere from your code
 
 Optionally, define user attributes anywhere from your code
 ```dart
-  Formbricks().setUserAttribute(Map<String, dynamic> attributes);
+  Formbricks().setAttribute(Map<String, dynamic> attributes);
 ```
 
 Optionally, set Trigger Values if you don't want to define from the app level
 ```dart
-  Formbricks().addTriggerValues(List<TriggerValue> triggerValues);
+  Formbricks().track(String key);
 ```
 
 Change app locale
 ```dart
-  Formbricks().setLocale(String locale);
+  Formbricks().setLanguage(String locale);
 ```
 
 Gets the currently active locale.
