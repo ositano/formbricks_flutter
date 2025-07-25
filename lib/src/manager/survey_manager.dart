@@ -22,8 +22,8 @@ class SurveyManager {
   static const _prefFormbricksDataHolder = 'formbricksDataHolder';
 
   final FormbricksClient client;
-  late final SurveyDisplayMode surveyDisplayMode;
-  late final SurveyPlatform surveyPlatform;
+  late SurveyDisplayMode surveyDisplayMode;
+  late SurveyPlatform surveyPlatform;
   final BuildContext context;
   final FormbricksFlutterConfig? formbricksFlutterConfig;
 
@@ -32,16 +32,12 @@ class SurveyManager {
   /// Returns the existing instance or creates a new one if it hasn't been initialized.
   factory SurveyManager({
     required FormbricksClient client,
-    required SurveyDisplayMode surveyDisplayMode,
-    required SurveyPlatform surveyPlatform,
     required BuildContext context,
     FormbricksFlutterConfig? formbricksFlutterConfig,
   }) {
     _instance ??= SurveyManager._internal(
       context: context,
       client: client,
-      surveyDisplayMode: surveyDisplayMode,
-      surveyPlatform: surveyPlatform,
       formbricksFlutterConfig: formbricksFlutterConfig,
     );
     return _instance!;
@@ -57,8 +53,6 @@ class SurveyManager {
 
   SurveyManager._internal({
     required this.client,
-    required this.surveyDisplayMode,
-    required this.surveyPlatform,
     required this.context,
     this.formbricksFlutterConfig,
   });

@@ -55,7 +55,7 @@ Wrap your app (or section of it) with the `FormbricksProvider`:
 ```dart
 FormbricksProvider(
   client: FormbricksClient(
-    apiHost: 'https://app.formbricks.com',
+    appUrl: 'https://app.formbricks.com',
     environmentId: 'your-env-id',
     apiKey: 'your-api-key',
     isDev: false,
@@ -68,6 +68,28 @@ FormbricksProvider(
 );
 ```
 
+```dart
+    MaterialApp(
+      title: 'Flutter Demo',
+      localizationsDelegates: AppLocalizations.localizationsDelegates, /// make sure to include this
+      supportedLocales: AppLocalizations.supportedLocales, /// make sure to include this
+      locale: Locale('en'), // or make dynamic
+      home: FormbricksProvider(
+        client: FormbricksClient(
+            appUrl: 'https://app.formbricks.com',
+            environmentId: 'your-env-id',
+            apiKey: 'your-api-key',
+            isDev: false,
+            useV2: false
+        ),
+        userId: 'user-123',
+        surveyPlatform: SurveyPlatform.inApp,
+        surveyDisplayMode: SurveyDisplayMode.bottomSheetModal,
+        checkForNewSurveysOnRestart: true,
+        child: const HomeScreen(),
+      ),
+    )
+```
 ---
 
 ## 📦 Customization Options
@@ -154,6 +176,98 @@ Formbricks currently supports the following input types:
 And **you can override any of them** for full control.
 
 ---
+### Full example
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:formbricks_flutter/formbricks_flutter.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: Locale('en'), // or make dynamic
+      home: FormbricksProvider(
+        client: FormbricksClient(
+            appUrl: 'https://app.formbricks.com',
+            environmentId: 'your-env-id',
+            apiKey: 'your-api-key',
+            isDev: false,
+            useV2: false
+        ),
+        userId: 'gideonvideon',
+        surveyPlatform: SurveyPlatform.inApp,
+        surveyDisplayMode: SurveyDisplayMode.bottomSheetModal,
+        checkForNewSurveysOnRestart: true,
+        child: const HomeScreen(),
+      ),
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('My App')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Formbricks.instance.setSurveyPlatform(SurveyPlatform.inApp);
+                Formbricks.instance.setSurveyDisplayMode(SurveyDisplayMode.fullScreen);
+                Formbricks.instance.track(action: "click_button");
+              },
+              child: const Text('Launch Survey inApp in fullscreen'),
+            ),
+            SizedBox(height: 10,),
+            ElevatedButton(
+              onPressed: () {
+                Formbricks.instance.setSurveyPlatform(SurveyPlatform.inApp);
+                Formbricks.instance.setSurveyDisplayMode(SurveyDisplayMode.bottomSheetModal);
+                Formbricks.instance.track(action: "click_button");
+              },
+              child: const Text('Launch Survey inApp in bottom sheet modal'),
+            ),
+            SizedBox(height: 10,),
+            ElevatedButton(
+              onPressed: () {
+                Formbricks.instance.setSurveyPlatform(SurveyPlatform.inApp);
+                Formbricks.instance.setSurveyDisplayMode(SurveyDisplayMode.dialog);
+                Formbricks.instance.track(action: "click_button");
+              },
+              child: const Text('Launch Survey inApp in alert dialog'),
+            ),
+            SizedBox(height: 10,),
+            ElevatedButton(
+              onPressed: () {
+                Formbricks.instance.setSurveyPlatform(SurveyPlatform.webView);
+                Formbricks.instance.track(action: "click_button");
+              },
+              child: const Text('Launch Survey as Web Browser'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+```
 
 ## 📜 License
 

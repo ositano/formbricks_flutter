@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../formbricks_flutter.dart';
-import 'formbricks_flutter_config.dart';
 import 'manager/survey_manager.dart';
 import 'manager/user_manager.dart';
 
@@ -67,8 +66,6 @@ class _FormbricksProviderState extends State<FormbricksProvider> {
     /// Initialize the survey manager with the necessary configuration.
     _surveyManager = SurveyManager(
       client: widget.client,
-      surveyDisplayMode: widget.surveyDisplayMode,
-      surveyPlatform: widget.surveyPlatform,
       context: context,
       formbricksFlutterConfig: widget.formbricksFlutterConfig,
     );
@@ -83,11 +80,15 @@ class _FormbricksProviderState extends State<FormbricksProvider> {
     }
 
     /// Register user and survey managers in the Formbricks singleton.
-    Formbricks().init(
+    Formbricks.instance.init(
       _userManager,
       _surveyManager,
       widget.checkForNewSurveysOnRestart,
     );
+
+    Formbricks.instance.setSurveyPlatform(widget.surveyPlatform);
+    Formbricks.instance.setSurveyDisplayMode(widget.surveyDisplayMode);
+
   }
 
   @override
