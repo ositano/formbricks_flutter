@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:http_parser/http_parser.dart';
 
 import '../models/environment/environment_data_holder.dart';
+import '../models/upload/fetch_storage_url_request_body.dart';
+import '../models/upload/fetch_storage_url_response.dart';
 import '../models/user/user_response_data.dart';
 import '_base_request.dart';
 
@@ -137,8 +138,6 @@ class FormbricksClient {
     required Map<String, dynamic> data,
     bool finished = true,
   }) async {
-    debugPrint("responses: $data");
-
     final url = Uri.parse('$baseUrl/api/$version/client/$environmentId/responses');
     final body = {
       'surveyId': surveyId,
@@ -162,59 +161,42 @@ class FormbricksClient {
   }
 
   /// Uploads a file to Formbricks storage system. Handles both S3 and fallback (local) uploads.
-  Future<String> uploadFile({
-    required String name,
-    required String mime,
-    required String filePath,
-    String? surveyId,
-    List<String>? allowedFileExtensions,
-  }) async {
-    if (name.isEmpty || mime.isEmpty || filePath.isEmpty) {
+  Future<String> uploadFile(FetchStorageUrlRequestBody requestBody) async {
+    if (requestBody.fileName.isEmpty || requestBody.fileType.isEmpty || requestBody.filePath.isEmpty) {
       throw Exception('Invalid file upload parameters.');
     }
 
     // Request upload metadata from Formbricks
     final metadataUrl = Uri.parse('$baseUrl/api/$version/client/$environmentId/storage');
-    final metadataPayload = {
-      'fileName': name,
-      'fileType': mime,
-      if (surveyId != null) 'surveyId': surveyId,
-      if (allowedFileExtensions != null) 'allowedFileExtensions': allowedFileExtensions,
-    };
-
     final metadataResponse = await baseRequest.post(
       metadataUrl,
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(metadataPayload),
+      body: jsonEncode(requestBody.toJson()),
     );
 
     if (!(metadataResponse.statusCode >= 200 && metadataResponse.statusCode < 300)) {
       throw Exception("Failed to get upload metadata: ${metadataResponse.statusCode}");
     }
 
-    final metadata = jsonDecode(metadataResponse.body)['data'];
-    final signedUrl = metadata['signedUrl'];
-    final fileUrl = metadata['fileUrl'];
-    final presignedFields = metadata['presignedFields'];
-    final updatedFileName = metadata['updatedFileName'];
-    final signingData = metadata['signingData'];
+    //final metadata = jsonDecode(metadataResponse.body)['data'];
+    final metadata = FetchStorageUrlResponse.fromJson(jsonDecode(metadataResponse.body));
+    final storageInfo = metadata.data;
 
     // S3 Presigned Upload
-    if (presignedFields != null) {
-      final request = MultipartRequest('POST', Uri.parse(signedUrl));
-      presignedFields.forEach((key, value) => request.fields[key] = value);
+    if (storageInfo.presignedFields != null) {
+      final request = MultipartRequest('POST', Uri.parse(storageInfo.signedUrl));
+      storageInfo.presignedFields!.forEach((key, value) => request.fields[key] = value);
 
-      final fileBytes = await File(filePath).readAsBytes();
-      final media = mime.split('/');
+      final fileBytes = await File(requestBody.filePath).readAsBytes();
+      final media = requestBody.fileType.split('/');
       request.files.add(MultipartFile.fromBytes(
         'file',
         fileBytes,
-        filename: updatedFileName,
+        filename: storageInfo.updatedFileName,
         contentType: MediaType(media[0], media[1]),
       ));
 
       final response = await baseRequest.multipart(request);
-      debugPrint("sent up till here .... ${response.statusCode}");
 
       if (!(response.statusCode >= 200 && response.statusCode < 300)) {
         final error = response.body;
@@ -226,21 +208,19 @@ class FormbricksClient {
     }
     // Local upload fallback (base64)
     else {
-      final fileBase64 = base64Encode(await File(filePath).readAsBytes());
+      final fileBase64 = base64Encode(await File(requestBody.filePath).readAsBytes());
       final localUploadPayload = {
         "fileBase64String": fileBase64,
-        "fileType": mime,
-        "fileName": Uri.encodeComponent(updatedFileName),
-        "surveyId": surveyId ?? "",
-        if (signingData != null) ...{
-          "signature": signingData["signature"],
-          "timestamp": signingData["timestamp"].toString(),
-          "uuid": signingData["uuid"],
+        "fileType": requestBody.fileType,
+        "fileName": Uri.encodeComponent(storageInfo.updatedFileName),
+        "surveyId": requestBody.surveyId,
+        if (storageInfo.signingData != null) ...{
+          ...storageInfo.signingData!.toJson()
         }
       };
 
       final localUploadResponse = await baseRequest.post(
-        Uri.parse(signedUrl),
+        Uri.parse(storageInfo.signedUrl),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(localUploadPayload),
       );
@@ -250,7 +230,6 @@ class FormbricksClient {
         throw Exception("Local upload failed: $message");
       }
     }
-
-    return fileUrl;
+    return storageInfo.fileUrl;
   }
 }

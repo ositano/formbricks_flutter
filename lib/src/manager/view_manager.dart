@@ -131,7 +131,7 @@ class ViewManager {
       backgroundColor: Colors.transparent,
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: 1.0,
-        minChildSize: 0.5,
+        minChildSize: 0.6,
         maxChildSize: 1.0,
         builder: (context, scrollController) => widget,
       ),

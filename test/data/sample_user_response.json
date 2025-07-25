@@ -1,0 +1,27 @@
+{
+  "data": {
+    "state": {
+      "data": {
+        "contactId": "cmdj0t0il9fl5w101gg7epcvh",
+        "userId": "gideonvision247",
+        "segments": [
+          "cmct8slow0yfmyl01nehyfebn",
+          "cmdhoq1ty05yyu401t8nn7925"
+        ],
+        "displays": [
+          {
+            "surveyId": "cmcm3oa6bw3y0ww01rsvv11n2",
+            "createdAt": "2025-07-25T16:23:12.006Z"
+          },
+          {
+            "surveyId": "cmcm3oa6bw3y0ww01rsvv11n2",
+            "createdAt": "2025-07-25T16:22:39.316Z"
+          }
+        ],
+        "responses": [],
+        "lastDisplayAt": "2025-07-25T16:23:12.006Z"
+      },
+      "expiresAt": "2025-07-25T19:20:59.019Z"
+    }
+  }
+}

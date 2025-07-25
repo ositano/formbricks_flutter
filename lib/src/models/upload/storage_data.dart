@@ -5,15 +5,17 @@ part 'storage_data.g.dart';
 @JsonSerializable()
 class StorageData {
   final String signedUrl;
-  final SigningData signingData;
+  final SigningData? signingData;
   final String updatedFileName;
   final String fileUrl;
+  final Map<String, dynamic>? presignedFields;
 
   StorageData({
     required this.signedUrl,
     required this.signingData,
     required this.updatedFileName,
     required this.fileUrl,
+    required this.presignedFields
   });
 
   factory StorageData.fromJson(Map<String, dynamic> json) =>

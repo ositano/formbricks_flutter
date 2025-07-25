@@ -8,12 +8,14 @@ class FetchStorageUrlRequestBody {
   final List<String>? allowedFileExtensions;
   final String surveyId;
   final String accessType;
+  final String filePath;
 
   FetchStorageUrlRequestBody({
     required this.fileName,
     required this.fileType,
     this.allowedFileExtensions,
     required this.surveyId,
+    required this.filePath,
     this.accessType = "public",
   });
 

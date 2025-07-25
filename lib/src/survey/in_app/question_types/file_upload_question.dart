@@ -1,12 +1,16 @@
 
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:mime_type/mime_type.dart';
 import '../../../../formbricks_flutter.dart';
-import '../../../../l10n/app_localizations.dart';
+import '../../../models/upload/fetch_storage_url_request_body.dart';
+import '../../../utils/file_upload_utils.dart';
 import '../../../utils/helper.dart';
+import '../../../utils/logger.dart';
 import '../components/custom_heading.dart';
 
 class FileUploadQuestion extends StatefulWidget {
@@ -39,20 +43,15 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
   void initState() {
     super.initState();
     fileUrls = (widget.response as List<dynamic>?)?.cast<String>() ?? [];
-    imageFileUrls = fileUrls.where(_isFileAllowed).toList();
-  }
-
-  bool _isFileAllowed(String? url) {
-    if (url == null) return false;
-    final ext = url.split('.').last.toLowerCase();
-    return (widget.question.allowedFileExtensions ?? ['pdf', 'png', 'jpg', 'jpeg']).contains(ext);
+    imageFileUrls = fileUrls.where( (url) => FileUploadUtils.isValidFileExtension(url!, widget.question.allowedFileExtensions ??
+        ['pdf', 'png', 'jpg', 'jpeg'])).toList();
   }
 
   Future<void> _pickAndUploadFile() async {
     final result = await FilePicker.platform.pickFiles(
       allowMultiple: widget.question.allowMultipleFiles ?? false,
       type: FileType.custom,
-      allowedExtensions: widget.question.allowedFileExtensions?.cast<String>() ??
+      allowedExtensions: widget.question.allowedFileExtensions ??
           ['pdf', 'png', 'jpg', 'jpeg'],
     );
 
@@ -62,7 +61,23 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
         final imageUrls = <String>[];
 
         for (var file in result.files) {
-          if (file.size / (1024 * 1024) > (widget.question.maxSizeInMB ?? 10)) {
+          if(FileUploadUtils.isValidFileExtension(file.path!, widget.question.allowedFileExtensions ??
+              ['pdf', 'png', 'jpg', 'jpeg'])){
+            Log.instance.d('Unsupported file type, Select either of these: ${widget.question.allowedFileExtensions ??
+                ['pdf', 'png', 'jpg', 'jpeg']}');
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Unsupported file type, Select either of these: ${widget.question.allowedFileExtensions ??
+                      ['pdf', 'png', 'jpg', 'jpeg']}',
+                ),
+              ),
+            );
+            continue;
+          }
+
+          if(FileUploadUtils.isValidFileSize(File(file.path!), widget.question.maxSizeInMB ?? 10)){
+            Log.instance.d('${AppLocalizations.of(context)!.file_size_exceeds_limit}, limit: ${widget.question.maxSizeInMB ?? 10}MB');
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
@@ -74,17 +89,16 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
           }
 
           String? mimeType = mime(file.path);
-          final url = await widget.client.uploadFile(
-            surveyId: widget.surveyId,
-            filePath: file.path!,
-            name: file.name,
-            mime: mimeType!,
-          );
+          var fileRequestBody = FetchStorageUrlRequestBody(
+              fileName: file.name,
+              fileType: mimeType!,
+              surveyId: widget.surveyId,
+              filePath: file.path!
 
-          if (url != null) {
+          );
+          final url = await widget.client.uploadFile(fileRequestBody);
             urls.add(url);
-            if (_isFileAllowed(url)) imageUrls.add(url);
-          }
+            imageUrls.add(url);
         }
 
         setState(() {
@@ -93,6 +107,7 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
           widget.onResponse(widget.question.id, fileUrls);
         });
       } catch (e) {
+        Log.instance.d(e);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${AppLocalizations.of(context)!.error_uploading_file} $e'),
@@ -177,7 +192,8 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
                   spacing: 12,
                   runSpacing: 12,
                   children: fileUrls.map((url) {
-                    final isImage = _isFileAllowed(url);
+                    final isImage = FileUploadUtils.isValidFileExtension(url!, widget.question.allowedFileExtensions ??
+                        ['pdf', 'png', 'jpg', 'jpeg']);
                     return Stack(
                       alignment: Alignment.topRight,
                       children: [
@@ -198,7 +214,7 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
                                 borderRadius: BorderRadius.circular(8),
                                 child: isImage
                                     ? CachedNetworkImage(
-                                  imageUrl: url!,
+                                  imageUrl: url,
                                   width: 80,
                                   height: 80,
                                   fit: BoxFit.cover,
@@ -216,7 +232,7 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
                               SizedBox(
                                 width: 80,
                                 child: Text(
-                                  url!.split('/').last,
+                                  url.split('/').last,
                                   overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                   style: Theme.of(context).textTheme.bodySmall,

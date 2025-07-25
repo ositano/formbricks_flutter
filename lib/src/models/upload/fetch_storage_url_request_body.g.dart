@@ -15,6 +15,7 @@ FetchStorageUrlRequestBody _$FetchStorageUrlRequestBodyFromJson(
       ?.map((e) => e as String)
       .toList(),
   surveyId: json['surveyId'] as String,
+  filePath: json['filePath'] as String,
   accessType: json['accessType'] as String? ?? "public",
 );
 
@@ -26,4 +27,5 @@ Map<String, dynamic> _$FetchStorageUrlRequestBodyToJson(
   'allowedFileExtensions': instance.allowedFileExtensions,
   'surveyId': instance.surveyId,
   'accessType': instance.accessType,
+  'filePath': instance.filePath,
 };

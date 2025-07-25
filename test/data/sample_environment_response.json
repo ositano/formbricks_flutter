@@ -1,0 +1,1636 @@
+{
+  "data": {
+    "data": {
+      "surveys": [
+        {
+          "id": "cmct8slo90yflyl0140dzc1th",
+          "welcomeCard": {
+            "html": {
+              "default": "Thanks for providing your feedback - let's go!"
+            },
+            "enabled": false,
+            "headline": {
+              "default": "Welcome!"
+            },
+            "buttonLabel": {
+              "default": "Next"
+            },
+            "timeToFinish": false,
+            "showResponseCount": false
+          },
+          "name": "Review Prompt",
+          "questions": [
+            {
+              "id": "td63o0g3fqttv4cs7bdxxtwy",
+              "type": "rating",
+              "logic": [
+                {
+                  "id": "pzbuvodr12ozkg8jmvovz2bc",
+                  "actions": [
+                    {
+                      "id": "fqw41oy1326c6xrf62mll93v",
+                      "target": "mkonjdlktk8fy66iugday346",
+                      "objective": "jumpToQuestion"
+                    }
+                  ],
+                  "conditions": {
+                    "id": "jgxa7jdggei9ae4yb98ohp9r",
+                    "connector": "and",
+                    "conditions": [
+                      {
+                        "id": "h47osr799jo3isljev2080ch",
+                        "operator": "isLessThanOrEqual",
+                        "leftOperand": {
+                          "type": "question",
+                          "value": "td63o0g3fqttv4cs7bdxxtwy"
+                        },
+                        "rightOperand": {
+                          "type": "static",
+                          "value": 3
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "range": 5,
+              "scale": "star",
+              "headline": {
+                "default": "How do you like WorkBench?"
+              },
+              "required": true,
+              "lowerLabel": {
+                "default": "Not good"
+              },
+              "upperLabel": {
+                "default": "Very satisfied"
+              },
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              },
+              "isColorCodingEnabled": false
+            },
+            {
+              "id": "sb7tx7r8q7qxpb07azn21zok",
+              "html": {
+                "default": "<p class=\"fb-editor-paragraph\" dir=\"ltr\"><span>This helps us a lot.</span></p>"
+              },
+              "type": "cta",
+              "logic": [
+                {
+                  "id": "uzw2wunot308y4q6qwhd712c",
+                  "actions": [
+                    {
+                      "id": "jkkfcqljld74x9bugvglrq0n",
+                      "target": "zl2oxqpexu7l9rmn2qcuujcc",
+                      "objective": "jumpToQuestion"
+                    }
+                  ],
+                  "conditions": {
+                    "id": "pq0mgyikw05hpgjrxkwi9v7t",
+                    "connector": "and",
+                    "conditions": [
+                      {
+                        "id": "d37met6fnu4r69uarbl25pfo",
+                        "operator": "isClicked",
+                        "leftOperand": {
+                          "type": "question",
+                          "value": "sb7tx7r8q7qxpb07azn21zok"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "headline": {
+                "default": "Happy to hear 🙏 Please write a review for us!"
+              },
+              "required": true,
+              "buttonUrl": "https://formbricks.com/github",
+              "buttonLabel": {
+                "default": "Write review"
+              },
+              "buttonExternal": true,
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "mkonjdlktk8fy66iugday346",
+              "type": "openText",
+              "headline": {
+                "default": "Sorry to hear! What is ONE thing we can do better?"
+              },
+              "required": true,
+              "charLimit": {
+                "enabled": false
+              },
+              "inputType": "text",
+              "subheader": {
+                "default": "Help us improve your experience."
+              },
+              "buttonLabel": {
+                "default": "Send"
+              },
+              "placeholder": {
+                "default": "Type your answer here..."
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            }
+          ],
+          "variables": [],
+          "type": "app",
+          "showLanguageSwitch": null,
+          "languages": [],
+          "endings": [
+            {
+              "id": "zl2oxqpexu7l9rmn2qcuujcc",
+              "type": "endScreen",
+              "headline": {
+                "default": "Thank you!"
+              },
+              "subheader": {
+                "default": "We appreciate your feedback."
+              },
+              "buttonLink": "https://formbricks.com",
+              "buttonLabel": {
+                "default": "Create your own Survey"
+              }
+            }
+          ],
+          "autoClose": null,
+          "styling": null,
+          "status": "inProgress",
+          "recaptcha": {
+            "enabled": false,
+            "threshold": 0.1
+          },
+          "segment": {
+            "id": "cmct8slow0yfmyl01nehyfebn",
+            "createdAt": "2025-07-07T15:14:48.657Z",
+            "updatedAt": "2025-07-07T15:14:48.657Z",
+            "title": "cmct8slo90yflyl0140dzc1th",
+            "description": null,
+            "isPrivate": true,
+            "filters": [],
+            "environmentId": "cmcm0ihkk5ell0801mo8gh38i",
+            "surveys": [
+              "cmct8slo90yflyl0140dzc1th"
+            ]
+          },
+          "recontactDays": 0,
+          "displayLimit": 10,
+          "displayOption": "displaySome",
+          "hiddenFields": {
+            "enabled": true,
+            "fieldIds": []
+          },
+          "isBackButtonHidden": false,
+          "triggers": [
+            {
+              "actionClass": {
+                "name": "Load page"
+              }
+            }
+          ],
+          "displayPercentage": null,
+          "delay": 0,
+          "projectOverwrites": null
+        },
+        {
+          "id": "cmcm3oa6bw3y0ww01rsvv11n2",
+          "welcomeCard": {
+            "html": {
+              "default": "<p class=\"fb-editor-paragraph\" dir=\"ltr\"><span style=\"white-space: pre-wrap;\">Thanks for providing your feedback - let's go!</span></p>"
+            },
+            "enabled": true,
+            "fileUrl": "https://app.formbricks.com/storage/cmcm0ihkk5ell0801mo8gh38i/public/WB%2520Image--fid--62701079-cae2-4403-9a68-d331fd752168.jpeg",
+            "headline": {
+              "default": "Welcome!"
+            },
+            "buttonLabel": {
+              "default": "Next"
+            },
+            "timeToFinish": true,
+            "showResponseCount": false
+          },
+          "name": "Start from scratch",
+          "questions": [
+            {
+              "id": "a7yq2xaoo1pp94rr563m2r7q",
+              "type": "multipleChoiceSingle",
+              "choices": [
+                {
+                  "id": "ig9u7r6jvla6i2y3kqbnvpaj",
+                  "label": {
+                    "default": "Dashboard "
+                  }
+                },
+                {
+                  "id": "de17mrjyclkyr8zd4c5rmnbt",
+                  "label": {
+                    "default": "Analytics "
+                  }
+                },
+                {
+                  "id": "hl9ldnxeyyf2095by2r996fs",
+                  "label": {
+                    "default": "Notifications "
+                  }
+                },
+                {
+                  "id": "wdk9qtc6bwo150bep1irpbaf",
+                  "label": {
+                    "default": "Settings "
+                  }
+                },
+                {
+                  "id": "vradmel8ahzhv8blzshj6smf",
+                  "label": {
+                    "default": "Reports"
+                  }
+                }
+              ],
+              "headline": {
+                "default": "Which feature do you use most frequently?"
+              },
+              "required": true,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "shuffleOption": "none",
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "xwzboewxie3wtxnx66i8bg8c",
+              "type": "rating",
+              "range": 4,
+              "scale": "smiley",
+              "headline": {
+                "default": "Rate this aura farmer"
+              },
+              "imageUrl": "",
+              "required": true,
+              "videoUrl": "https://www.youtube.com/embed/A30ni82gX6Q",
+              "lowerLabel": {
+                "default": "Not good"
+              },
+              "upperLabel": {
+                "default": "Very good"
+              },
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              },
+              "isColorCodingEnabled": true
+            },
+            {
+              "id": "jqaw47dnouojgycmx2sacfrn",
+              "type": "multipleChoiceMulti",
+              "choices": [
+                {
+                  "id": "eukxfkfhlalc6xzdomswclau",
+                  "label": {
+                    "default": "User interface design "
+                  }
+                },
+                {
+                  "id": "wwx4uhd0tu94xqvzq6aeml6w",
+                  "label": {
+                    "default": "Loading speed "
+                  }
+                },
+                {
+                  "id": "jl42ll4lz63apxk4ulvemu9r",
+                  "label": {
+                    "default": "Mobile experience "
+                  }
+                },
+                {
+                  "id": "xgm33sf0q2tray7pof0f91ih",
+                  "label": {
+                    "default": "Customer support "
+                  }
+                },
+                {
+                  "id": "f48tiy0y861e6nn7g26x9zni",
+                  "label": {
+                    "default": "Feature functionality "
+                  }
+                },
+                {
+                  "id": "hzomkcfnckm983r3jezyej3m",
+                  "label": {
+                    "default": "Documentation Pricing plans"
+                  }
+                }
+              ],
+              "headline": {
+                "default": "What areas would you like us to improve? (Select all that apply)"
+              },
+              "required": true,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "shuffleOption": "none",
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "d6kp0bxt6tthvt2i6lziv489",
+              "type": "rating",
+              "range": 5,
+              "scale": "star",
+              "headline": {
+                "default": "How would you rate your experience using this app?"
+              },
+              "required": true,
+              "lowerLabel": {
+                "default": "Not good"
+              },
+              "upperLabel": {
+                "default": "Very good"
+              },
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "isColorCodingEnabled": false
+            },
+            {
+              "id": "krrb5q4zn8nzy1vjv1sgqzvw",
+              "type": "nps",
+              "logic": [
+                {
+                  "id": "i929gmj6ayky38o0ta27zsag",
+                  "actions": [
+                    {
+                      "id": "w0v2pdl8tfsviw237rizk1xs",
+                      "target": "e8gz9w3julointpu7g62x1ba",
+                      "objective": "jumpToQuestion"
+                    }
+                  ],
+                  "conditions": {
+                    "id": "qco8jjjbkatomgkiwx7m4uox",
+                    "connector": "and",
+                    "conditions": [
+                      {
+                        "id": "lwlyeuaysuv744gzlzgtm1d3",
+                        "operator": "isLessThan",
+                        "leftOperand": {
+                          "type": "question",
+                          "value": "krrb5q4zn8nzy1vjv1sgqzvw"
+                        },
+                        "rightOperand": {
+                          "type": "static",
+                          "value": 3
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "headline": {
+                "default": "On a scale of 0 to 10, how likely are you to recommend Africa Exchange to a friend or colleague (has logic)"
+              },
+              "required": true,
+              "lowerLabel": {
+                "default": "Not at all likely"
+              },
+              "upperLabel": {
+                "default": "Extremely likely"
+              },
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "logicFallback": "ccnymuan0ek6ssygwoho8euv",
+              "backButtonLabel": {
+                "default": "Back"
+              },
+              "isColorCodingEnabled": true
+            },
+            {
+              "id": "e8gz9w3julointpu7g62x1ba",
+              "type": "openText",
+              "logic": [],
+              "headline": {
+                "default": "Why is your score that low? "
+              },
+              "required": true,
+              "charLimit": {},
+              "inputType": "text",
+              "longAnswer": false,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "placeholder": {
+                "default": "Type your answer here..."
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "ccnymuan0ek6ssygwoho8euv",
+              "type": "openText",
+              "logic": [
+                {
+                  "id": "l7mkvh2v1cerc552ibr95kkz",
+                  "actions": [
+                    {
+                      "id": "fk4tm9mcq4he5krosunm6cv9",
+                      "target": "ja5oqc5lzso9f3u3psqx9dep",
+                      "objective": "jumpToQuestion"
+                    }
+                  ],
+                  "conditions": {
+                    "id": "i1h35e5zz3r1lzy97nm7ipsd",
+                    "connector": "or",
+                    "conditions": [
+                      {
+                        "id": "wrxw7yizowg2utg0dgn3qhqc",
+                        "operator": "contains",
+                        "leftOperand": {
+                          "type": "question",
+                          "value": "ccnymuan0ek6ssygwoho8euv"
+                        },
+                        "rightOperand": {
+                          "type": "static",
+                          "value": "not sync"
+                        }
+                      },
+                      {
+                        "id": "jme6c3e4ffvi2q88jj2czowd",
+                        "connector": "and",
+                        "conditions": [
+                          {
+                            "id": "wjefrmoswesdip1ynzuu8pdl",
+                            "operator": "contains",
+                            "leftOperand": {
+                              "type": "question",
+                              "value": "ccnymuan0ek6ssygwoho8euv"
+                            },
+                            "rightOperand": {
+                              "type": "static",
+                              "value": "fast"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "id": "gan7yvmvkn5vs2fdcbr4hv2r",
+                        "operator": "equals",
+                        "leftOperand": {
+                          "type": "question",
+                          "value": "ccnymuan0ek6ssygwoho8euv"
+                        },
+                        "rightOperand": {
+                          "type": "static",
+                          "value": "folio"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "headline": {
+                "default": "What improvements would you like to see in our farmer registration process? (has logic)"
+              },
+              "required": true,
+              "charLimit": {},
+              "inputType": "text",
+              "longAnswer": false,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "placeholder": {
+                "default": "Type your answer here..."
+              },
+              "logicFallback": "ji58a53hkgb0q30tysm5a0poi",
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "ja5oqc5lzso9f3u3psqx9dep",
+              "type": "multipleChoiceSingle",
+              "choices": [
+                {
+                  "id": "jitpg979nacmgju7lxgpivj4",
+                  "label": {
+                    "default": "WB Lite"
+                  }
+                },
+                {
+                  "id": "tscxk7yc1grpr0iuvwhluxok",
+                  "label": {
+                    "default": "WB Pro"
+                  }
+                }
+              ],
+              "headline": {
+                "default": "where did you experience this?"
+              },
+              "required": true,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "shuffleOption": "none",
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "ji58a53hkgb0q30tysm5a0poi",
+              "type": "openText",
+              "headline": {
+                "default": "what your phone number"
+              },
+              "required": false,
+              "videoUrl": "",
+              "charLimit": {},
+              "inputType": "number",
+              "subheader": {
+                "default": "tell me your personal contact"
+              },
+              "longAnswer": false,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "placeholder": {
+                "default": "42"
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "qp7moirtmkamb8wr7eto9dsp",
+              "type": "multipleChoiceSingle",
+              "logic": [
+                {
+                  "id": "py7ohfrvtretyom4n86p2xue",
+                  "actions": [
+                    {
+                      "id": "w5d0nwc0ct74pnuktvjuvu3s",
+                      "target": "ur9620kk5tkjp4chwas902b7",
+                      "objective": "jumpToQuestion"
+                    }
+                  ],
+                  "conditions": {
+                    "id": "nzrf9jzc4er7ctwklnzw3n0f",
+                    "connector": "and",
+                    "conditions": [
+                      {
+                        "id": "ufigmngocvj70q5eak0dtz9s",
+                        "operator": "equals",
+                        "leftOperand": {
+                          "type": "question",
+                          "value": "qp7moirtmkamb8wr7eto9dsp"
+                        },
+                        "rightOperand": {
+                          "type": "static",
+                          "value": "ni6ixasxvyzy7ivjk4tba7o3"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "choices": [
+                {
+                  "id": "ni6ixasxvyzy7ivjk4tba7o3",
+                  "label": {
+                    "default": "Daily"
+                  }
+                },
+                {
+                  "id": "r4pakiemri8vvl1u85y9563w",
+                  "label": {
+                    "default": "Weekly"
+                  }
+                }
+              ],
+              "headline": {
+                "default": "How often do you use the farmer registration feature? "
+              },
+              "required": true,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "logicFallback": "fyp2v57k0s34n89o195nivob",
+              "shuffleOption": "none",
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "ur9620kk5tkjp4chwas902b7",
+              "type": "rating",
+              "range": 10,
+              "scale": "smiley",
+              "headline": {
+                "default": "Rate your daily  interaction with the farmer module"
+              },
+              "required": true,
+              "lowerLabel": {
+                "default": "Not good at all "
+              },
+              "upperLabel": {
+                "default": "Very good gan gan "
+              },
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              },
+              "isColorCodingEnabled": true
+            },
+            {
+              "id": "fyp2v57k0s34n89o195nivob",
+              "type": "multipleChoiceMulti",
+              "choices": [
+                {
+                  "id": "eos7gvz33zi4j4r4gk1nny15",
+                  "label": {
+                    "default": "Farmer"
+                  }
+                },
+                {
+                  "id": "w62w0oove8krqg4tj0vh5ion",
+                  "label": {
+                    "default": "Loan"
+                  }
+                },
+                {
+                  "id": "koj48y055cpwzoq7gh2aotg2",
+                  "label": {
+                    "default": "Markets"
+                  }
+                }
+              ],
+              "headline": {
+                "default": "Which features do you use most frequently? (Select all that apply)"
+              },
+              "required": true,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "shuffleOption": "none",
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "upe1hbt79w7k5lai1pvbwqg8",
+              "type": "pictureSelection",
+              "choices": [
+                {
+                  "id": "lcfx0y6em9n33mc0pzpwsxw8",
+                  "imageUrl": "https://app.formbricks.com/storage/cmcm0ihkk5ell0801mo8gh38i/public/Farmer's%2520Details--fid--0a1fdc3c-db23-40cb-be86-880394633ac9.png"
+                },
+                {
+                  "id": "i1zkep9sr3e22seav902ovzi",
+                  "imageUrl": "https://app.formbricks.com/storage/cmcm0ihkk5ell0801mo8gh38i/public/Farmer's%2520Details--fid--928c1a65-e15a-4d87-bb7e-a3b51a4284a1.jpg"
+                }
+              ],
+              "headline": {
+                "default": "Which communicates best the farmer profile details to you?"
+              },
+              "required": true,
+              "subheader": {
+                "default": "double click to open"
+              },
+              "allowMulti": false,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "chynj18kvojan5hej44nuse9",
+              "type": "ranking",
+              "choices": [
+                {
+                  "id": "fgzm9ngkqmytjhyb475vzqcs",
+                  "label": {
+                    "default": "Faster processing time"
+                  }
+                },
+                {
+                  "id": "jc88wj5wwqy3bqej7gwg3ogj",
+                  "label": {
+                    "default": "Better mobile experience"
+                  }
+                },
+                {
+                  "id": "dfc3t65qmchxt609b6wkpbf9",
+                  "label": {
+                    "default": "More colours"
+                  }
+                },
+                {
+                  "id": "jfow2dfzd5gj55g97cf920pw",
+                  "label": {
+                    "default": "Enhanced security features "
+                  }
+                },
+                {
+                  "id": "tw6uoqbi04qknx3bwervkg4d",
+                  "label": {
+                    "default": "Bigger font size"
+                  }
+                }
+              ],
+              "headline": {
+                "default": "Rank these potential improvements by priority (1 = highest priority, 4 = lowest priority"
+              },
+              "required": true,
+              "subheader": {
+                "default": "drag to rank "
+              },
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "cwuw6dzngrjvg3yr8aa0g42b",
+              "html": {
+                "default": "<p class=\"fb-editor-paragraph\"><br></p>"
+              },
+              "type": "cta",
+              "headline": {
+                "default": "Have you set up your 2FA?"
+              },
+              "required": true,
+              "buttonUrl": "https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&pcampaignid=web_share",
+              "buttonLabel": {
+                "default": "Enable 2FA"
+              },
+              "buttonExternal": true,
+              "backButtonLabel": {
+                "default": "Back"
+              },
+              "dismissButtonLabel": {
+                "default": "Skip"
+              }
+            },
+            {
+              "id": "b90naktdascv3tpb10rzeol8",
+              "html": {
+                "default": "<p class=\"fb-editor-paragraph\"><br></p>"
+              },
+              "type": "consent",
+              "label": {
+                "default": "Yes, I agree"
+              },
+              "headline": {
+                "default": "Do you consent to us collecting and analyzing your usage data to improve our platform?"
+              },
+              "required": true,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "k9h1xt9ohtwys9dgs3u9tkzc",
+              "rows": [
+                {
+                  "default": "Customer Support"
+                },
+                {
+                  "default": "Product Quality "
+                },
+                {
+                  "default": "Delivery Speed"
+                },
+                {
+                  "default": "Value for Money"
+                }
+              ],
+              "type": "matrix",
+              "columns": [
+                {
+                  "default": "Excellent "
+                },
+                {
+                  "default": "Good"
+                },
+                {
+                  "default": "Fair"
+                },
+                {
+                  "default": "Poor"
+                }
+              ],
+              "headline": {
+                "default": "How would you rate the following aspects of our service? (randomize all)"
+              },
+              "imageUrl": "",
+              "required": true,
+              "videoUrl": "",
+              "subheader": {
+                "default": "This is to rate our service "
+              },
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "shuffleOption": "all",
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "k1e4dv814zt684keca775vk1",
+              "rows": [
+                {
+                  "default": "Customer Support"
+                },
+                {
+                  "default": "Product Quality "
+                },
+                {
+                  "default": "Delivery Speed"
+                },
+                {
+                  "default": "Value for Money"
+                }
+              ],
+              "type": "matrix",
+              "columns": [
+                {
+                  "default": "Excellent "
+                },
+                {
+                  "default": "Good"
+                },
+                {
+                  "default": "Fair"
+                },
+                {
+                  "default": "Poor"
+                }
+              ],
+              "headline": {
+                "default": "How would you rate the following aspects of our service? (randomize all except last)"
+              },
+              "imageUrl": "",
+              "required": true,
+              "videoUrl": "",
+              "subheader": {
+                "default": "This is to rate our service "
+              },
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "shuffleOption": "exceptLast",
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "u55g5cwukot7cs1z4yc89h5n",
+              "type": "fileUpload",
+              "headline": {
+                "default": "Kindly upload an image of your passport "
+              },
+              "required": false,
+              "subheader": {
+                "default": "This is to rate our service "
+              },
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "maxSizeInMB": 10,
+              "backButtonLabel": {
+                "default": "Back"
+              },
+              "allowMultipleFiles": true,
+              "allowedFileExtensions": [
+                "pdf",
+                "png",
+                "jpeg"
+              ]
+            },
+            {
+              "id": "r36e2ewr2o1ujbn1r9p6c0pd",
+              "type": "date",
+              "format": "M-d-y",
+              "headline": {
+                "default": "When would you like to schedule a meeting with us (MM-DD-YY)"
+              },
+              "required": false,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "gr4q93z4x0qt44mscl46aq9s",
+              "type": "date",
+              "format": "d-M-y",
+              "headline": {
+                "default": "When would you like to schedule a meeting with us (DD-MM-YY)"
+              },
+              "required": true,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "pf2o78et1z0vma5sihqrzuc0",
+              "type": "date",
+              "format": "y-M-d",
+              "headline": {
+                "default": "When would you like to schedule a meeting with us (YY-MM-DD)"
+              },
+              "required": true,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "n6yoacl7i0v2pgso7ro9q9nv",
+              "type": "cal",
+              "calHost": "cal.com",
+              "headline": {
+                "default": "Schedule a meeting for a live demo "
+              },
+              "required": false,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "calUserName": "vision-gideon-dn1lqx",
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "gfp921y9tg33pqhoiibzcg4h",
+              "zip": {
+                "show": true,
+                "required": false,
+                "placeholder": {
+                  "default": "Zip"
+                }
+              },
+              "city": {
+                "show": true,
+                "required": false,
+                "placeholder": {
+                  "default": "City"
+                }
+              },
+              "type": "address",
+              "state": {
+                "show": true,
+                "required": true,
+                "placeholder": {
+                  "default": "State"
+                }
+              },
+              "country": {
+                "show": true,
+                "required": true,
+                "placeholder": {
+                  "default": "Country"
+                }
+              },
+              "headline": {
+                "default": "Please enter your delivery address "
+              },
+              "required": true,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "addressLine1": {
+                "show": true,
+                "required": true,
+                "placeholder": {
+                  "default": "Address Line 1"
+                }
+              },
+              "addressLine2": {
+                "show": false,
+                "required": false,
+                "placeholder": {
+                  "default": "Address Line 2"
+                }
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "je78g3dmken91jrrnx18hb6z",
+              "type": "contactInfo",
+              "email": {
+                "show": true,
+                "required": true,
+                "placeholder": {
+                  "default": "Email"
+                }
+              },
+              "phone": {
+                "show": true,
+                "required": true,
+                "placeholder": {
+                  "default": "Phone"
+                }
+              },
+              "company": {
+                "show": true,
+                "required": true,
+                "placeholder": {
+                  "default": "Company"
+                }
+              },
+              "headline": {
+                "default": "Provide your contact information "
+              },
+              "lastName": {
+                "show": true,
+                "required": false,
+                "placeholder": {
+                  "default": "Last Name"
+                }
+              },
+              "required": true,
+              "firstName": {
+                "show": true,
+                "required": true,
+                "placeholder": {
+                  "default": "First Name"
+                }
+              },
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "tnts3cnw4ijupon4tqo9dma0",
+              "type": "rating",
+              "range": 7,
+              "scale": "smiley",
+              "headline": {
+                "default": "Rate your daily  interaction with the farmer module (7 pts)"
+              },
+              "required": true,
+              "lowerLabel": {
+                "default": "Not good"
+              },
+              "upperLabel": {
+                "default": "Very good"
+              },
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              },
+              "isColorCodingEnabled": true
+            },
+            {
+              "id": "pm9mlpzuble8v5lmmow6o39m",
+              "type": "rating",
+              "range": 6,
+              "scale": "smiley",
+              "headline": {
+                "default": "Rate your daily  interaction with the farmer module (6 pts)"
+              },
+              "required": true,
+              "lowerLabel": {
+                "default": "Not good"
+              },
+              "upperLabel": {
+                "default": "Very good"
+              },
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              },
+              "isColorCodingEnabled": true
+            },
+            {
+              "id": "u5b6azie74i0w6w56jpw1smq",
+              "type": "rating",
+              "range": 3,
+              "scale": "smiley",
+              "headline": {
+                "default": "Rate your daily  interaction with the farmer module (3 pts)"
+              },
+              "required": true,
+              "lowerLabel": {
+                "default": "Not good"
+              },
+              "upperLabel": {
+                "default": "Very good"
+              },
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              },
+              "isColorCodingEnabled": true
+            },
+            {
+              "id": "e0y306u0zlsxpk4ccfxbx3nv",
+              "type": "rating",
+              "range": 5,
+              "scale": "smiley",
+              "headline": {
+                "default": "Rate your daily  interaction with the farmer module (5 pts)"
+              },
+              "required": true,
+              "lowerLabel": {
+                "default": "Not good"
+              },
+              "upperLabel": {
+                "default": "Very good"
+              },
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              },
+              "isColorCodingEnabled": true
+            },
+            {
+              "id": "plbvev1522gtq813lxb6wxfo",
+              "type": "multipleChoiceSingle",
+              "logic": [
+                {
+                  "id": "zwvb9zmaifl6dv14uadyd7ev",
+                  "actions": [
+                    {
+                      "id": "lqskcathwhfask2o4q49y6y4",
+                      "target": "jrbzg6y3u047aakmqgiugeq3",
+                      "objective": "jumpToQuestion"
+                    }
+                  ],
+                  "conditions": {
+                    "id": "u4edpxnk69xq9shiq6d4spjl",
+                    "connector": "and",
+                    "conditions": [
+                      {
+                        "id": "bjllh0w4iz5jr90qlfb83dqu",
+                        "operator": "equals",
+                        "leftOperand": {
+                          "type": "question",
+                          "value": "plbvev1522gtq813lxb6wxfo"
+                        },
+                        "rightOperand": {
+                          "type": "static",
+                          "value": "hitx8kwppg2v9irczpf5ayou"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "choices": [
+                {
+                  "id": "joar1idfymcqv166syam8kqd",
+                  "label": {
+                    "default": "Yes"
+                  }
+                },
+                {
+                  "id": "hitx8kwppg2v9irczpf5ayou",
+                  "label": {
+                    "default": "No"
+                  }
+                }
+              ],
+              "headline": {
+                "default": "Would you like to continue with this survey? "
+              },
+              "required": true,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "logicFallback": "exaohsb9ff532mhaydz2pc0t",
+              "shuffleOption": "none",
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "exaohsb9ff532mhaydz2pc0t",
+              "type": "openText",
+              "logic": [
+                {
+                  "id": "vg3lyivuu3pl46l4c5lvrbpn",
+                  "actions": [
+                    {
+                      "id": "a2ytai7baeqwno8xile170wb",
+                      "value": {
+                        "type": "static",
+                        "value": 12
+                      },
+                      "operator": "multiply",
+                      "objective": "calculate",
+                      "variableId": "s2rr10w845ud89qa5kdvnwud"
+                    }
+                  ],
+                  "conditions": {
+                    "id": "ps6kqf8pf0npglk1u16vq45b",
+                    "connector": "and",
+                    "conditions": [
+                      {
+                        "id": "sezrx9fddswp0ijqzaeja0xe",
+                        "operator": "isSubmitted",
+                        "leftOperand": {
+                          "type": "question",
+                          "value": "exaohsb9ff532mhaydz2pc0t"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "headline": {
+                "default": "What is your monthly software budget in USD?"
+              },
+              "required": true,
+              "charLimit": {},
+              "inputType": "number",
+              "longAnswer": false,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "placeholder": {
+                "default": "Amount in dollars"
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "mbsfdoahe27g2znt5s3spq3e",
+              "type": "multipleChoiceSingle",
+              "logic": [
+                {
+                  "id": "ohvfmp4fyx240eyr2h0n7gyo",
+                  "actions": [
+                    {
+                      "id": "ggljkf9q1gz4u81xnk83besf",
+                      "target": "zhlyuctq393fygtgjfp3nx3c",
+                      "objective": "requireAnswer"
+                    },
+                    {
+                      "id": "uoh8ef3g7h86fmngd7sm95mg",
+                      "target": "zhlyuctq393fygtgjfp3nx3c",
+                      "objective": "jumpToQuestion"
+                    }
+                  ],
+                  "conditions": {
+                    "id": "f8szqxv41cl5ixrt5qlntn2r",
+                    "connector": "or",
+                    "conditions": [
+                      {
+                        "id": "tlrthy8qtc3m2olmd3ak9xw7",
+                        "operator": "equals",
+                        "leftOperand": {
+                          "type": "question",
+                          "value": "mbsfdoahe27g2znt5s3spq3e"
+                        },
+                        "rightOperand": {
+                          "type": "static",
+                          "value": "jtz2ga246nfcz6xruwl53bin"
+                        }
+                      },
+                      {
+                        "id": "gpyn0154wh1ihbuxihgvfpzc",
+                        "operator": "equalsOneOf",
+                        "leftOperand": {
+                          "type": "question",
+                          "value": "mbsfdoahe27g2znt5s3spq3e"
+                        },
+                        "rightOperand": {
+                          "type": "static",
+                          "value": [
+                            "lzepo2pe2w16l7b86ql3dd5k",
+                            "ckokz6v1rwczw9lo7jgqmdsi"
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "choices": [
+                {
+                  "id": "jtz2ga246nfcz6xruwl53bin",
+                  "label": {
+                    "default": "Yes, I'd like to schedule a demo"
+                  }
+                },
+                {
+                  "id": "lzepo2pe2w16l7b86ql3dd5k",
+                  "label": {
+                    "default": "Maybe, send me more information first"
+                  }
+                },
+                {
+                  "id": "ckokz6v1rwczw9lo7jgqmdsi",
+                  "label": {
+                    "default": "No, not at this time"
+                  }
+                }
+              ],
+              "headline": {
+                "default": "Are you interested in scheduling a product demo?"
+              },
+              "required": true,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "shuffleOption": "none",
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            },
+            {
+              "id": "zhlyuctq393fygtgjfp3nx3c",
+              "type": "openText",
+              "headline": {
+                "default": "Please provide your contact information for demo scheduling"
+              },
+              "required": false,
+              "charLimit": {
+                "enabled": false
+              },
+              "inputType": "text",
+              "longAnswer": true,
+              "buttonLabel": {
+                "default": "Next"
+              },
+              "placeholder": {
+                "default": "Type your answer here..."
+              },
+              "backButtonLabel": {
+                "default": "Back"
+              }
+            }
+          ],
+          "variables": [
+            {
+              "id": "qpyq2u305083q4qbujylj5m6",
+              "name": "number_of_farmer",
+              "type": "number",
+              "value": 10
+            },
+            {
+              "id": "wx5uladzl13snktdj2dwxu0s",
+              "name": "phone_os",
+              "type": "text",
+              "value": "Android"
+            },
+            {
+              "id": "nb6l2diuqgsq4akrzry9ydvf",
+              "name": "user_name",
+              "type": "text",
+              "value": "jvance"
+            },
+            {
+              "id": "s2rr10w845ud89qa5kdvnwud",
+              "name": "monthly_budget",
+              "type": "number",
+              "value": 3
+            },
+            {
+              "id": "l1ep845o1qdrhfmhgyzt0men",
+              "name": "business_email",
+              "type": "text",
+              "value": ""
+            }
+          ],
+          "type": "app",
+          "showLanguageSwitch": null,
+          "languages": [],
+          "endings": [
+            {
+              "id": "jrbzg6y3u047aakmqgiugeq3",
+              "type": "endScreen",
+              "headline": {
+                "default": "Thank you!"
+              },
+              "imageUrl": "https://app.formbricks.com/storage/cmcm0ihkk5ell0801mo8gh38i/public/timing--fid--aedcd7cd-6bda-4589-bc4c-5b051dc919e2.jpg",
+              "videoUrl": "",
+              "subheader": {
+                "default": "We appreciate your feedback."
+              }
+            }
+          ],
+          "autoClose": 10,
+          "styling": {
+            "roundness": 17,
+            "background": {
+              "bg": "#f2e0fb",
+              "bgType": "color"
+            },
+            "brandColor": {
+              "light": "#a527e1"
+            },
+            "inputColor": {
+              "light": "#f8eefd"
+            },
+            "isLogoHidden": false,
+            "questionColor": {
+              "light": "#6b1992"
+            },
+            "cardArrangement": {
+              "appSurveys": "simple",
+              "linkSurveys": "straight"
+            },
+            "cardBorderColor": {
+              "light": "#edd4f9"
+            },
+            "hideProgressBar": false,
+            "inputBorderColor": {
+              "light": "#dba9f3"
+            },
+            "isDarkModeEnabled": false,
+            "cardBackgroundColor": {
+              "light": "#fcf9fe"
+            },
+            "highlightBorderColor": {
+              "light": "#bc5de9"
+            },
+            "overwriteThemeStyling": true
+          },
+          "status": "inProgress",
+          "recaptcha": {
+            "enabled": false,
+            "threshold": 0.1
+          },
+          "segment": {
+            "id": "cmdhoq1ty05yyu401t8nn7925",
+            "createdAt": "2025-07-24T17:47:11.686Z",
+            "updatedAt": "2025-07-24T17:47:11.686Z",
+            "title": "cmcm3oa6bw3y0ww01rsvv11n2",
+            "description": null,
+            "isPrivate": true,
+            "filters": [],
+            "environmentId": "cmcm0ihkk5ell0801mo8gh38i",
+            "surveys": [
+              "cmcm3oa6bw3y0ww01rsvv11n2"
+            ]
+          },
+          "recontactDays": 0,
+          "displayLimit": 1,
+          "displayOption": "displayMultiple",
+          "hiddenFields": {
+            "enabled": true,
+            "fieldIds": [
+              "Smile",
+              "Angry"
+            ]
+          },
+          "isBackButtonHidden": true,
+          "triggers": [
+            {
+              "actionClass": {
+                "name": "click_button"
+              }
+            }
+          ],
+          "displayPercentage": 100,
+          "delay": 5,
+          "projectOverwrites": {
+            "placement": "center",
+            "darkOverlay": true,
+            "clickOutsideClose": true
+          }
+        }
+      ],
+      "actionClasses": [
+        {
+          "id": "cmcm44ac1w60aww01q101ybpi",
+          "type": "noCode",
+          "name": "Clicked Farmer",
+          "key": null,
+          "noCodeConfig": {
+            "type": "pageView",
+            "urlFilters": []
+          }
+        },
+        {
+          "id": "cmcn683tocr3gyz01fu3fetoq",
+          "type": "noCode",
+          "name": "click button",
+          "key": null,
+          "noCodeConfig": {
+            "type": "click",
+            "urlFilters": [],
+            "elementSelector": {
+              "cssSelector": "counterButton"
+            }
+          }
+        },
+        {
+          "id": "cmcnsg7c949h0yi01hmq656os",
+          "type": "code",
+          "name": "Tester",
+          "key": "click_to_download",
+          "noCodeConfig": null
+        },
+        {
+          "id": "cmct8utv47p5cyh01jqsub33q",
+          "type": "noCode",
+          "name": "Load page",
+          "key": null,
+          "noCodeConfig": {
+            "type": "pageView",
+            "urlFilters": []
+          }
+        },
+        {
+          "id": "cmdhi3q6jzeyrrn01rrcm2ozb",
+          "type": "code",
+          "name": "click_button",
+          "key": "click_button",
+          "noCodeConfig": null
+        }
+      ],
+      "project": {
+        "id": "cmcm0ihjo5elf08013tx492fg",
+        "recontactDays": 0,
+        "clickOutsideClose": true,
+        "darkOverlay": false,
+        "placement": "bottomRight",
+        "inAppSurveyBranding": true,
+        "styling": {
+          "roundness": 8,
+          "background": {
+            "bg": "#fff",
+            "bgType": "color"
+          },
+          "brandColor": {
+            "light": "#E1261C"
+          },
+          "inputColor": {
+            "light": "#ffffff"
+          },
+          "isLogoHidden": false,
+          "questionColor": {
+            "light": "#2b2524"
+          },
+          "cardArrangement": {
+            "appSurveys": "straight",
+            "linkSurveys": "straight"
+          },
+          "cardBorderColor": {
+            "light": "#f8fafc"
+          },
+          "cardShadowColor": {
+            "light": "#000000"
+          },
+          "inputBorderColor": {
+            "light": "#cbd5e1"
+          },
+          "isDarkModeEnabled": false,
+          "allowStyleOverwrite": true,
+          "cardBackgroundColor": {
+            "light": "#ffffff"
+          }
+        }
+      }
+    },
+    "expiresAt": "2025-07-25T19:51:33.455Z"
+  }
+}
