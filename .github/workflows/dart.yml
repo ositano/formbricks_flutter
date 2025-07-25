@@ -1,0 +1,100 @@
+# Workflow name displayed in GitHub Actions UI
+name: Flutter CI/CD to Pub.dev
+
+# Triggers for the workflow
+on:
+  push:
+    branches:
+      - master # Run on pushes to the master branch
+  pull_request:
+    branches:
+      - master # Run on pull requests targeting the master branch
+
+# Define the jobs to be executed
+jobs:
+  # Job to analyze the Flutter code
+  analyze:
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner
+
+    steps:
+      # Step 1: Checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Flutter SDK
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable' # Use the stable Flutter channel
+
+      # Step 3: Get Flutter package dependencies
+      - name: Get dependencies
+        run: flutter pub get
+
+      # Step 4: Run Flutter code analysis
+      - name: Analyze code
+        run: flutter analyze
+
+  # Job to run tests
+  test:
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner
+
+    steps:
+      # Step 1: Checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Flutter SDK
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable' # Use the stable Flutter channel
+
+      # Step 3: Get Flutter package dependencies
+      - name: Get dependencies
+        run: flutter pub get
+
+      # Step 4: Run Flutter tests
+      - name: Run tests
+        run: flutter test
+
+  # Job to publish the package to pub.dev
+  publish:
+    needs: [analyze, test] # This job depends on 'analyze' and 'test' jobs succeeding
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' # Only run on push to master
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner
+
+    steps:
+      # Step 1: Checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Flutter SDK
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable' # Use the stable Flutter channel
+
+      # Step 3: Get Flutter package dependencies
+      - name: Get dependencies
+        run: flutter pub get
+
+      # Step 4: Authenticate with pub.dev
+      # This step uses a secret named 'PUB_DEV_PUBLISH_ACCESS_TOKEN'
+      # You need to generate an access token from pub.dev and add it to your GitHub repository secrets.
+      # Go to your repository -> Settings -> Secrets and variables -> Actions -> New repository secret.
+      # Name it PUB_DEV_PUBLISH_ACCESS_TOKEN and paste your token as the value.
+      - name: Authenticate with pub.dev
+        run: |
+          mkdir -p ~/.config/dart
+          echo "{\"accessToken\":\"${{ secrets.PUB_DEV_PUBLISH_ACCESS_TOKEN }}\"}" > ~/.config/dart/pub-credentials.json
+        env:
+          PUB_DEV_PUBLISH_ACCESS_TOKEN: ${{ secrets.PUB_DEV_PUBLISH_ACCESS_TOKEN }}
+
+      # Step 5: Publish the package to pub.dev
+      # IMPORTANT: By default, this uses --dry-run for safety.
+      # To actually publish, change '--dry-run' to '--force'.
+      # Ensure your version in pubspec.yaml is incremented before pushing to master
+      # to avoid publishing the same version multiple times.
+      - name: Publish to pub.dev
+        run: flutter pub publish --dry-run # Change to --force to actually publish
