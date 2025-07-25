@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.4.0
+  http_parser: ^4.1.2
   flutter_rating_bar: ^4.0.1
   file_picker: ^10.2.0 #For file uploads
   intl: ^0.20.2 #For date formatting
