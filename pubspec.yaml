@@ -1,7 +1,9 @@
 name: formbricks_flutter
 description: "Formbricks Flutter SDK. \n#Formbricks #NPS #promoter score #survey"
 version: 0.0.1
-homepage:
+homepage: https://formbricks.com/
+repository: https://github.com/ositano/formbricks_flutter
+issue_tracker: https://github.com/ositano/formbricks_flutter/issues
 
 environment:
   sdk: ^3.8.0
@@ -20,8 +22,8 @@ dependencies:
   collection: ^1.19.1
   cached_network_image: ^3.4.1 #For picture selection
   reorderables: ^0.6.0 #For ranking questions
-  url_launcher: any
-  shared_preferences: any
+  url_launcher: ^6.3.2
+  shared_preferences: ^2.5.3
   flutter_widget_from_html: ^0.16.0
   pretty_http_logger: ^1.0.5
   chewie: ^1.12.1
