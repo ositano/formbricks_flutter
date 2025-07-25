@@ -63,7 +63,10 @@
   "email_required": "البريد الإلكتروني مطلوب",
   "first_name": "الاسم الأول",
   "last_name": "اسم العائلة",
-    "click_to_upload_file": "انقر لتحميل الملفات",
-      "cannot_preview_file": "لا يمكن معاينة الملف",
-        "optional": "اختياري"
+  "click_to_upload_file": "انقر لتحميل الملفات",
+  "cannot_preview_file": "لا يمكن معاينة الملف",
+  "optional": "اختياري",
+  "unable_to_connect": "غير قادر على الاتصال بالخدمة. تحقق من وجود اتصال إنترنت مستقر",
+  "something_went_wrong": "حدث خطأ ما ولم يكتمل طلبك. يرجى المحاولة مرة أخرى",
+  "no_internet_available": "لم يتم اكتشاف اتصال بالإنترنت. تأكد من توفر الإنترنت وحاول مرة أخرى"
 }

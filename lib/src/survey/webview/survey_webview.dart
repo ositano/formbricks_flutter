@@ -4,10 +4,13 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 
 import '../../../formbricks_flutter.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../utils/logger.dart';
 
 /// A widget that renders a Formbricks survey inside a WebView.
 ///
@@ -43,6 +46,8 @@ class SurveyWebviewState extends State<SurveyWebview> {
   late WebViewController _webViewController;
   bool _isDismissing = false;
   final Completer<bool> _webViewLoaded = Completer<bool>();
+  bool hasErrorLoadingWebview = false;
+  bool hasHttpErrorLoadingWebview = false;
 
   @override
   void initState() {
@@ -60,14 +65,26 @@ class SurveyWebviewState extends State<SurveyWebview> {
       ..enableZoom(false)
       ..setNavigationDelegate(
         NavigationDelegate(
-          onProgress: (_) {},
+          onProgress: (_) {
+            Log.instance.d("progress....");
+          },
           onPageStarted: (url) => debugPrint('WebView started: $url'),
-          onHttpError: (error) => debugPrint('HTTP error: ${error.request} / ${error.response}'),
+          onHttpError: (error) {
+            setState(() {
+              hasHttpErrorLoadingWebview = true;
+            });
+          },
           onPageFinished: (_) {
+            Log.instance.d("webview loaded ....");
             _webViewLoaded.complete(true);
             debugPrint('WebView finished loading.');
           },
-          onWebResourceError: (error) => debugPrint('WebView error: ${error.description}'),
+          onWebResourceError: (error) {
+            setState(() {
+              hasErrorLoadingWebview = true;
+            });
+            debugPrint('WebView error: ${error.description}');
+            },
         ),
       )
       ..addJavaScriptChannel(
@@ -208,10 +225,10 @@ class SurveyWebviewState extends State<SurveyWebview> {
           _safeDismiss();
           break;
         case 'onDisplayCreated':
-          debugPrint('Display created for survey: ${widget.survey.id}');
+          context.userManager?.onDisplay(widget.survey.id);
           break;
         case 'onResponseCreated':
-          debugPrint('Response created for survey: ${widget.survey.id}');
+          context.userManager?.onResponse(widget.survey.id);
           break;
         case 'onFilePick':
           final params = data['fileUploadParams'];
@@ -221,12 +238,12 @@ class SurveyWebviewState extends State<SurveyWebview> {
           );
           break;
         case 'onSurveyLibraryLoadError':
-          debugPrint('Failed to load Formbricks Surveys library');
+          Log.instance.e('Failed to load Formbricks Surveys library');
           _safeDismiss();
           break;
       }
     } catch (e) {
-      debugPrint('Error handling JS message: $e');
+      Log.instance.e('Error handling JS message: $e');
     }
   }
 
@@ -282,8 +299,22 @@ class SurveyWebviewState extends State<SurveyWebview> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.expand(
+    return hasErrorLoadingWebview || hasHttpErrorLoadingWebview ? errorWidget(context) : SizedBox.expand(
       child: WebViewWidget(controller: _webViewController),
+    );
+  }
+
+  Widget errorWidget(BuildContext context){
+    String message = hasErrorLoadingWebview ? AppLocalizations.of(context)!.something_went_wrong : AppLocalizations.of(context)!.unable_to_connect;
+    return Center(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(hasErrorLoadingWebview ? LineAwesomeIcons.bug_solid : LineAwesomeIcons.exclamation_triangle_solid, size: 30,),
+          SizedBox(height: 8,),
+          Text(message, style: Theme.of(context).textTheme.bodyMedium,),
+        ],
+      ),
     );
   }
 }

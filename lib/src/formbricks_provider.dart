@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../formbricks_flutter.dart';
 import 'formbricks_flutter_config.dart';
+import 'manager/survey_manager.dart';
+import 'manager/user_manager.dart';
 
 /// A Flutter widget that provides access to the Formbricks client and configuration
 /// throughout the widget tree via an [InheritedWidget].
@@ -62,7 +64,7 @@ class _FormbricksProviderState extends State<FormbricksProvider> {
   void initState() {
     super.initState();
 
-    // Initialize the survey manager with the necessary configuration.
+    /// Initialize the survey manager with the necessary configuration.
     _surveyManager = SurveyManager(
       client: widget.client,
       surveyDisplayMode: widget.surveyDisplayMode,
@@ -71,7 +73,7 @@ class _FormbricksProviderState extends State<FormbricksProvider> {
       formbricksFlutterConfig: widget.formbricksFlutterConfig,
     );
 
-    // Initialize and configure the user manager.
+    /// Initialize and configure the user manager.
     _userManager = UserManager();
     if (widget.userId != null && widget.userId!.isNotEmpty) {
       _userManager.setUserId(widget.userId!);
@@ -80,7 +82,7 @@ class _FormbricksProviderState extends State<FormbricksProvider> {
       _userManager.setLanguage(widget.language!);
     }
 
-    // Register user and survey managers in the Formbricks singleton.
+    /// Register user and survey managers in the Formbricks singleton.
     Formbricks().init(
       _userManager,
       _surveyManager,
@@ -92,7 +94,7 @@ class _FormbricksProviderState extends State<FormbricksProvider> {
   void didUpdateWidget(covariant FormbricksProvider oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Update language if it has changed and is not null.
+    /// Update language if it has changed and is not null.
     if (widget.language != oldWidget.language && widget.language != null) {
       _userManager.setLanguage(widget.language!);
     }
@@ -100,14 +102,14 @@ class _FormbricksProviderState extends State<FormbricksProvider> {
 
   @override
   void dispose() {
-    // You can dispose surveyManager if needed in future to release resources.
-    // _surveyManager.dispose();
+    /// You can dispose surveyManager if needed in future to release resources.
+    _userManager.logout();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Provide [SurveyManager] and [UserManager] to the widget tree using an inherited widget.
+    /// Provide [SurveyManager] and [UserManager] to the widget tree using an inherited widget.
     return InheritedFormbricks(
       surveyManager: _surveyManager,
       userManager: _userManager,

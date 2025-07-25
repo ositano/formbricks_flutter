@@ -8,18 +8,6 @@ class Logic {
   final Condition? conditions;
 
   Logic({required this.id, required this.actions, this.conditions});
-
-  // factory Logic.fromJson(Map<String, dynamic> json) {
-  //   return Logic(
-  //     id: json['id'],
-  //     actions: (json['actions'] as List)
-  //         .map((a) => LogicAction.fromJson(a))
-  //         .toList(),
-  //     conditions: json['conditions'] != null
-  //         ? Condition.fromJson(json['conditions'])
-  //         : null,
-  //   );
-  // }
   factory Logic.fromJson(Map<String, dynamic> json) => _$LogicFromJson(json);
   Map<String, dynamic> toJson() => _$LogicToJson(this);
 }
@@ -42,18 +30,6 @@ class LogicAction {
     this.operator,
     this.variableId
   });
-
-  // factory LogicAction.fromJson(Map<String, dynamic> json) {
-  //   return LogicAction(
-  //     id: json['id'],
-  //     objective: json['objective'],
-  //     target: json['target'],
-  //     value: json['value'],
-  //     operator: json['operator'],
-  //     variableId: json['variableId'],
-  //   );
-  // }
-
   factory LogicAction.fromJson(Map<String, dynamic> json) => _$LogicActionFromJson(json);
   Map<String, dynamic> toJson() => _$LogicActionToJson(this);
 }
@@ -70,19 +46,6 @@ class Condition {
     required this.connector,
     required this.conditions,
   });
-
-  // factory Condition.fromJson(Map<String, dynamic> json) {
-  //   return Condition(
-  //     id: json['id'],
-  //     connector: json['connector'],
-  //     conditions: (json['conditions'] as List)
-  //         .map((c) => c.containsKey('operator')
-  //         ? ConditionDetail.fromJson(c)
-  //         : Condition.fromJson(c))
-  //         .toList(),
-  //   );
-  // }
-
   factory Condition.fromJson(Map<String, dynamic> json) => _$ConditionFromJson(json);
   Map<String, dynamic> toJson() => _$ConditionToJson(this);
 }
@@ -100,15 +63,6 @@ class ConditionDetail {
     required this.leftOperand,
     this.rightOperand,
   });
-
-  // factory ConditionDetail.fromJson(Map<String, dynamic> json) {
-  //   return ConditionDetail(
-  //     id: json['id'],
-  //     operator: json['operator'],
-  //     leftOperand: Operand.fromJson(json['leftOperand']),
-  //     rightOperand: json['rightOperand'] != null ? Operand.fromJson(json['rightOperand']) : null,
-  //   );
-  // }
   factory ConditionDetail.fromJson(Map<String, dynamic> json) => _$ConditionDetailFromJson(json);
   Map<String, dynamic> toJson() => _$ConditionDetailToJson(this);
 }
@@ -119,13 +73,6 @@ class Operand {
   final dynamic value;
 
   Operand({required this.type, this.value});
-
-  // factory Operand.fromJson(Map<String, dynamic> json) {
-  //   return Operand(
-  //     type: json['type'],
-  //     value: json['value'],
-  //   );
-  // }
   factory Operand.fromJson(Map<String, dynamic> json) => _$OperandFromJson(json);
   Map<String, dynamic> toJson() => _$OperandToJson(this);
 }

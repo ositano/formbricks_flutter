@@ -52,9 +52,9 @@
     "state": "都道府県",
     "zip": "郵便番号",
     "country": "国",
-      "response_required": "要対応",
-        "takes_less_than": "かかる時間は以下です",
-          "close": "近い",
+    "response_required": "要対応",
+   "takes_less_than": "かかる時間は以下です",
+   "close": "近い",
    "first_name_required": "名は必須です",
    "last_name_required": "姓は必須です",
    "company": "会社",
@@ -63,8 +63,11 @@
    "email_required": "メールアドレスは必須です",
    "first_name": "名",
    "last_name": "姓",
-     "click_to_upload_file": "クリックしてファイルをアップロードします",
-       "cannot_preview_file": "ファイルをプレビューできません",
-         "optional": "オプション"
+   "click_to_upload_file": "クリックしてファイルをアップロードします",
+   "cannot_preview_file": "ファイルをプレビューできません",
+   "optional": "オプション",
+   "unable_to_connect": "サービスに接続できません。安定したインターネット接続があることを確認してください",
+   "something_went_wrong": "問題が発生し、リクエストを完了できませんでした。もう一度お試しください",
+   "no_internet_available": "インターネットが検出されませんでした。インターネット接続を確認して再試行してください"
 
 }

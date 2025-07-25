@@ -65,5 +65,8 @@
   "last_name": "Apellido",
     "click_to_upload_file": "Haga clic para cargar archivos",
       "cannot_preview_file": "No se puede previsualizar el archivo",
-        "optional": "Opcional"
+        "optional": "Opcional",
+  "unable_to_connect": "No se puede conectar al servicio. Asegúrese de tener una conexión a Internet estable",
+      "something_went_wrong": "Algo salió mal y no se pudo completar su solicitud. Por favor, inténtelo de nuevo",
+      "no_internet_available": "No se detectó conexión a Internet. Asegúrese de tener Internet disponible e inténtelo de nuevo"
 }

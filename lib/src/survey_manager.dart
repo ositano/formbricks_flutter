@@ -12,46 +12,46 @@
 // import 'survey/webview/survey_webview.dart';
 // import 'utils/helper.dart';
 //
-// // SurveyManager listens for app events and decides when to display surveys
-// // based on conditions like triggers, completion state, and percentage chance.
+// /// SurveyManager listens for app events and decides when to display surveys
+// /// based on conditions like triggers, completion state, and percentage chance.
 // class SurveyManager {
-//   // Dependencies and configuration
+//   /// Dependencies and configuration
 //   final FormbricksClient client;
 //   late String userId;
 //   late Map<String, dynamic> userAttributes;
 //
-//   // Tracks how many times each event has occurred
+//   /// Tracks how many times each event has occurred
 //   final Map<String, int> eventCounts = {};
 //
-//   // Tracks whether surveys have been completed (cached locally)
+//   /// Tracks whether surveys have been completed (cached locally)
 //   late Map<String, bool> completedSurveys = {};
 //
-//   // Tracks whether `initialize` has run to avoid duplicate loading
+//   /// Tracks whether `initialize` has run to avoid duplicate loading
 //   bool _isInitialized = false;
 //
-//   // Optional callback when a survey is triggered
+//   /// Optional callback when a survey is triggered
 //   Function(String)? onSurveyTriggered;
 //
-//   // Custom theming and display options
+//   /// Custom theming and display options
 //   final ThemeData? customTheme;
 //   final SurveyDisplayMode surveyDisplayMode;
 //   final SurveyPlatform surveyPlatform;
 //
-//   // Handles async event tracking
+//   /// Handles async event tracking
 //   final StreamController<TriggerValue> _eventStream =
 //       StreamController<TriggerValue>.broadcast();
 //   late StreamSubscription _eventSubscription;
 //
-//   // List of configured app-level triggers
+//   /// List of configured app-level triggers
 //   late List<TriggerValue> triggers;
 //
-//   // Language for internationalization
+//   /// Language for internationalization
 //   late String language;
 //
-//   // Used to show surveys in current context
+//   /// Used to show surveys in current context
 //   final BuildContext context;
 //
-//   // Optional custom question widget builders
+//   /// Optional custom question widget builders
 //   final QuestionWidgetBuilder? addressQuestionBuilder;
 //   final QuestionWidgetBuilder? calQuestionBuilder;
 //   final QuestionWidgetBuilder? consentQuestionBuilder;
@@ -95,7 +95,7 @@
 //     this.rankingQuestionBuilder,
 //     this.ratingQuestionBuilder,
 //   }) {
-//     // Listen to incoming event stream
+//     /// Listen to incoming event stream
 //     _eventSubscription = _eventStream.stream.listen(_handleEvent);
 //   }
 //
@@ -103,10 +103,10 @@
 //   final Set<String> _queuedSurveyIds = {};
 //   bool _isSurveyDisplaying = false;
 //
-//   // Getter for current locale
+//   /// Getter for current locale
 //   String get currentLanguage => language;
 //
-//   // Update language
+//   /// Update language
 //   void setLanguage(String newLanguage) {
 //     if (newLanguage.isNotEmpty && newLanguage != language) {
 //       language = newLanguage;
@@ -117,25 +117,25 @@
 //     userId = newUserId;
 //   }
 //
-//   // Triggers an event manually (e.g. from UI or user interaction)
+//   /// Triggers an event manually (e.g. from UI or user interaction)
 //   void addEvent(TriggerValue event) {
 //     _eventStream.add(event);
 //   }
 //
-//   // Event handler: increments count and rechecks all surveys
+//   /// Event handler: increments count and rechecks all surveys
 //   void _handleEvent(TriggerValue event) async {
 //     eventCounts[event.name] = (eventCounts[event.name] ?? 0) + 1;
 //     triggers.add(event);
 //     await _loadAndTriggerSurveys();
 //   }
 //
-//   // Cleanup method to be called from outside
+//   /// Cleanup method to be called from outside
 //   void dispose() {
 //     _eventSubscription.cancel();
 //     _eventStream.close();
 //   }
 //
-//   // Loads completed surveys from SharedPreferences
+//   /// Loads completed surveys from SharedPreferences
 //   Future<void> initialize() async {
 //     _displayQueue.clear();
 //     _queuedSurveyIds.clear();
@@ -151,7 +151,7 @@
 //     await _loadAndTriggerSurveys(); // Immediately check for trigger
 //   }
 //
-//   // Saves updated completed survey state to SharedPreferences
+//   /// Saves updated completed survey state to SharedPreferences
 //   Future<void> _saveCompletedSurveys() async {
 //     final prefs = await SharedPreferences.getInstance();
 //     await prefs.setString(
@@ -160,14 +160,14 @@
 //     );
 //   }
 //
-//   // Determines if a survey should be shown randomly based on displayPercentage
+//   /// Determines if a survey should be shown randomly based on displayPercentage
 //   bool shouldDisplaySurvey(double? displayPercentage) {
 //     if (displayPercentage == null) return true;
 //     final random = Random().nextDouble() * 100;
 //     return random <= displayPercentage;
 //   }
 //
-//   // Main method to fetch and decide whether to show any surveys
+//   /// Main method to fetch and decide whether to show any surveys
 //   Future<void> _loadAndTriggerSurveys() async {
 //     if (!_isInitialized) await initialize();
 //
@@ -178,35 +178,35 @@
 //       for (var surveyData in surveys) {
 //         final survey = Survey.fromJson(surveyData);
 //
-//         // Skip surveys that are inactive or from another environment
+//         /// Skip surveys that are inactive or from another environment
 //         if (survey.status != 'inProgress') {
 //           continue;
 //         }
 //
-//         //skip surveys that are not within the desired date range
+//         /// skip surveys that are not within the desired date range
 //         if (!isWithinDateRange(survey)) continue;
 //
 //         final isCompleted = completedSurveys[survey.id] == true;
 //
-//         // Skip if should run once after completed
+//         /// Skip if should run once after completed
 //         if (survey.singleUse?['enabled'] == true && isCompleted) continue;
 //
-//         // Skip if marked completed and only supposed to display once
+//         /// Skip if marked completed and only supposed to display once
 //         if (survey.displayOption == 'displayOnce' && isCompleted) continue;
 //
-//         // Evaluate whether any trigger conditions match
+//         /// Evaluate whether any trigger conditions match
 //         if (matchesTrigger(survey) == false) continue;
 //
 //         bool shouldTrigger = true;
-//         // Segment filter matching
+//         /// Segment filter matching
 //         if (survey.segment != null) {
 //           shouldTrigger = matchesSegment(survey);
 //         }
 //
-//         // Display percentage control
+//         /// Display percentage control
 //         //if (!shouldTrigger || !_shouldDisplaySurvey(survey.displayPercentage)) continue;
 //
-//         // If it passes all checks, mark as completed and show
+//         /// If it passes all checks, mark as completed and show
 //         completedSurveys[survey.id] = true;
 //         await _saveCompletedSurveys();
 //
@@ -234,7 +234,7 @@
 //   }
 //
 //   bool matchesTrigger(Survey survey) {
-//     //don't show survey if there are no triggers either from the dev or Formbricks
+//     /// don't show survey if there are no triggers either from the dev or Formbricks
 //     bool hasDefinedTriggers =
 //         triggers.isNotEmpty; //checks if triggers are defined from the user app
 //     bool hasSystemTriggers =
@@ -369,7 +369,7 @@
 //     _processSurveyQueue(environmentData); // move to next
 //   }
 //
-//   // Displays the survey in the selected display mode
+//   /// Displays the survey in the selected display mode
 //   Future<void> showSurveyWeb(
 //     Survey survey,
 //     Map<String, dynamic> environmentData,
@@ -393,7 +393,7 @@
 //       ),
 //     );
 //
-//     // bottom sheet mode
+//     /// bottom sheet mode
 //     showModalBottomSheet(
 //       context: context,
 //       isDismissible: survey.projectOverwrites?['clickOutsideClose'] ?? false,
@@ -409,7 +409,7 @@
 //     return completer.future;
 //   }
 //
-//   // Displays the survey in the selected display mode
+//   /// Displays the survey in the selected display mode
 //   Future<void> showSurveyAsync(Survey survey) async {
 //     onSurveyTriggered?.call(survey.id);
 //     int estimatedTimeInSecs = calculateEstimatedTime(survey.questions);
@@ -434,7 +434,7 @@
 //             ),
 //           );
 //
-//     // Full-screen modal
+//     /// Full-screen modal
 //     if (surveyDisplayMode == SurveyDisplayMode.fullScreen) {
 //       Navigator.push(
 //         context,
@@ -443,7 +443,7 @@
 //             : MaterialPageRoute(builder: (context) => widget),
 //       );
 //
-//       // Dialog mode
+//       /// Dialog mode
 //     } else if (surveyDisplayMode == SurveyDisplayMode.dialog) {
 //       showDialog(
 //         context: context,
@@ -457,7 +457,7 @@
 //           content: widget,
 //         ),
 //       );
-//       // Bottom sheet mode
+//       /// Bottom sheet mode
 //     } else {
 //       showModalBottomSheet(
 //         context: context,
@@ -469,7 +469,7 @@
 //     return completer.future;
 //   }
 //
-//   // Builds themed full-screen survey view
+//   /// Builds themed full-screen survey view
 //   Widget _buildSurveyScreen(
 //     Survey survey,
 //     int estimatedTimeInSecs, {
@@ -488,7 +488,7 @@
 //     );
 //   }
 //
-//   // Creates the SurveyWidget with all required props and builders
+//   /// Creates the SurveyWidget with all required props and builders
 //   SurveyWidget _buildSurveyWidget(
 //     Survey survey,
 //     int estimatedTimeInSecs, {
@@ -519,7 +519,7 @@
 //     );
 //   }
 //
-//   // Estimation logic for timing questions
+//   /// Estimation logic for timing questions
 //   int calculateEstimatedTime(List<Question> questions) {
 //     int total = 0;
 //     for (final q in questions) {

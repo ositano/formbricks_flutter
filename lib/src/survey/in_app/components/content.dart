@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 import '../../../../formbricks_flutter.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'buttons.dart';
 import 'copyright.dart';
 import 'progress.dart';
@@ -25,6 +27,8 @@ class SurveyContent extends StatelessWidget {
   final dynamic response;
   final VoidCallback? onComplete;
   final bool clickOutsideClose;
+  final bool hasUserInteracted;
+  final int inactivitySecondsRemaining;
 
   const SurveyContent({
     super.key,
@@ -46,7 +50,9 @@ class SurveyContent extends StatelessWidget {
     required this.surveyDisplayMode,
     required this.estimatedTimeInSecs,
     required this.onComplete,
-    required this.clickOutsideClose
+    required this.clickOutsideClose,
+    required this.hasUserInteracted,
+    required this.inactivitySecondsRemaining
   });
 
   @override
@@ -81,6 +87,7 @@ class SurveyContent extends StatelessWidget {
         break;
     }
 
+    double inactivityProgress = inactivitySecondsRemaining / (survey.autoClose ?? 10).toDouble();
     return SizedBox(
       width: width,
       height: height,
@@ -88,23 +95,26 @@ class SurveyContent extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          hasUserInteracted ? SizedBox.shrink() :
+              SurveyProgress(progress: inactivityProgress),
           Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               surveyDisplayMode == SurveyDisplayMode.fullScreen
                   ? SizedBox(
-                      height:
-                          MediaQuery.of(context).padding.top + kToolbarHeight,
+                      height: kToolbarHeight,
                     )
                   : SizedBox.shrink(),
               clickOutsideClose ? IconButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                    onComplete?.call(); // notify TriggerManager to show next
+                    Navigator.of(context).maybePop();
                 },
                 icon: Icon(
-                  Icons.cancel_rounded,
-                  color: Theme.of(context).cardColor,
+                  LineAwesomeIcons.times_solid,
+                  color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
                 ),
               ) : SizedBox.shrink(),
             ],

@@ -1,9 +1,11 @@
-import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:flutter/material.dart';
 import '../../../../formbricks_flutter.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../models/environment/question.dart';
 import '../../../utils/helper.dart';
-import '../components/formbricks_video_player.dart';
+import '../components/custom_heading.dart';
+import '../components/custom_text_field.dart';
 
 class ContactInfoQuestion extends StatefulWidget {
   final Question question;
@@ -64,38 +66,6 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
     widget.onResponse(widget.question.id, data);
   }
 
-  Widget _buildField({
-    required bool show,
-    required bool required,
-    required String label,
-    required TextEditingController controller,
-    required void Function() revalidate,
-    required TextInputType? keyboardType
-  }) {
-    if (!show) return const SizedBox.shrink();
-    return Padding(
-        padding: const EdgeInsets.only(bottom: 8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              required ? '$label *' : label,
-            ),
-            SizedBox(height: 4.0,),
-            TextFormField(
-              controller: controller,
-              onChanged: (_) {
-                _updateResponse();
-                revalidate();
-              },
-              textInputAction: TextInputAction.next,
-              keyboardType: keyboardType ?? TextInputType.text,
-            ),
-          ],
-        )
-    );
-  }
 
   @override
   void dispose() {
@@ -111,6 +81,10 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final question = widget.question;
+    bool isRequired = question.required ?? false;
+    if(widget.requiredAnswerByLogicCondition){
+      isRequired = widget.requiredAnswerByLogicCondition;
+    }
 
     final firstName = question.firstName ?? {};
     final lastName = question.lastName ?? {};
@@ -119,12 +93,9 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
     final company = question.company ?? {};
 
     return FormField<bool>(
+      key: ValueKey(widget.question.id),
       validator: (_) {
-        if(widget.requiredAnswerByLogicCondition) {
-          return AppLocalizations.of(context)!.response_required;
-        }
-
-        if (!(question.required ?? false)) return null;
+        if (!isRequired) return null;
 
         if (firstName['show'] == true &&
             firstName['required'] == true &&
@@ -164,106 +135,51 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (widget.question.imageUrl?.isNotEmpty ?? false)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: GestureDetector(child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: CachedNetworkImage(
-                    imageUrl: widget.question.imageUrl!,
-                    height: 150,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => const Center(
-                        child: SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator())),
-                    errorWidget: (context, url, error) =>
-                    const Icon(Icons.error),
-                  ),
-                ),
-                  onTap: () => showFullScreenImage(context, widget.question.imageUrl!),
-                ),
-              )
-            else if (widget.question.videoUrl?.isNotEmpty ?? false)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(
-                    theme.extension<MyCustomTheme>()!.styleRoundness!,
-                  ),
-                  child: FormbricksVideoPlayer(videoUrl: widget.question.videoUrl!,),
-                ),
-              ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: Text(
-                  translate(widget.question.headline, context) ?? '',
-                  style: theme.textTheme.headlineMedium ??
-                      const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                ),
-                widget.question.required == true || widget.requiredAnswerByLogicCondition == true ? const SizedBox.shrink() :
-                Text(
-                  AppLocalizations.of(context)!.optional,
-                  textAlign: TextAlign.end,
-                  style: theme.textTheme.headlineSmall ??
-                      const TextStyle(fontSize: 14, fontWeight: FontWeight.w300),
-                ),
-              ],
-            ),
-            if (translate(question.subheader, context)?.isNotEmpty ?? false)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  translate(question.subheader, context) ?? '',
-                  style: theme.textTheme.bodyMedium,
-                ),
-              ),
-            const SizedBox(height: 16),
-
-            _buildField(
+            CustomHeading(question: widget.question, required: isRequired),
+            CustomTextField(
               show: firstName['show'] ?? false,
               required: firstName['required'] ?? false,
               label: translate(firstName['placeholder'], context) ?? AppLocalizations.of(context)!.first_name,
               controller: _firstNameController,
               revalidate: () => field.didChange,
-              keyboardType: TextInputType.text
+              keyboardType: TextInputType.text,
+              updateResponse: () => _updateResponse(),
             ),
-            _buildField(
+            CustomTextField(
               show: lastName['show'] ?? false,
               required: lastName['required'] ?? false,
               label: translate(lastName['placeholder'], context) ?? AppLocalizations.of(context)!.last_name,
               controller: _lastNameController,
               revalidate: () =>  field.didChange,
-                keyboardType: TextInputType.text
+              keyboardType: TextInputType.text,
+              updateResponse: () => _updateResponse(),
             ),
-            _buildField(
+            CustomTextField(
               show: email['show'] ?? false,
               required: email['required'] ?? false,
               label: translate(email['placeholder'], context) ?? AppLocalizations.of(context)!.email,
               controller: _emailController,
               revalidate: () => field.didChange,
-                keyboardType: TextInputType.emailAddress
+              keyboardType: TextInputType.emailAddress,
+              updateResponse: () => _updateResponse(),
             ),
-            _buildField(
+            CustomTextField(
               show: phone['show'] ?? false,
               required: phone['required'] ?? false,
               label: translate(phone['placeholder'], context) ?? AppLocalizations.of(context)!.phone,
               controller: _phoneController,
               revalidate: () => field.didChange,
-                keyboardType: TextInputType.phone
+              keyboardType: TextInputType.phone,
+              updateResponse: () => _updateResponse(),
             ),
-            _buildField(
+            CustomTextField(
               show: company['show'] ?? false,
               required: company['required'] ?? false,
               label: translate(company['placeholder'], context) ?? AppLocalizations.of(context)!.company,
               controller: _companyController,
               revalidate: () => field.didChange,
-                keyboardType: TextInputType.text
+              keyboardType: TextInputType.text,
+              updateResponse: () => _updateResponse(),
             ),
 
             if (field.hasError)

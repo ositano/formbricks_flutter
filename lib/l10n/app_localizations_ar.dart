@@ -205,4 +205,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get optional => 'اختياري';
+
+  @override
+  String get unable_to_connect => 'غير قادر على الاتصال بالخدمة. تحقق من وجود اتصال إنترنت مستقر';
+
+  @override
+  String get something_went_wrong => 'حدث خطأ ما ولم يكتمل طلبك. يرجى المحاولة مرة أخرى';
+
+  @override
+  String get no_internet_available => 'لم يتم اكتشاف اتصال بالإنترنت. تأكد من توفر الإنترنت وحاول مرة أخرى';
 }

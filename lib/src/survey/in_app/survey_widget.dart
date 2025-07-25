@@ -1,13 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../formbricks_flutter.dart';
 import '../../models/environment/logic.dart';
-import '../../models/environment/question.dart';
 import '../../utils/helper.dart';
+import 'components/error.dart';
+import 'components/loading.dart';
 import 'survey_form.dart';
 
-// Main widget that renders a full survey experience for a user.
+/// Main Flutter widget that renders a full survey experience for a user.
 class SurveyWidget extends StatefulWidget {
 
   final FormbricksClient client;
@@ -18,7 +21,7 @@ class SurveyWidget extends StatefulWidget {
   final VoidCallback? onComplete;
   final bool clickOutsideClose;
 
-  // Optional custom question widget builders
+  /// Optional custom question widget builders
   final QuestionWidgetBuilder? addressQuestionBuilder;
   final QuestionWidgetBuilder? calQuestionBuilder;
   final QuestionWidgetBuilder? consentQuestionBuilder;
@@ -66,36 +69,44 @@ class SurveyWidget extends StatefulWidget {
 }
 
 class SurveyWidgetState extends State<SurveyWidget> {
-  // Tracks current position in the survey.
+  /// Tracks current position in the survey.
   int _currentStep = -1;
   int _currentEndingStep = 0;
 
-  // Track visited question IDs
+  /// Tracks if user has interacted with the survey
+  bool hasUserInteracted = false;
+
+  /// Track visited question IDs
   final List<String> _visitedQuestionIds = [];
 
 
-  // Local instance of survey to allow mutation
+  /// Local instance of survey to allow mutation
   late Survey survey;
 
-  // Stores user responses keyed by questionId
+  /// Stores user responses keyed by questionId
   Map<String, dynamic> responses = {};
 
-  // Stores variable values used in condition evaluation or calculation
+  /// Stores variable values used in condition evaluation or calculation
   final Map<String, dynamic> _variables = {};
 
   bool isLoading = true;
   String? error;
   String? displayId;
-  String? _currentQuestionId;
+
 
   final formKey = GlobalKey<FormState>();
 
-  // Tracks which question is required (based on logic conditions)
+  /// Tracks which question is required (based on logic conditions)
   final Map<String, bool> _requiredAnswers = {};
+
+  Timer? _inactivityTimer;
+  late int _inactivitySecondsRemaining;
 
   @override
   void initState() {
-    // Skip welcome screen if disabled
+    _inactivitySecondsRemaining = widget.survey.autoClose ?? 10;
+    hasUserInteracted = false;
+    /// Skip welcome screen if disabled
     if (widget.survey.welcomeCard?['enabled'] == false) {
       _currentStep++;
     }
@@ -103,14 +114,45 @@ class SurveyWidgetState extends State<SurveyWidget> {
     _fetchSurvey();
     _createDisplay();
     _initializeVariables();
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      if(widget.survey.autoClose != null) {
+        _startInactivityTimer(widget.survey.autoClose!);
+      }
+    });
   }
 
   @override
   void dispose() {
+    _inactivityTimer?.cancel();
     super.dispose();
   }
 
-  // Loads the survey data
+  /// Starts the inactivity timer
+  void _startInactivityTimer(int seconds) {
+    _inactivityTimer?.cancel();
+    setState(() => _inactivitySecondsRemaining = seconds);
+
+    _inactivityTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_inactivitySecondsRemaining == 1) {
+        timer.cancel();
+        if(!hasUserInteracted) {
+          _closeSurvey();
+        }
+      } else {
+        setState(() => _inactivitySecondsRemaining--);
+      }
+    });
+  }
+
+  /// Called after survey.autoClose seconds of inactivity
+  void _closeSurvey() {
+    if(mounted) {
+      widget.onComplete?.call(); // notify TriggerManager to show next
+      Navigator.of(context).maybePop();
+    }
+  }
+
+  /// Loads the survey data
   void _fetchSurvey() {
     try {
       setState(() {
@@ -125,13 +167,14 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
-  // Registers a display session for formbricks analytics/tracking
+  /// Registers a display session for formbricks analytics/tracking
   Future<void> _createDisplay() async {
     try {
       displayId = await widget.client.createDisplay(
         surveyId: widget.survey.id,
         userId: widget.userId,
       );
+      context.userManager?.onDisplay(widget.survey.id);
     } catch (e) {
       setState(() {
         error = e.toString();
@@ -139,17 +182,17 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
-  // Callback when a user answers a question
+  /// Callback when a user answers a question
   void _onResponse(String questionId, dynamic value) {
     setState(() {
-      _currentQuestionId = questionId;
       responses[questionId] = value;
     });
   }
 
+  /// To avoid multiple submission at a time
   bool _isSubmitting = false;
 
-  // Submits the survey data to the backend
+  /// Submits the survey data to the backend
   Future<void> _submitSurvey() async {
     if (_isSubmitting) return;
     _isSubmitting = true;
@@ -171,14 +214,12 @@ class SurveyWidgetState extends State<SurveyWidget> {
         userId: widget.userId,
         data: responses,
       );
-      if (survey.autoClose != null) {
-        Future.delayed(Duration(milliseconds: survey.autoClose!), () {
-          if(mounted) {
-            widget.onComplete?.call(); // notify TriggerManager to show next
-            Navigator.of(context).maybePop();
-          }
+      if (survey.delay != null) {
+        Future.delayed(Duration(milliseconds: survey.delay!.toInt()), () {
+          _closeSurvey();
         });
       }
+      context.userManager?.onResponse(widget.survey.id);
       if(kDebugMode) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Survey submitted successfully!')),
@@ -194,15 +235,16 @@ class SurveyWidgetState extends State<SurveyWidget> {
   }
 
 
-  // Advances to the next question, applying logic if needed
-  // assumptions [there would only be one jump action in a list of actions]
-  // jump action is the only action that takes you to another question and alters the user experience
-  // require answer and calculate basically happens behind the scene
+  /// Advances to the next question, applying logic if needed
+  /// assumptions [there would only be one jump action in a list of actions]
+  /// jump action is the only action that takes you to another question and alters the user experience
+  /// require answer and calculate basically happens behind the scene
   void nextStep() {
+    hasUserInteracted = true;
     final form = formKey.currentState;
     form?.validate();
 
-    // Show questions if welcome card is enabled
+    /// Show questions if welcome card is enabled
     if (_currentStep == -1 && survey.welcomeCard?['enabled'] == true) {
       setState(() => _currentStep++);
       return;
@@ -218,7 +260,8 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
 
     _trackVisit(currentQuestion.id);
-    // Evaluate logic, if defined
+
+    /// Evaluate logic, if defined
     if (currentQuestion.logic != null && currentQuestion.logic!.isNotEmpty) {
       bool anyLogicMatched = false;
       String? jumpTarget;
@@ -237,14 +280,14 @@ class SurveyWidgetState extends State<SurveyWidget> {
         }
       }
 
-      // Jump action takes precedence if matched
+      /// Jump action takes precedence if matched
       if (jumpTarget != null) {
         _jumpToQuestion(jumpTarget);
         return;
       }
 
       if (anyLogicMatched) {
-        // If answer is required but missing, block next step
+        /// If answer is required but missing, block next step
         if (_requiredAnswers[currentQuestion.id] == true &&
             !responses.containsKey(currentQuestion.id)) {
           form?.validate();
@@ -255,14 +298,14 @@ class SurveyWidgetState extends State<SurveyWidget> {
         return;
       }
 
-      // No logic matched, fallback
+      /// No logic matched, fallback
       if (currentQuestion.logicFallback != null) {
         _jumpToQuestion(currentQuestion.logicFallback!);
         return;
       }
     }
 
-    // No logic to evaluate
+    /// No logic to evaluate
     if (_requiredAnswers[currentQuestion.id] == true &&
         !responses.containsKey(currentQuestion.id)) {
       form?.validate();
@@ -272,7 +315,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
     _advanceToNextOrEnd();
   }
 
-// Moves to the next step or finishes the survey
+/// Moves to the next step or finishes the survey
   void _advanceToNextOrEnd() {
     if ((formKey.currentState?.validate() ?? false) &&
         _currentStep < survey.questions.length) {
@@ -285,7 +328,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
-  // Record the question ID if it hasn't already been recorded as the last entry in the list.
+  /// Record the question ID if it hasn't already been recorded as the last entry in the list.
   void _trackVisit(String questionId) {
     if (_visitedQuestionIds.isEmpty || _visitedQuestionIds.last != questionId) {
       _visitedQuestionIds.add(questionId);
@@ -306,14 +349,14 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
-  // Moves one step back
+  /// Moves one step back
   void previousStep() {
     if (_currentStep > 0) {
       setState(() => _currentStep--);
     }
   }
 
-  // Shows the ending screen
+  /// Shows the ending screen
   void _showEnding() {
     setState(() {
       _currentStep = survey.questions.length;
@@ -321,19 +364,19 @@ class SurveyWidgetState extends State<SurveyWidget> {
     });
   }
 
-  // Advances to next part of the ending screen (multi-step ending)
+  /// Advances to next part of the ending screen (multi-step ending)
   void _endingStep() {
     setState(() => _currentEndingStep++);
   }
 
-  // Initializes variables used in logic conditions and calculations
+  /// Initializes variables used in logic conditions and calculations
   void _initializeVariables() {
     _variables.addAll({
       for (var v in survey.variables ?? []) v['id']: v['value'],
     });
   }
 
-// Recursively evaluates a a tree of conditions, that can contain mixed types of condition or conditionDetail
+/// Recursively evaluates a a tree of conditions, that can contain mixed types of condition or conditionDetail
   bool _evaluateConditions(dynamic conditions) {
     if (conditions == null || conditions.conditions == null || conditions.conditions.isEmpty) return true;
 
@@ -342,11 +385,11 @@ class SurveyWidgetState extends State<SurveyWidget> {
     for (var condition in conditions.conditions) {
       bool conditionResult;
 
-      // Handle nested group condition (Condition)
+      /// Handle nested group condition (Condition)
       if (condition is Map<String, dynamic> && condition.containsKey('conditions') || condition is Condition) {
         conditionResult = _evaluateConditions(condition is Condition ? condition : Condition.fromJson(condition));
       }
-      // Handle atomic condition (ConditionDetail)
+      /// Handle atomic condition (ConditionDetail)
       else if (condition is Map<String, dynamic> && condition.containsKey('operator') || condition is ConditionDetail) {
         final detail = condition is ConditionDetail ? condition : ConditionDetail.fromJson(condition);
         final leftValue = _getOperandValue(detail.leftOperand);
@@ -355,12 +398,12 @@ class SurveyWidgetState extends State<SurveyWidget> {
             : null;
         conditionResult = _evaluateCondition( leftValue, detail.operator, rightValue);
       }
-      // Fallback true for unexpected cases
+      /// Fallback true for unexpected cases
       else {
         conditionResult = true;
       }
 
-      // Combine results using AND / OR logic
+      /// Combine results using AND / OR logic
       if (conditions.connector == 'and') {
         result = result && conditionResult;
         if (!result) break; // early exit for AND
@@ -374,7 +417,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
   }
 
 
-  // Resolves operand values from responses or variables
+  /// Resolves operand values from responses or variables
   dynamic _getOperandValue(Operand operand) {
     switch (operand.type) {
       case 'question': return responses[operand.value] ?? '';
@@ -384,10 +427,10 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
-  // Applies basic comparison operators for logic conditions
+  /// Applies basic comparison operators for logic conditions
   bool _evaluateCondition(dynamic left, String operator, dynamic right) {
 
-    //Picks the left id for comparison for multiple choice and pictureSelection questions
+    ///Picks the left id for comparison for multiple choice and pictureSelection questions
     final currentQuestion = survey.questions.elementAtOrNull(_currentStep);
     if(currentQuestion?.type == 'multipleChoiceSingle' || currentQuestion?.type == 'multipleChoiceMulti' || currentQuestion?.type == 'pictureSelection'){
       String? choiceId = getIdFromChoices(currentQuestion?.choices ?? [], left, currentQuestion?.type == 'pictureSelection');
@@ -411,7 +454,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
       case 'endsWith': return left.toString().endsWith(right.toString());
       case 'doesNotEndWith': return !left.toString().endsWith(right.toString());
       case 'isSubmitted': // Evaluate only at the point of progressing from the specific question
-        // Make sure `left` refers to a questionId
+        /// Make sure 'left' refers to a questionId
         if (left is String) {
           return responses.containsKey(left);
         } else if (left is Map && left['value'] is String) {
@@ -422,7 +465,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
-  // Extracts ID from choices of MultipleChoice questions
+  /// Extracts ID from choices of MultipleChoice questions
   String? getIdFromChoices(List<Map<String, dynamic>> choices, String value, bool isPictureSelection) {
     if(isPictureSelection){
       for (final choice in choices) {
@@ -441,7 +484,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
     } // Return null if no match found
   }
 
-  // Executes an action from a logic block
+  /// Executes an action from a logic block
   void _executeAction(LogicAction action) {
     switch (action.objective) {
       case 'jumpToQuestion':
@@ -456,7 +499,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
-  // Moves to a specific question by ID
+  /// Moves to a specific question by ID
   void _jumpToQuestion(String targetId) {
     _currentStep = survey.questions.indexWhere((q) => q.id == targetId);
     if (_currentStep == -1) {
@@ -468,7 +511,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
-  // Evaluates a calculation and updates the variable value
+  /// Evaluates a calculation and updates the variable value
   void _calculateValue(LogicAction action) {
     final variableId = action.variableId;
     if (variableId == null) return;
@@ -490,7 +533,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
     _variables[variableId] = result;
   }
 
-  // Marks a question as required and triggers validation
+  /// Marks a question as required and triggers validation
   void _requireAnswer(String? targetId) {
     final targetQuestion = survey.questions.firstWhere(
           (q) => q.id == targetId,
@@ -506,11 +549,11 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }
   }
 
-  // Builds the main UI of the survey
+  /// Builds the main UI of the survey
   @override
   Widget build(BuildContext context) {
-    if (isLoading) return const Center(child: CircularProgressIndicator());
-    if (error != null && kDebugMode) return Center(child: Text('Error: $error'));
+    if (isLoading) return SurveyLoading();
+    if (error != null && kDebugMode) return SurveyError(errorMessage: error.toString());
 
     return Container(
       color: Theme.of(context).cardColor,
@@ -535,7 +578,8 @@ class SurveyWidgetState extends State<SurveyWidget> {
         nextStepEnding: _endingStep,
         onComplete: widget.onComplete,
         clickOutsideClose: widget.clickOutsideClose,
-
+        hasUserInteracted: hasUserInteracted,
+        inactivitySecondsRemaining: _inactivitySecondsRemaining,
         // Custom widget builders
         calQuestionBuilder: widget.ctaQuestionBuilder,
         consentQuestionBuilder: widget.consentQuestionBuilder,

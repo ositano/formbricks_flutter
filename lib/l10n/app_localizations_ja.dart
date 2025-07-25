@@ -205,4 +205,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get optional => 'オプション';
+
+  @override
+  String get unable_to_connect => 'サービスに接続できません。安定したインターネット接続があることを確認してください';
+
+  @override
+  String get something_went_wrong => '問題が発生し、リクエストを完了できませんでした。もう一度お試しください';
+
+  @override
+  String get no_internet_available => 'インターネットが検出されませんでした。インターネット接続を確認して再試行してください';
 }

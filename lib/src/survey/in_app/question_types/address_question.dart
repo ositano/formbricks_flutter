@@ -1,9 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../../formbricks_flutter.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../models/environment/question.dart';
 import '../../../utils/helper.dart';
-import '../components/formbricks_video_player.dart';
+import '../components/custom_heading.dart';
+import '../components/custom_text_field.dart';
 
 class AddressQuestion extends StatefulWidget {
   final Question question;
@@ -67,39 +68,6 @@ class _AddressQuestionState extends State<AddressQuestion> {
     widget.onResponse(widget.question.id, data);
   }
 
-  Widget _buildField({
-    required bool show,
-    required bool required,
-    required String label,
-    required TextEditingController controller,
-    required void Function() revalidate,
-    required TextInputType? keyboardType
-  }) {
-    if (!show) return const SizedBox.shrink();
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            required ? '$label *' : label,
-          ),
-          SizedBox(height: 4.0,),
-          TextFormField(
-            controller: controller,
-            onChanged: (_) {
-              _updateResponse();
-              revalidate();
-            },
-            textInputAction: TextInputAction.next,
-            keyboardType: keyboardType ?? TextInputType.text,
-          ),
-        ],
-      )
-    );
-  }
-
   @override
   void dispose() {
     _addressLine1Controller.dispose();
@@ -116,6 +84,11 @@ class _AddressQuestionState extends State<AddressQuestion> {
     final theme = Theme.of(context);
     final question = widget.question;
 
+    bool isRequired = question.required ?? false;
+    if(widget.requiredAnswerByLogicCondition){
+      isRequired = widget.requiredAnswerByLogicCondition;
+    }
+
     final addressLine1 = question.addressLine1 ?? {};
     final addressLine2 = question.addressLine2 ?? {};
     final city = question.city ?? {};
@@ -124,12 +97,9 @@ class _AddressQuestionState extends State<AddressQuestion> {
     final country = question.country ?? {};
 
     return FormField<bool>(
+      key: ValueKey(question.id),
       validator: (_) {
-        if(widget.requiredAnswerByLogicCondition) {
-          return AppLocalizations.of(context)!.response_required;
-        }
-
-        if (!(question.required ?? false)) return null;
+        if (!(isRequired)) return null;
 
         if (addressLine1['show'] == true &&
             addressLine1['required'] == true &&
@@ -168,114 +138,60 @@ class _AddressQuestionState extends State<AddressQuestion> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (widget.question.imageUrl?.isNotEmpty ?? false)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: GestureDetector(child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: CachedNetworkImage(
-                    imageUrl: widget.question.imageUrl!,
-                    height: 150,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => const Center(
-                        child: SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator())),
-                    errorWidget: (context, url, error) =>
-                    const Icon(Icons.error),
-                  ),
-                ),
-                  onTap: () => showFullScreenImage(context, widget.question.imageUrl!),
-                ),
-              )
-            else if (widget.question.videoUrl?.isNotEmpty ?? false)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(
-                    theme.extension<MyCustomTheme>()!.styleRoundness!,
-                  ),
-                  child: FormbricksVideoPlayer(videoUrl: widget.question.videoUrl!,),
-                ),
-              ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: Text(
-                  translate(widget.question.headline, context) ?? '',
-                  style: theme.textTheme.headlineMedium ??
-                      const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                ),
-                widget.question.required == true || widget.requiredAnswerByLogicCondition == true ? const SizedBox.shrink() :
-                Text(
-                  AppLocalizations.of(context)!.optional,
-                  textAlign: TextAlign.end,
-                  style: theme.textTheme.headlineSmall ??
-                      const TextStyle(fontSize: 14, fontWeight: FontWeight.w300),
-                ),
-              ],
-            ),
-            if (translate(question.subheader, context)?.isNotEmpty ?? false)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Text(
-                  translate(question.subheader, context) ?? '',
-                  style: theme.textTheme.bodyMedium,
-                ),
-              ),
-            const SizedBox(height: 16),
-
-            _buildField(
+            CustomHeading(question: question, required: isRequired),
+            CustomTextField(
               show: addressLine1['show'] ?? false,
               required: addressLine1['required'] ?? false,
               label: translate(addressLine1['placeholder'], context) ?? AppLocalizations.of(context)!.address_line_1,
               controller: _addressLine1Controller,
               revalidate: () => field.didChange,
-                keyboardType: TextInputType.text
+              keyboardType: TextInputType.text,
+              updateResponse: () => _updateResponse(),
             ),
-            _buildField(
+            CustomTextField(
               show: addressLine2['show'] ?? false,
               required: addressLine2['required'] ?? false,
               label: translate(addressLine2['placeholder'], context) ?? AppLocalizations.of(context)!.address_line_2,
               controller: _addressLine2Controller,
               revalidate: () =>  field.didChange,
-                keyboardType: TextInputType.text
+              keyboardType: TextInputType.text,
+              updateResponse: () => _updateResponse(),
             ),
-            _buildField(
+            CustomTextField(
               show: city['show'] ?? false,
               required: city['required'] ?? false,
               label: translate(city['placeholder'], context) ?? AppLocalizations.of(context)!.city,
               controller: _cityController,
               revalidate: () => field.didChange,
-                keyboardType: TextInputType.text
+              keyboardType: TextInputType.text,
+              updateResponse: () => _updateResponse(),
             ),
-            _buildField(
+            CustomTextField(
               show: state['show'] ?? false,
               required: state['required'] ?? false,
               label: translate(state['placeholder'], context) ?? AppLocalizations.of(context)!.state,
               controller: _stateController,
               revalidate: () => field.didChange,
-                keyboardType: TextInputType.text
+              keyboardType: TextInputType.text,
+              updateResponse: () => _updateResponse(),
             ),
-            _buildField(
+            CustomTextField(
               show: zip['show'] ?? false,
               required: zip['required'] ?? false,
               label: translate(zip['placeholder'], context) ?? AppLocalizations.of(context)!.zip,
               controller: _zipController,
-                revalidate: () => field.didChange,
-                keyboardType: TextInputType.text
+              revalidate: () => field.didChange,
+              keyboardType: TextInputType.text,
+              updateResponse: () => _updateResponse(),
             ),
-            _buildField(
+            CustomTextField(
               show: country['show'] ?? false,
               required: country['required'] ?? false,
               label: translate(country['placeholder'], context) ?? AppLocalizations.of(context)!.country,
               controller: _countryController,
               revalidate: () => field.didChange,
-                keyboardType: TextInputType.text
+              keyboardType: TextInputType.text,
+              updateResponse: () => _updateResponse(),
             ),
 
             if (field.hasError)

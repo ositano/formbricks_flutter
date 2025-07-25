@@ -205,4 +205,13 @@ class AppLocalizationsSw extends AppLocalizations {
 
   @override
   String get optional => 'Hiari';
+
+  @override
+  String get unable_to_connect => 'Imeshindikana kuunganishwa na huduma. Hakikisha una muunganisho thabiti wa intaneti';
+
+  @override
+  String get something_went_wrong => 'Kuna hitilafu imetokea na ombi lako halikuweza kukamilika. Tafadhali jaribu tena';
+
+  @override
+  String get no_internet_available => 'Intaneti haijapatikana. Hakikisha intaneti inapatikana na ujaribu tena';
 }

@@ -205,4 +205,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get optional => '可选';
+
+  @override
+  String get unable_to_connect => '无法连接到服务。请确保您有稳定的互联网连接';
+
+  @override
+  String get something_went_wrong => '出现错误，您的请求未能完成。请再试一次';
+
+  @override
+  String get no_internet_available => '未检测到互联网。请确保互联网可用后重试';
 }

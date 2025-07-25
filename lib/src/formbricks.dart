@@ -1,4 +1,6 @@
 import '../formbricks_flutter.dart';
+import 'manager/survey_manager.dart';
+import 'manager/user_manager.dart';
 import 'utils/logger.dart';
 import 'utils/sdk_error.dart';
 
@@ -15,11 +17,23 @@ class Formbricks {
   bool isInitialized = false;
 
   /// Private singleton instance of the Formbricks SDK.
-  static final Formbricks _instance = Formbricks._internal();
+  static Formbricks? _instance = Formbricks._internal();
 
   /// Factory constructor that always returns the same [Formbricks] instance.
-  factory Formbricks() => _instance;
+  factory Formbricks() {
+    _instance ??= Formbricks._internal();
+    return _instance!;
+  }
 
+  /// Static getter to retrieve the existing [Formbricks] instance.
+  ///
+  /// Throws an exception if the instance hasn't been initialized.
+  static Formbricks get instance {
+    if (_instance == null) {
+      throw Exception("Formbricks has not been initialized.");
+    }
+    return _instance!;
+  }
   /// Private constructor to prevent external instantiation.
   Formbricks._internal();
 
@@ -40,7 +54,7 @@ class Formbricks {
       return;
     }
 
-    // Enforce HTTPS usage for app security
+    /// Enforce HTTPS usage for app security
     if (!surveyManager.client.appUrl.toLowerCase().startsWith("https://")) {
       var error = Exception(
           "Only HTTPS URLs are allowed for security reasons. "
@@ -53,7 +67,7 @@ class Formbricks {
     _userManager = userManager;
     _surveyManager = surveyManager;
 
-    // Refresh environment and sync user data
+    /// Refresh environment and sync user data
     _surveyManager.refreshEnvironmentIfNeeded(force: checkForNewSurveysOnRestart);
     _userManager.syncUserIfNeeded();
 
@@ -89,7 +103,7 @@ class Formbricks {
   /// ```dart
   /// setAttribute({"name": "Green Onyeji", "role": "Senior Flutter Engineer"});
   /// ```
-  void setAttribute(Map<String, String> attributes) {
+  void setAttributes(Map<String, String> attributes) {
     if (!isInitialized) {
       var error = SDKError.instance.sdkIsNotInitialized;
       Log.instance.e(error);
@@ -144,28 +158,28 @@ class Formbricks {
     _userManager.setLanguage(language);
   }
 
-  /// Tracks a specific action by key.
+  /// Tracks a specific action.
   /// Note that this SDK works with [code] actionType
   ///
-  /// Triggers any surveys associated with that event.
-  void track({required String key}) {
+  /// Triggers any surveys associated with that action.
+  void track({required String action}) {
     if (!isInitialized) {
       var error = SDKError.instance.sdkIsNotInitialized;
       Log.instance.e(error);
       return;
     }
 
-    _surveyManager.track(key);
+    _surveyManager.track(action);
   }
 
-  /// Sets the survey platform (e.g., inApp, web) - implementation placeholder.
+  /// Sets the survey platform (e.g., inApp, webview)
   void setSurveyPlatform(SurveyPlatform surveyPlatform) {
-    // Future enhancement: Set SDK platform environment
+    _surveyManager.setSurveyPlatform(surveyPlatform);
   }
 
-  /// Sets how surveys should be displayed (e.g., fullscreen, dialog, bottomSheetModal) - implementation placeholder.
+  /// Sets how surveys should be displayed for inApp (e.g. fullscreen, dialog, bottomSheetModal)
   void setSurveyDisplayMode(SurveyDisplayMode surveyDisplayMode) {
-    // Future enhancement: Override display mode globally
+    _surveyManager.setSurveyDisplayMode(surveyDisplayMode);
   }
 
   /// Logs out the current user and clears all user attributes.

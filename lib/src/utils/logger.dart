@@ -6,10 +6,10 @@ import 'package:logger/logger.dart';
 /// Logs are only printed in debug mode using `kDebugMode`.
 /// Provides methods for logging debug, warning, and error messages.
 class Log {
-  // Internal Logger instance from the `logger` package
+  /// Internal Logger instance from the `logger` package
   static Logger? _logger;
 
-  // Singleton instance of the Log class
+  /// Singleton instance of the Log class
   static Log? _instance = Log._internal();
 
   /// Factory constructor that returns the singleton instance of [Log].

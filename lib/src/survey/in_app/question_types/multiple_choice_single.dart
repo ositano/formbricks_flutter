@@ -1,9 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../../formbricks_flutter.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../models/environment/question.dart';
 import '../../../utils/helper.dart';
-import '../components/formbricks_video_player.dart';
+import '../../../utils/theme_manager.dart';
+import '../components/custom_heading.dart';
 
 class MultipleChoiceSingleQuestion extends StatefulWidget {
   final Question question;
@@ -35,15 +36,15 @@ class _MultipleChoiceSingleQuestionState extends State<MultipleChoiceSingleQuest
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isRequired = widget.question.required ?? false;
+    bool isRequired = widget.question.required ?? false;
+    if(widget.requiredAnswerByLogicCondition){
+      isRequired = widget.requiredAnswerByLogicCondition;
+    }
     final options = widget.question.choices ?? [];
 
     return FormField<bool>(
+      key: ValueKey(widget.question.id),
       validator: (_) {
-        if(widget.requiredAnswerByLogicCondition) {
-          return AppLocalizations.of(context)!.response_required;
-        }
-
         if (isRequired && selectedOption == null) {
           return AppLocalizations.of(context)!.select_option;
         }
@@ -53,66 +54,7 @@ class _MultipleChoiceSingleQuestionState extends State<MultipleChoiceSingleQuest
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (widget.question.imageUrl?.isNotEmpty ?? false)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: GestureDetector(child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: CachedNetworkImage(
-                    imageUrl: widget.question.imageUrl!,
-                    height: 150,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => const Center(
-                        child: SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator())),
-                    errorWidget: (context, url, error) =>
-                    const Icon(Icons.error),
-                  ),
-                ),
-                  onTap: () => showFullScreenImage(context, widget.question.imageUrl!),
-                ),
-              )
-            else if (widget.question.videoUrl?.isNotEmpty ?? false)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(
-                    theme.extension<MyCustomTheme>()!.styleRoundness!,
-                  ),
-                  child: FormbricksVideoPlayer(videoUrl: widget.question.videoUrl!,),
-                ),
-              ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: Text(
-                  translate(widget.question.headline, context) ?? '',
-                  style: theme.textTheme.headlineMedium ??
-                      const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                ),
-                widget.question.required == true || widget.requiredAnswerByLogicCondition == true ? const SizedBox.shrink() :
-                Text(
-                  AppLocalizations.of(context)!.optional,
-                  textAlign: TextAlign.end,
-                  style: theme.textTheme.headlineSmall ??
-                      const TextStyle(fontSize: 14, fontWeight: FontWeight.w300),
-                ),
-              ],
-            ),
-            if ((translate(widget.question.subheader, context) ?? '').isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  translate(widget.question.subheader, context) ?? '',
-                  style: theme.textTheme.bodyMedium,
-                ),
-              ),
-            const SizedBox(height: 16),
+            CustomHeading(question: widget.question, required: isRequired),
             ...options.map<Widget>((option) {
               final optionId = option['id']?.toString();
               final label = translate(option['label'], context)?.toString() ?? '';

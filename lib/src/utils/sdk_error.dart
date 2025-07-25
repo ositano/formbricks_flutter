@@ -1,18 +1,18 @@
 class SDKError {
-  SDKError._(); // Private constructor for singleton
+  SDKError._(); /// Private constructor for singleton
 
-  // Singleton instance
+  /// Singleton instance
   static final SDKError instance = SDKError._();
 
-  // Errors related to SDK initialization and configuration
+  /// Errors related to SDK initialization and configuration
   final sdkIsNotInitialized = Exception("Formbricks SDK is not initialized");
   final sdkIsAlreadyInitialized = Exception("Formbricks SDK is already initialized");
 
-  // Errors related to network and connectivity
+  /// Errors related to network and connectivity
   final connectionIsNotAvailable = Exception("There is no connection.");
   final unableToLoadFormbicksJs = Exception("Unable to load Formbricks Javascript package.");
 
-  // Errors related to surveys
+  /// Errors related to surveys
   final surveyDisplayFetchError = Exception("Error: creating display: TypeError: Failure to fetch the survey data.");
   final surveyNotDisplayedError = Exception("Survey was not displayed due to display percentage restrictions.");
   final unableToRefreshEnvironment = Exception("Unable to refresh environment state.");

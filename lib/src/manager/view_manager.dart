@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 
 import '../../formbricks_flutter.dart';
 import '../formbricks_flutter_config.dart';
+import '../survey/in_app/survey_widget.dart';
 import '../survey/webview/survey_webview.dart';
 import '../utils/helper.dart';
+import '../utils/theme_manager.dart';
 
 /// Handles how surveys are presented in the app – full screen, dialog, bottom sheet, or web view.
 class ViewManager {
@@ -20,7 +22,7 @@ class ViewManager {
         FormbricksFlutterConfig? formbricksFlutterConfig,
       }) {
 
-    // Build the actual survey widget using registered question builders.
+    /// Build the actual survey widget using registered question builders.
     final widgetBody = _buildSurveyWidget(
       client,
       userId,
@@ -50,7 +52,7 @@ class ViewManager {
       ratingQuestionBuilder: formbricksFlutterConfig?.ratingQuestionBuilder,
     );
 
-    // Render survey as full screen page.
+    /// Render survey as full screen page.
     if (surveyDisplayMode == SurveyDisplayMode.fullScreen) {
       final widget = Theme(
         data: buildTheme(context, formbricksFlutterConfig?.customTheme, survey),
@@ -66,7 +68,7 @@ class ViewManager {
             : MaterialPageRoute(builder: (context) => widget),
       );
     }
-    // Render survey as an alert dialog.
+    /// Render survey as an alert dialog.
     else if (surveyDisplayMode == SurveyDisplayMode.dialog) {
       final widget = Theme(
         data: buildTheme(context, formbricksFlutterConfig?.customTheme, survey),
@@ -85,7 +87,7 @@ class ViewManager {
         ),
       );
     }
-    // Render survey as a modal bottom sheet.
+    /// Render survey as a modal bottom sheet.
     else {
       final widget = Theme(
         data: buildTheme(context, formbricksFlutterConfig?.customTheme, survey),
@@ -94,7 +96,7 @@ class ViewManager {
       showModalBottomSheet(
         context: context,
         isDismissible: survey.projectOverwrites?['clickOutsideClose'] ?? false,
-        backgroundColor: Theme.of(context).cardColor,
+        backgroundColor: Colors.transparent,
         builder: (context) => widget,
       );
     }

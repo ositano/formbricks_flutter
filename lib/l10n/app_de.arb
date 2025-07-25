@@ -65,5 +65,8 @@
   "last_name": "Nachname",
   "click_to_upload_file": "Klicken Sie hier, um Dateien hochzuladen",
   "cannot_preview_file": "Datei kann nicht angezeigt werden",
-    "optional": "Optional"
+  "optional": "Optional",
+  "unable_to_connect": "Verbindung zum Dienst nicht möglich. Stellen Sie sicher, dass eine stabile Internetverbindung besteht",
+      "something_went_wrong": "Etwas ist schiefgelaufen und Ihre Anfrage konnte nicht abgeschlossen werden. Bitte versuchen Sie es erneut",
+      "no_internet_available": "Kein Internet erkannt. Stellen Sie sicher, dass eine Internetverbindung besteht, und versuchen Sie es erneut"
 }

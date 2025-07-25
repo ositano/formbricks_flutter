@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:formbricks_flutter/src/utils/extensions.dart';
 
 import '../../formbricks_flutter.dart';
-import '../models/environment/question.dart';
 
 /// Signature definition for question widget builders.
 /// - [key] is the unique widget key.

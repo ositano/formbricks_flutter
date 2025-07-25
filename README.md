@@ -19,19 +19,19 @@ Built on top of [Formbricks](https://formbricks.com) — the open-source experie
 
 ## ✨ Features
 
-| Feature | Description                                                                                                             |
-|--------|-------------------------------------------------------------------------------------------------------------------------|
-| 💬 **In-App Micro-Surveys** | Display beautiful, embeddable surveys inside your app.                                                                  |
-| 🌐 **Localization Support** | Built-in support for multiple languages: `en`, `es`, `de`, `fr`, `ja`, `ar`, `pt`, `sw`, `zh`.                          |
-| ⚡ **Custom Triggers** | Trigger surveys based on app events or coded conditions.                                                                |
-| 🎨 **Theme Customization** | Use Formbricks styling or fallback to Style surveys using your app’s `ThemeData`. or use a different custom theme for it |
-| 🙋‍♂️ **User Targeting** | Pass `userId` and `userAttributes` to personalize surveys.                                                              |
-| 🪟 **Multiple Display Modes** | Show surveys in `fullScreen`, `dialog`, or `bottomSheet` views.                                                         |
-| 🧱 **Custom Question Widgets** | Override default widgets with your own beautiful UI.                                                                    |
-| 🧠 **Smart Completion Tracking** | Prevent duplicate displays with `displayOnce` logic.                                                                    |
-| ⏱ **Estimated Completion Time** | Automatically calculated time to inform users.                                                                          |
-| 🔐 **Secure API Integration** | Connect with the Formbricks API using your API key and environment ID.                                                  |
-| 🧪 **Dev Mode Toggle** | Enable/disable development mode for previewing surveys.                                                                 |
+| Feature                          | Description                                                                                                              |
+|----------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| 💬 **In-App Micro-Surveys**      | Display beautiful, embeddable surveys inside your app using flutter implementation.                                      |
+| 💬 **Webview Micro-Surveys**     | Display beautiful, embeddable surveys inside your app using formbricks browser.                                          |
+| 🌐 **Localization Support**      | Built-in support for multiple languages: `en`, `es`, `de`, `fr`, `ja`, `ar`, `pt`, `sw`, `zh`.                           |
+| ⚡ **Custom Triggers**            | Trigger surveys based on app events.                                                                                     |
+| 🎨 **Theme Customization**       | Use Formbricks styling or fallback to Style surveys using your app’s `ThemeData`. or use a different custom theme for it |
+| 🙋‍♂️ **User Targeting**         | Pass `userId` and `userAttributes` to personalize surveys.                                                               |
+| 🪟 **Multiple Display Modes**    | Show In-App surveys in `fullScreen`, `dialog`, or `bottomSheet` views.                                                   |
+| 🧱 **Custom Question Widgets**   | Override default widgets with your own beautiful UI.                                                                     |
+| ⏱ **Estimated Completion Time**  | Automatically calculated time to inform users.                                                                           |
+| 🔐 **Secure API Integration**    | Connect with the Formbricks API using your API key and environment ID.                                                   |
+| 🧪 **Dev Mode Toggle**           | Enable/disable development mode for previewing surveys.                                                                  |
 
 ---
 
@@ -43,7 +43,7 @@ Add `formbricks_flutter` to your `pubspec.yaml`:
 dependencies:
   flutter:
     sdk: flutter
-  formbricks_flutter: ^x.y.z # 🔁 Replace with the latest version
+  formbricks_flutter: ^0.0.1 #Replace with the latest version
 ```
 
 ---
@@ -59,22 +59,11 @@ FormbricksProvider(
     environmentId: 'your-env-id',
     apiKey: 'your-api-key',
     isDev: false,
+    useV2: false
   ),
   userId: 'user-123',
+  surveyPlatform: SurveyPlatform.inApp,
   surveyDisplayMode: SurveyDisplayMode.fullScreen,
-  customTheme: ThemeData(
-    primaryColor: Colors.teal,
-    textTheme: const TextTheme(
-      headlineMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-      bodyMedium: TextStyle(fontSize: 12),
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ButtonStyle(
-        backgroundColor: WidgetStateProperty.all(Colors.teal),
-        foregroundColor: WidgetStateProperty.all(Colors.white),
-      ),
-    ),
-  ),
   child: const HomeScreen(),
 );
 ```
@@ -83,43 +72,64 @@ FormbricksProvider(
 
 ## 📦 Customization Options
 
-You can override any survey question widget using builder overrides:
+You can define custom theme or override any survey question widget using FormbricksFlutterConfig.
+Note: custom theme works only if _overwriteThemeStyling_ property of the survey is set to false
 
 ```dart
 FormbricksProvider(
-  freeTextQuestionBuilder: (key, question, onResponse, response, requiredByLogicCondition){
-    return CustomFreeTextWidget(question: question, onResponse: onResponse, response: response, requiredByLogicCondition: requiredByLogicCondition);
-  },
-  // Other overrides: addressQuestionBuilder, dateQuestionBuilder, etc.
-  ...
+    // required declarations
+    ...
+    formbricksFlutterConfig: FormbricksFlutterConfig(
+        customTheme: ThemeData(
+            textTheme: TextTheme(
+                headlineMedium: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            )
+        ),
+        freeTextQuestionBuilder: (key, question, onResponse, response, requiredByLogicCondition, {formbricksClient, surveyId}){
+          return CustomFreeTextWidget(question: question, onResponse: onResponse, response: response, requiredByLogicCondition: requiredByLogicCondition);
+        },
+        // Other overrides: addressQuestionBuilder, dateQuestionBuilder, etc.
+        ...
+    ),
 )
 ```
 
 
-Define user ID anywhere from your code
+Sets the current user’s unique identifier (e.g., user ID or email).
 ```dart
-  Formbricks().setUserId(String userId);
+  Formbricks.instance.setUserId("abc@xyz.com");
 ```
 
-Optionally, define user attributes anywhere from your code
+Sets or replaces the user’s attributes for segment filtering and targeting
 ```dart
-  Formbricks().setAttribute(Map<String, dynamic> attributes);
+  Formbricks.instance.setAttributes({"first_name": "Green", "last_name": "Onyeji"});
 ```
 
-Optionally, set Trigger Values if you don't want to define from the app level
+Adds or updates specific user attributes without replacing existing ones.
 ```dart
-  Formbricks().track(String key);
+  Formbricks.instance.setAttribute({"location": "Abuja"});
 ```
 
-Change app locale
+Trigger any survey associated with that action
 ```dart
-  Formbricks().setLanguage(String locale);
+  Formbricks.instance.track(action: "download_button");
 ```
 
-Gets the currently active locale.
+Sets the language code for surveys (e.g., "en", "de", "fr").
 ```dart
-  Formbricks().currentLocale;
+  Formbricks.instance.setLanguage("de");
 ```
+
+Sets the survey platform (e.g., inApp, webView)
+```dart
+  Formbricks.instance.setSurveyPlatform(SurveyPlatform.inApp);
+```
+
+Sets how surveys should be displayed for inApp (e.g. fullscreen, dialog, bottomSheetModal)
+```dart
+  Formbricks.instance.setSurveyDisplayMode(SurveyDisplayMode.fullScreen);
+```
+
 ---
 
 ## 🧪 Supported Question Types
@@ -147,16 +157,5 @@ And **you can override any of them** for full control.
 
 ## 📜 License
 
-This package is licensed under the **AGPLv3** Open Source License.
+This SDK is released under the MIT License.
 
-You can use it **freely** for personal and commercial purposes.  
-If you modify the code, you must also publish your changes under AGPLv3.  
-See the [LICENSE](LICENSE) file for more details.
-
----
-
-## 🌐 Learn More
-
-- 📚 [Formbricks Documentation](https://formbricks.com/docs)
-- 💬 [Community on Discord](https://discord.com/invite/formbricks)
-- 💻 [Source Code on GitHub](https://github.com/ositano/formbricks_flutter)

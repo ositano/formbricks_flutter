@@ -9,10 +9,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../formbricks_flutter.dart';
 import '../formbricks_flutter_config.dart';
 import '../models/environment/environment_data_holder.dart';
-import '../models/environment/question.dart';
 import '../models/user/user_display.dart';
 import '../utils/logger.dart';
 import '../utils/sdk_error.dart';
+import 'user_manager.dart';
 import 'view_manager.dart';
 
 /// Manages the lifecycle of surveys including fetching, filtering, triggering,
@@ -22,8 +22,8 @@ class SurveyManager {
   static const _prefFormbricksDataHolder = 'formbricksDataHolder';
 
   final FormbricksClient client;
-  final SurveyDisplayMode surveyDisplayMode;
-  final SurveyPlatform surveyPlatform;
+  late final SurveyDisplayMode surveyDisplayMode;
+  late final SurveyPlatform surveyPlatform;
   final BuildContext context;
   final FormbricksFlutterConfig? formbricksFlutterConfig;
 
@@ -324,5 +324,15 @@ class SurveyManager {
       if (q.required == true) total += 2; // extra time for mandatory
     }
     return total;
+  }
+
+  /// Sets the survey platform (e.g., inApp, webView)
+  void setSurveyPlatform(SurveyPlatform platform){
+    surveyPlatform = platform;
+  }
+
+  /// Sets how surveys should be displayed for inApp (e.g., fullscreen, dialog, bottomSheetModal)
+  void setSurveyDisplayMode(SurveyDisplayMode mode){
+    surveyDisplayMode = mode;
   }
 }

@@ -205,4 +205,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get optional => 'Opcional';
+
+  @override
+  String get unable_to_connect => 'No se puede conectar al servicio. Asegúrese de tener una conexión a Internet estable';
+
+  @override
+  String get something_went_wrong => 'Algo salió mal y no se pudo completar su solicitud. Por favor, inténtelo de nuevo';
+
+  @override
+  String get no_internet_available => 'No se detectó conexión a Internet. Asegúrese de tener Internet disponible e inténtelo de nuevo';
 }

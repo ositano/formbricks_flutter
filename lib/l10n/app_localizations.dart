@@ -504,6 +504,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Optional'**
   String get optional;
+
+  /// No description provided for @unable_to_connect.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to connect to service. Check you have a stable internet connection'**
+  String get unable_to_connect;
+
+  /// No description provided for @something_went_wrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong and your request could not be completed. Please try again'**
+  String get something_went_wrong;
+
+  /// No description provided for @no_internet_available.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet detected. Ensure internet availability and try again'**
+  String get no_internet_available;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

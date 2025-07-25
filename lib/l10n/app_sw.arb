@@ -63,7 +63,10 @@
   "email_required": "Barua pepe inahitajika",
   "first_name": "Jina la kwanza",
   "last_name": "Jina la mwisho",
-    "click_to_upload_file": "Bofya ili kupakia faili",
-      "cannot_preview_file": "Haiwezi kuonyesha faili kabla",
-        "optional": "Hiari"
+  "click_to_upload_file": "Bofya ili kupakia faili",
+  "cannot_preview_file": "Haiwezi kuonyesha faili kabla",
+  "optional": "Hiari",
+  "unable_to_connect": "Imeshindikana kuunganishwa na huduma. Hakikisha una muunganisho thabiti wa intaneti",
+  "something_went_wrong": "Kuna hitilafu imetokea na ombi lako halikuweza kukamilika. Tafadhali jaribu tena",
+  "no_internet_available": "Intaneti haijapatikana. Hakikisha intaneti inapatikana na ujaribu tena"
 }

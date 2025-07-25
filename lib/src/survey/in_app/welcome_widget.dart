@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 
 import '../../../formbricks_flutter.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../utils/helper.dart';
 
 

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../formbricks_flutter.dart';
-import '../../models/environment/question.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../utils/helper.dart';
+import 'components/close.dart';
 import 'components/content.dart';
-import 'components/error.dart';
-import 'components/loading.dart';
 import 'end_widget.dart';
 import 'question_widget.dart';
 import 'welcome_widget.dart';
@@ -31,6 +30,8 @@ class SurveyForm extends StatelessWidget {
   final Map<String, bool> requiredAnswers;
   final VoidCallback? onComplete;
   final bool clickOutsideClose;
+  final bool hasUserInteracted;
+  final int inactivitySecondsRemaining;
 
   final QuestionWidgetBuilder? addressQuestionBuilder;
   final QuestionWidgetBuilder? calQuestionBuilder;
@@ -70,6 +71,8 @@ class SurveyForm extends StatelessWidget {
     required this.requiredAnswers,
     required this.onComplete,
     required this.clickOutsideClose,
+    required this.hasUserInteracted,
+    required this.inactivitySecondsRemaining,
 
     this.addressQuestionBuilder,
     this.calQuestionBuilder,
@@ -98,13 +101,6 @@ class SurveyForm extends StatelessWidget {
 
   Widget _buildSurvey(BuildContext context) {
     final totalSteps = survey.questions.length;
-
-    if (isLoading) {
-      return SurveyLoading();
-    }
-    if (error != null) {
-      return SurveyError(errorMessage: error.toString());
-    }
 
     // Add the front interactive card
     Widget content;
@@ -164,7 +160,7 @@ class SurveyForm extends StatelessWidget {
         );
       } else {
         nextLabel = AppLocalizations.of(context)!.close;
-        content = SizedBox();
+        content = CloseWidget(onComplete: onComplete);
       }
     }
 
@@ -184,6 +180,8 @@ class SurveyForm extends StatelessWidget {
       estimatedTimeInSecs: estimatedTimeInSecs,
       onComplete: onComplete,
       clickOutsideClose: clickOutsideClose,
+      hasUserInteracted: hasUserInteracted,
+      inactivitySecondsRemaining: inactivitySecondsRemaining,
       child: content,
     );
   }
