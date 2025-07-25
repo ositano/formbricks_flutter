@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../formbricks_flutter.dart';
-import '../../../l10n/app_localizations.dart';
 import '../../utils/helper.dart';
 import 'question_types/address_question.dart';
 import 'question_types/cal_question.dart';

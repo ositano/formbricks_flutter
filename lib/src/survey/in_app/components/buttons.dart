@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../../formbricks_flutter.dart';
-import '../../../../l10n/app_localizations.dart';
 
 class SurveyButtons extends StatelessWidget {
   final int currentStep;

@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:formbricks_flutter/src/utils/extensions.dart';
+import 'extensions.dart';
 
 import '../../formbricks_flutter.dart';
 

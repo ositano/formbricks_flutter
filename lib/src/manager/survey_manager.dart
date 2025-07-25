@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../formbricks_flutter.dart';
-import '../formbricks_flutter_config.dart';
 import '../models/environment/environment_data_holder.dart';
 import '../models/user/user_display.dart';
 import '../utils/logger.dart';
@@ -124,7 +123,7 @@ class SurveyManager {
       _startRefreshTimer(expiresAt);
       await filterSurveys();
       hasApiError = false;
-    } catch (e, st) {
+    } catch (_) {
       Log.instance.e(SDKError.instance.unableToRefreshEnvironment);
       hasApiError = true;
       _startErrorTimer();

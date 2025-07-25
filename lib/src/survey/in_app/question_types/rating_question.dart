@@ -3,8 +3,6 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 import '../../../../formbricks_flutter.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../models/environment/question.dart';
 import '../../../utils/helper.dart';
 import '../components/custom_heading.dart';
 import '../survey_widget.dart';

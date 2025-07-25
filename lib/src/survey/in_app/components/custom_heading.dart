@@ -2,8 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../formbricks_flutter.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../models/environment/question.dart';
 import '../../../utils/helper.dart';
 import '../../../utils/theme_manager.dart';
 import 'formbricks_video_player.dart';

@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../formbricks_flutter.dart';
-import '../formbricks_flutter_config.dart';
 import '../survey/in_app/survey_widget.dart';
 import '../survey/webview/survey_webview.dart';
 import '../utils/helper.dart';

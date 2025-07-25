@@ -2,8 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../formbricks_flutter.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../models/environment/question.dart';
 import '../../../utils/helper.dart';
 import '../components/custom_heading.dart';
 

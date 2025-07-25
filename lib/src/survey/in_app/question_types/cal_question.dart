@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../formbricks_flutter.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../models/environment/question.dart';
-
+import '../../../utils/logger.dart';
 import '../components/custom_heading.dart';
 
 /// Calendar booking input (e.g., using cal.com)
@@ -37,18 +35,17 @@ class _CalQuestionState extends State<CalQuestion> {
   Future<void> _openCalendar() async {
     final url =
         'https://${widget.question.calHost ?? 'cal.com'}/${widget.question.calUserName ?? ''}';
-    if (await canLaunch(url)) {
-      await launch(url);
+    if (await launchUrl(Uri.parse(url))) {
       setState(() {
         isScheduled = true;
         widget.onResponse(widget.question.id, isScheduled ? "booked" : "dismissed");
       });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.could_not_open_calendar),
-        ),
-      );
+      // Check if the widget is still mounted before using context
+      if (context.mounted) {
+        return; // Widget is no longer in the tree, so don't use context
+      }
+      Log.instance.d(AppLocalizations.of(context)!.could_not_open_calendar);
     }
   }
 

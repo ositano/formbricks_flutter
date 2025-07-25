@@ -108,6 +108,9 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
         });
       } catch (e) {
         Log.instance.d(e);
+        if(!context.mounted){
+          return;
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${AppLocalizations.of(context)!.error_uploading_file} $e'),

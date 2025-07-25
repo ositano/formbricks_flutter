@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 import '../../../../formbricks_flutter.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../models/environment/question.dart';
 import '../../../utils/helper.dart';
 import '../components/custom_heading.dart';
 
@@ -144,7 +142,7 @@ class _MatrixQuestionState extends State<MatrixQuestion> {
                             value: colValue,
                             groupValue: selections[rowLabel],
                             fillColor: WidgetStateProperty.resolveWith<Color>((states) {
-                              if (states.contains(MaterialState.selected)) {
+                              if (states.contains(WidgetState.selected)) {
                                 return theme.primaryColor; // Selected = primary color
                               }
                               return theme.primaryColor; // Unselected = white fill

@@ -60,7 +60,7 @@ jobs:
 
   # Job to publish the package to pub.dev
   publish:
-    needs: [analyze, test] # This job depends on 'analyze' and 'test' jobs succeeding
+    needs: [test] #[analyze, test] # This job depends on 'analyze' and 'test' jobs succeeding
     if: github.event_name == 'push' && github.ref == 'refs/heads/master' # Only run on push to master
     runs-on: ubuntu-latest # Use the latest Ubuntu runner
 

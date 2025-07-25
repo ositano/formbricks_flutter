@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -8,10 +7,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-// Import for Android features.
-import 'package:webview_flutter_android/webview_flutter_android.dart';
-// Import for iOS/macOS features.
-import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 import 'package:file_picker/file_picker.dart';
 
 import '../../../formbricks_flutter.dart';
@@ -62,18 +57,8 @@ class SurveyWebviewState extends State<SurveyWebview> {
 
   /// Initializes and configures the WebView controller
   void _setupWebView() {
-    late final PlatformWebViewControllerCreationParams params;
-    if (WebViewPlatform.instance is WebKitWebViewPlatform) {
-      params = WebKitWebViewControllerCreationParams(
-        allowsInlineMediaPlayback: true,
-        mediaTypesRequiringUserAction: const <PlaybackMediaTypes>{},
-        limitsNavigationsToAppBoundDomains: true
-      );
-    } else {
-      params = const PlatformWebViewControllerCreationParams();
-    }
     _webViewController = WebViewController.fromPlatformCreationParams(
-      params,
+      PlatformWebViewControllerCreationParams(),
     )..setVerticalScrollBarEnabled(true)
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.transparent)
@@ -105,12 +90,6 @@ class SurveyWebviewState extends State<SurveyWebview> {
         'FormbricksJavascript',
         onMessageReceived: (message) => _handleJavaScriptMessage(message.message),
       );
-
-    if (_webViewController.platform is AndroidWebViewController) {
-      if(kDebugMode) {
-        AndroidWebViewController.enableDebugging(true);
-      }
-    }
     _loadSurveyHtml();
   }
 
