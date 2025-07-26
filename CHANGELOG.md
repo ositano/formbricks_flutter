@@ -1,3 +1,3 @@
 ## 0.0.1
 
-* TODO: Describe initial release.
+* All features of Formbricks with supported question types. There is the option of inApp and Webview
