@@ -46,9 +46,9 @@ class FormbricksProvider extends StatefulWidget {
   });
 
   /// Retrieves the state of the nearest [FormbricksProvider] above in the widget tree.
-  static _FormbricksProviderState? of(BuildContext context) {
-    return context.findAncestorStateOfType<_FormbricksProviderState>();
-  }
+  // static _FormbricksProviderState? of(BuildContext context) {
+  //   return context.findAncestorStateOfType<_FormbricksProviderState>();
+  // }
 
   @override
   State<FormbricksProvider> createState() => _FormbricksProviderState();

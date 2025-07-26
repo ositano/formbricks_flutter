@@ -103,16 +103,16 @@ class SurveyContent extends StatelessWidget {
     switch (surveyDisplayMode) {
       case SurveyDisplayMode.bottomSheetModal:
         height = contentHeight ?? deviceHeight * 0.8;
-        padding = const EdgeInsets.fromLTRB(24.0, 32.0, 24.0, 16.0);
+        padding = const EdgeInsets.fromLTRB(24.0, 32.0, 24.0, 1.0);
         break;
       case SurveyDisplayMode.dialog:
         height = contentHeight ?? deviceHeight * 0.7;
         padding = const EdgeInsets.all(16.0);
-        isScrollable = false; // Dialog typically handles overflow itself
+        isScrollable = false; /// Dialog typically handles overflow itself
         break;
       default:
         height = widgetHeight ?? deviceHeight;
-        padding = const EdgeInsets.fromLTRB(24.0, 32.0, 24.0, 16.0);
+        padding = EdgeInsets.fromLTRB(24.0, 0, 24.0, 1.0);
         break;
     }
 
@@ -129,7 +129,7 @@ class SurveyContent extends StatelessWidget {
           /// Show inactivity countdown progress bar only if user hasn't interacted
           hasUserInteracted
               ? SizedBox.shrink()
-              : SurveyProgress(progress: inactivityProgress),
+              : SurveyProgress(progress: inactivityProgress, inactivitySecs: survey.autoClose,),
 
           /// Top-right close button (only in modal/dialog mode)
           Row(
@@ -141,12 +141,12 @@ class SurveyContent extends StatelessWidget {
               clickOutsideClose
                   ? IconButton(
                 onPressed: () {
-                  onComplete?.call(); // Trigger completion logic
-                  Navigator.of(context).maybePop(); // Close the dialog/modal
+                  onComplete?.call(); /// Trigger completion logic
+                  Navigator.of(context).maybePop(); /// Close the dialog/modal
                 },
                 icon: Icon(
                   LineAwesomeIcons.times_solid,
-                  color: Theme.of(context).iconTheme.color?.withOpacity(0.6),
+                  color: Theme.of(context).iconTheme.color?.withAlpha((255 * 0.6).round()),
                 ),
               )
                   : SizedBox.shrink(),
@@ -219,7 +219,7 @@ class SurveyContent extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Column(
               children: [
-                /// Show formbricks logo/copyright unless hidden
+                /// Show formbricks logo/copyright [powered by Formbricks] unless hidden
                 survey.styling?.isLogoHidden == true
                     ? SizedBox.shrink()
                     : SurveyCopyright(),

@@ -42,10 +42,17 @@ class _CalQuestionState extends State<CalQuestion> {
       });
     } else {
       // Check if the widget is still mounted before using context
-      if (context.mounted) {
-        return; // Widget is no longer in the tree, so don't use context
+      if (mounted) {
+        Log.instance.d(AppLocalizations.of(context)!.could_not_open_calendar);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                AppLocalizations.of(context)!.could_not_open_calendar
+            ),
+          ),
+        );
       }
-      Log.instance.d(AppLocalizations.of(context)!.could_not_open_calendar);
+
     }
   }
 

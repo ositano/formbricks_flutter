@@ -45,9 +45,7 @@ class UserManager {
     _prefs ??= await SharedPreferences.getInstance();
   }
 
-  // -------------------------------
-  // SETTERS
-  // -------------------------------
+  /// SETTERS
 
   /// Save user ID locally and in memory
   Future<void> setUserId(String id) async {
@@ -113,14 +111,12 @@ class UserManager {
     await _prefs?.setInt(_expiresAtKey, time.millisecondsSinceEpoch);
   }
 
-  // -------------------------------
-  // GETTERS
-  // -------------------------------
+  /// GETTERS
 
   String? get userId => _userId ?? _prefs?.getString(_userIdKey);
   String? get language => _language ?? _prefs?.getString(_languageKey);
 
-  /// Retrieve user attributes from memory or local storage
+  /// Retrieve user attributes from memory
   Map<String, String>? get attributes {
     if (_attributes != null) return _attributes!;
     final jsonStr = _prefs?.getString(_attributesKey);

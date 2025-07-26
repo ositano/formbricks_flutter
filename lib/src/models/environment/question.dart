@@ -1,13 +1,15 @@
 
 import 'package:json_annotation/json_annotation.dart';
 
+import '../../../formbricks_flutter.dart';
 import 'logic.dart';
 part 'question.g.dart';
 /// Defines the survey question model.
 @JsonSerializable()
 class Question {
   final String id;
-  final String type;
+  @JsonKey(name: 'type')
+  final QuestionType type;
   final Map<String, String> headline;
   final Map<String, String>? html;
   final Map<String, String>? subheader;

@@ -160,6 +160,26 @@ class FormbricksClient {
     }
   }
 
+  Future<void> reSubmitResponse({
+    required Map<String, dynamic> body,
+    required Function() onComplete
+  }) async {
+    final url = Uri.parse('$baseUrl/api/$version/client/$environmentId/responses');
+    final response = await baseRequest.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+      },
+      body: jsonEncode(body),
+    );
+
+    if (!(response.statusCode >= 200 && response.statusCode < 300)) {
+      throw Exception('Failed to resubmit response: ${response.statusCode} - ${response.body}');
+    }
+    onComplete.call();
+  }
+
   /// Uploads a file to Formbricks storage system. Handles both S3 and fallback (local) uploads.
   Future<String> uploadFile(FetchStorageUrlRequestBody requestBody) async {
     if (requestBody.fileName.isEmpty || requestBody.fileType.isEmpty || requestBody.filePath.isEmpty) {
@@ -178,7 +198,6 @@ class FormbricksClient {
       throw Exception("Failed to get upload metadata: ${metadataResponse.statusCode}");
     }
 
-    //final metadata = jsonDecode(metadataResponse.body)['data'];
     final metadata = FetchStorageUrlResponse.fromJson(jsonDecode(metadataResponse.body));
     final storageInfo = metadata.data;
 
@@ -212,7 +231,8 @@ class FormbricksClient {
       final localUploadPayload = {
         "fileBase64String": fileBase64,
         "fileType": requestBody.fileType,
-        "fileName": Uri.encodeComponent(storageInfo.updatedFileName),
+        if(storageInfo.updatedFileName != null)
+        "fileName": Uri.encodeComponent(storageInfo.updatedFileName!),
         "surveyId": requestBody.surveyId,
         if (storageInfo.signingData != null) ...{
           ...storageInfo.signingData!.toJson()

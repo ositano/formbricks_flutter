@@ -38,7 +38,6 @@ enum FilterOperator {
 
 
 /// SegmentFilterRoot union type with discriminated JSON
-@JsonSerializable()
 class SegmentFilterRoot {
   final String type;
   final String key;
@@ -119,7 +118,6 @@ class SegmentPrimitiveFilter {
 }
 
 /// Recursive resource: either primitive or group
-@JsonSerializable()
 class SegmentFilterResource {
   final SegmentPrimitiveFilter? primitive;
   final List<SegmentFilter>? group;

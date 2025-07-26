@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:reorderables/reorderables.dart';
 import '../../../../formbricks_flutter.dart';
+import '../../../utils/helper.dart';
 import '../components/custom_heading.dart';
 
 class RankingQuestion extends StatefulWidget {
@@ -22,22 +23,22 @@ class RankingQuestion extends StatefulWidget {
 }
 
 class _RankingQuestionState extends State<RankingQuestion> {
-  late List<String> rankedItems;
   late List<Map<String, dynamic>> choices;
+  late List<String> rankedChoices;
 
   @override
   void initState() {
     super.initState();
     choices = widget.question.choices ?? [];
-    rankedItems = (widget.response as List?)?.cast<String>() ??
-        choices.map((c) => c['id']?.toString() ?? '').toList();
+    List<String> choiceInList = choices.map((c) => translate(c['label'], context) ?? '').toList();
+    rankedChoices = widget.response as List<String>? ?? choiceInList;
   }
 
   void _onReorder(int oldIndex, int newIndex) {
     setState(() {
-      final item = rankedItems.removeAt(oldIndex);
-      rankedItems.insert(newIndex, item);
-      widget.onResponse(widget.question.id, rankedItems);
+      final item = rankedChoices.removeAt(oldIndex);
+      rankedChoices.insert(newIndex, item);
+      widget.onResponse(widget.question.id, rankedChoices);
     });
   }
 
@@ -46,7 +47,7 @@ class _RankingQuestionState extends State<RankingQuestion> {
           (c) => c['id'] == id,
       orElse: () => {},
     );
-    return choice['label']?['default'] ?? id;
+    return translate(choice['label'], context) ?? id;
   }
 
   @override
@@ -61,7 +62,7 @@ class _RankingQuestionState extends State<RankingQuestion> {
       key: ValueKey(widget.question.id),
       validator: (value) {
         if (!isRequired) return null;
-        final allItemsValid = rankedItems.toSet().length == choices.length;
+        final allItemsValid = rankedChoices.toSet().length == choices.length;
         return allItemsValid ? null : AppLocalizations.of(context)!.please_rank_all_options;
       },
       builder: (field) {
@@ -73,7 +74,7 @@ class _RankingQuestionState extends State<RankingQuestion> {
               crossAxisAlignment: CrossAxisAlignment.start,
               needsLongPressDraggable: false,
               onReorder: _onReorder,
-              children: rankedItems.asMap().entries.map((entry) {
+              children: rankedChoices.asMap().entries.map((entry) {
                 final index = entry.key + 1;
                 final value = entry.value;
                 final label = _getChoiceLabel(value);

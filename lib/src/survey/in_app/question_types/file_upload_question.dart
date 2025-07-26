@@ -61,30 +61,39 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
         final imageUrls = <String>[];
 
         for (var file in result.files) {
-          if(FileUploadUtils.isValidFileExtension(file.path!, widget.question.allowedFileExtensions ??
+          if(!FileUploadUtils.isValidFileExtension(file.path!, widget.question.allowedFileExtensions ??
               ['pdf', 'png', 'jpg', 'jpeg'])){
             Log.instance.d('Unsupported file type, Select either of these: ${widget.question.allowedFileExtensions ??
                 ['pdf', 'png', 'jpg', 'jpeg']}');
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  'Unsupported file type, Select either of these: ${widget.question.allowedFileExtensions ??
-                      ['pdf', 'png', 'jpg', 'jpeg']}',
+            if(mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Unsupported file type, Select either of these: ${widget
+                        .question.allowedFileExtensions ??
+                        ['pdf', 'png', 'jpg', 'jpeg']}',
+                  ),
                 ),
-              ),
-            );
+              );
+            }
             continue;
           }
 
-          if(FileUploadUtils.isValidFileSize(File(file.path!), widget.question.maxSizeInMB ?? 10)){
-            Log.instance.d('${AppLocalizations.of(context)!.file_size_exceeds_limit}, limit: ${widget.question.maxSizeInMB ?? 10}MB');
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  '${AppLocalizations.of(context)!.file_size_exceeds_limit}, limit: ${widget.question.maxSizeInMB ?? 10}MB',
+          if(!FileUploadUtils.isValidFileSize(File(file.path!), widget.question.maxSizeInMB ?? 10)){
+            if(mounted) {
+              Log.instance.d('${AppLocalizations.of(context)!
+                  .file_size_exceeds_limit}, limit: ${widget.question
+                  .maxSizeInMB ?? 10}MB');
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    '${AppLocalizations.of(context)!
+                        .file_size_exceeds_limit}, limit: ${widget.question
+                        .maxSizeInMB ?? 10}MB',
+                  ),
                 ),
-              ),
-            );
+              );
+            }
             continue;
           }
 
@@ -93,8 +102,9 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
               fileName: file.name,
               fileType: mimeType!,
               surveyId: widget.surveyId,
-              filePath: file.path!
-
+              filePath: file.path!,
+              allowedFileExtensions: widget
+                  .question.allowedFileExtensions,
           );
           final url = await widget.client.uploadFile(fileRequestBody);
             urls.add(url);
@@ -106,16 +116,16 @@ class _FileUploadQuestionState extends State<FileUploadQuestion> {
           imageFileUrls.addAll(imageUrls);
           widget.onResponse(widget.question.id, fileUrls);
         });
-      } catch (e) {
-        Log.instance.d(e);
-        if(!context.mounted){
-          return;
+      } catch (e, st) {
+        Log.instance.d(st);
+        if(mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  '${AppLocalizations.of(context)!.error_uploading_file} $e'),
+            ),
+          );
         }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${AppLocalizations.of(context)!.error_uploading_file} $e'),
-          ),
-        );
       }
     }
   }

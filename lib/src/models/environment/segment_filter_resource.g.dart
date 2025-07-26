@@ -6,12 +6,6 @@ part of 'segment_filter_resource.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-SegmentFilterRoot _$SegmentFilterRootFromJson(Map<String, dynamic> json) =>
-    SegmentFilterRoot(json['type'] as String, json['key'] as String);
-
-Map<String, dynamic> _$SegmentFilterRootToJson(SegmentFilterRoot instance) =>
-    <String, dynamic>{'type': instance.type, 'key': instance.key};
-
 SegmentFilterQualifier _$SegmentFilterQualifierFromJson(
   Map<String, dynamic> json,
 ) => SegmentFilterQualifier(
@@ -57,26 +51,6 @@ Map<String, dynamic> _$SegmentPrimitiveFilterToJson(
   'root': instance.root,
   'value': instance.value,
   'qualifier': instance.qualifier,
-};
-
-SegmentFilterResource _$SegmentFilterResourceFromJson(
-  Map<String, dynamic> json,
-) => SegmentFilterResource(
-  primitive: json['primitive'] == null
-      ? null
-      : SegmentPrimitiveFilter.fromJson(
-          json['primitive'] as Map<String, dynamic>,
-        ),
-  group: (json['group'] as List<dynamic>?)
-      ?.map((e) => SegmentFilter.fromJson(e as Map<String, dynamic>))
-      .toList(),
-);
-
-Map<String, dynamic> _$SegmentFilterResourceToJson(
-  SegmentFilterResource instance,
-) => <String, dynamic>{
-  'primitive': instance.primitive,
-  'group': instance.group,
 };
 
 SegmentFilter _$SegmentFilterFromJson(Map<String, dynamic> json) =>

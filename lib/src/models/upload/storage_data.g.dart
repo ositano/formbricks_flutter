@@ -11,7 +11,7 @@ StorageData _$StorageDataFromJson(Map<String, dynamic> json) => StorageData(
   signingData: json['signingData'] == null
       ? null
       : SigningData.fromJson(json['signingData'] as Map<String, dynamic>),
-  updatedFileName: json['updatedFileName'] as String,
+  updatedFileName: json['updatedFileName'] as String?,
   fileUrl: json['fileUrl'] as String,
   presignedFields: json['presignedFields'] as Map<String, dynamic>?,
 );

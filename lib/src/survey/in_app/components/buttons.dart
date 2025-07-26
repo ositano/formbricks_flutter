@@ -46,7 +46,7 @@ class SurveyButtons extends StatelessWidget {
                 if (nextLabel != null)
                   if (currentStep == -1 ||
                       (currentStep > -1 &&
-                          !['rating', 'nps'].contains(
+                          ![QuestionType.rating, QuestionType.nps].contains(
                             survey.questions.elementAtOrNull(currentStep)?.type,
                           )))
                     ElevatedButton(

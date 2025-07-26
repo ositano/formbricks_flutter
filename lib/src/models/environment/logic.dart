@@ -1,5 +1,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
+
+import '../../../formbricks_flutter.dart';
 part 'logic.g.dart';
 @JsonSerializable()
 class Logic {
@@ -16,10 +18,13 @@ class Logic {
 @JsonSerializable()
 class LogicAction {
   final String id;
-  final String objective;
+  @JsonKey(name: 'objective')
+  final LogicActionObjective objective;
   final String? target;
   final dynamic value; // For calculate actions
-  final String? operator; // For calculate actions
+
+  @JsonKey(name: 'operator')
+  final LogicActionOperator? operator; // For calculate actions
   final String? variableId; // For variable assignment
 
   LogicAction({
@@ -38,7 +43,8 @@ class LogicAction {
 @JsonSerializable()
 class Condition {
   final String id;
-  final String connector;
+  @JsonKey(name: 'connector')
+  final ConditionConnector connector;
   final List<dynamic> conditions; // Can be ConditionDetail or nested Condition
 
   Condition({
@@ -53,7 +59,8 @@ class Condition {
 @JsonSerializable()
 class ConditionDetail {
   final String id;
-  final String operator;
+  @JsonKey(name: 'operator')
+  final ConditionOperator operator;
   final Operand leftOperand;
   final Operand? rightOperand;
 
@@ -69,7 +76,8 @@ class ConditionDetail {
 
 @JsonSerializable()
 class Operand {
-  final String type;
+  @JsonKey(name: 'type')
+  final OperandType type;
   final dynamic value;
 
   Operand({required this.type, this.value});

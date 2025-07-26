@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -174,7 +175,9 @@ class SurveyWidgetState extends State<SurveyWidget> {
         surveyId: widget.survey.id,
         userId: widget.userId,
       );
-      context.userManager?.onDisplay(widget.survey.id);
+      if(mounted) {
+        context.userManager?.onDisplay(widget.survey.id);
+      }
     } catch (e) {
       setState(() {
         error = e.toString();
@@ -215,16 +218,33 @@ class SurveyWidgetState extends State<SurveyWidget> {
         data: responses,
       );
       if (survey.delay != null) {
-        Future.delayed(Duration(milliseconds: survey.delay!.toInt()), () {
+        Future.delayed(Duration(seconds: survey.delay!.toInt()), () {
           _closeSurvey();
         });
       }
-      context.userManager?.onResponse(widget.survey.id);
-      if(kDebugMode) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Survey submitted successfully!')),
-        );
+      if(mounted) {
+        context.userManager?.onResponse(widget.survey.id);
+        if (kDebugMode) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Survey submitted successfully!')),
+          );
+        }
       }
+    } on SocketException {
+      // Internet unavailable
+      _cacheUserResponseOnError({
+        'surveyId': widget.survey.id,
+        'userId': widget.userId,
+        'data': responses,
+        'finished': true,
+      });
+    } on HttpException {
+      _cacheUserResponseOnError({
+        'surveyId': widget.survey.id,
+        'userId': widget.userId,
+        'data': responses,
+        'finished': true,
+      });
     } catch (e) {
       setState(() {
         error = e.toString();
@@ -232,6 +252,11 @@ class SurveyWidgetState extends State<SurveyWidget> {
     }finally {
       _isSubmitting = false;
     }
+  }
+
+  /// caching UserResponse on Internet failure or Server issue
+  void _cacheUserResponseOnError(Map<String, dynamic> userResponse){
+    context.surveyManager?.setUnSyncUserResponse(userResponse);
   }
 
 
@@ -271,7 +296,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
           anyLogicMatched = true;
 
           for (final action in logic.actions) {
-            if (action.objective == 'jumpToQuestion') {
+            if (action.objective == LogicActionObjective.jumpToQuestion) {
               jumpTarget = action.target; // Handle jump later
             } else {
               _executeAction(action); // e.g., requireAnswer, calculate
@@ -380,7 +405,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
   bool _evaluateConditions(dynamic conditions) {
     if (conditions == null || conditions.conditions == null || conditions.conditions.isEmpty) return true;
 
-    bool result = conditions.connector == 'and';
+    bool result = conditions.connector == ConditionConnector.and;
 
     for (var condition in conditions.conditions) {
       bool conditionResult;
@@ -404,7 +429,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
       }
 
       /// Combine results using AND / OR logic
-      if (conditions.connector == 'and') {
+      if (conditions.connector == ConditionConnector.and) {
         result = result && conditionResult;
         if (!result) break; // early exit for AND
       } else {
@@ -420,40 +445,39 @@ class SurveyWidgetState extends State<SurveyWidget> {
   /// Resolves operand values from responses or variables
   dynamic _getOperandValue(Operand operand) {
     switch (operand.type) {
-      case 'question': return responses[operand.value] ?? '';
-      case 'static': return operand.value;
-      case 'variable': return _variables[operand.value] ?? 0;
-      default: return '';
-    }
+      case OperandType.question: return responses[operand.value] ?? '';
+      case OperandType.static: return operand.value;
+      case OperandType.variable: return _variables[operand.value] ?? 0;
+      }
   }
 
   /// Applies basic comparison operators for logic conditions
-  bool _evaluateCondition(dynamic left, String operator, dynamic right) {
+  bool _evaluateCondition(dynamic left, ConditionOperator operator, dynamic right) {
 
     ///Picks the left id for comparison for multiple choice and pictureSelection questions
     final currentQuestion = survey.questions.elementAtOrNull(_currentStep);
-    if(currentQuestion?.type == 'multipleChoiceSingle' || currentQuestion?.type == 'multipleChoiceMulti' || currentQuestion?.type == 'pictureSelection'){
-      String? choiceId = getIdFromChoices(currentQuestion?.choices ?? [], left, currentQuestion?.type == 'pictureSelection');
+    if(currentQuestion?.type == QuestionType.multipleChoiceSingle || currentQuestion?.type == QuestionType.multipleChoiceMulti || currentQuestion?.type == QuestionType.pictureSelection){
+      String? choiceId = getIdFromChoices(currentQuestion?.choices ?? [], left, currentQuestion?.type == QuestionType.pictureSelection);
       if(choiceId != null) {
         left = choiceId;
       }
     }
 
     switch (operator) {
-      case 'equals': return left == right;
-      case 'equalsOneOf': return (right as List).contains(left.toString());
-      case 'isLessThan': return num.parse(left.toString()) < num.parse(right.toString());
-      case 'isLessThanOrEqual': return num.parse(left.toString()) <= num.parse(right.toString());
-      case 'isGreaterThan': return num.parse(left.toString()) > num.parse(right.toString());
-      case 'isGreaterThanOrEqual': return num.parse(left.toString()) >= num.parse(right.toString());
-      case 'doesNotEqual': return left != right;
-      case 'contains': return left.toString().contains(right.toString());
-      case 'doesNotContain': return !left.toString().contains(right.toString());
-      case 'startsWith': return left.toString().startsWith(right.toString());
-      case 'doesNotStartWith': return !left.toString().startsWith(right.toString());
-      case 'endsWith': return left.toString().endsWith(right.toString());
-      case 'doesNotEndWith': return !left.toString().endsWith(right.toString());
-      case 'isSubmitted': // Evaluate only at the point of progressing from the specific question
+      case ConditionOperator.equals: return left == right;
+      case ConditionOperator.equalsOneOf: return (right as List).contains(left.toString());
+      case ConditionOperator.isLessThan: return num.parse(left.toString()) < num.parse(right.toString());
+      case ConditionOperator.isLessThanOrEqual: return num.parse(left.toString()) <= num.parse(right.toString());
+      case ConditionOperator.isGreaterThan: return num.parse(left.toString()) > num.parse(right.toString());
+      case ConditionOperator.isGreaterThanOrEqual: return num.parse(left.toString()) >= num.parse(right.toString());
+      case ConditionOperator.doesNotEqual: return left != right;
+      case ConditionOperator.contains: return left.toString().contains(right.toString());
+      case ConditionOperator.doesNotContain: return !left.toString().contains(right.toString());
+      case ConditionOperator.startsWith: return left.toString().startsWith(right.toString());
+      case ConditionOperator.doesNotStartWith: return !left.toString().startsWith(right.toString());
+      case ConditionOperator.endsWith: return left.toString().endsWith(right.toString());
+      case ConditionOperator.doesNotEndWith: return !left.toString().endsWith(right.toString());
+      case ConditionOperator.isSubmitted: // Evaluate only at the point of progressing from the specific question
         /// Make sure 'left' refers to a questionId
         if (left is String) {
           return responses.containsKey(left);
@@ -461,8 +485,9 @@ class SurveyWidgetState extends State<SurveyWidget> {
           return responses.containsKey(left['value']);
         }
         return false;
-      default: return false;
-    }
+      default:
+        return false;
+      }
   }
 
   /// Extracts ID from choices of MultipleChoice questions
@@ -487,13 +512,13 @@ class SurveyWidgetState extends State<SurveyWidget> {
   /// Executes an action from a logic block
   void _executeAction(LogicAction action) {
     switch (action.objective) {
-      case 'jumpToQuestion':
+      case LogicActionObjective.jumpToQuestion:
         _jumpToQuestion(action.target!);
         break;
-      case 'requireAnswer':
+      case LogicActionObjective.requireAnswer:
         _requireAnswer(action.target ?? action.variableId);
         break;
-      case 'calculate':
+      case LogicActionObjective.calculate:
         _calculateValue(action);
         break;
     }
@@ -523,11 +548,11 @@ class SurveyWidgetState extends State<SurveyWidget> {
 
     num result;
     switch (action.operator) {
-      case 'add': result = leftValue + rightValue; break;
-      case 'subtract': result = leftValue - rightValue; break;
-      case 'multiply': result = leftValue * rightValue; break;
-      case 'divide': result = rightValue != 0 ? leftValue / rightValue : leftValue; break;
-      case 'assign': result = rightValue; break;
+      case LogicActionOperator.add: result = leftValue + rightValue; break;
+      case LogicActionOperator.subtract: result = leftValue - rightValue; break;
+      case LogicActionOperator.multiply: result = leftValue * rightValue; break;
+      case LogicActionOperator.divide: result = rightValue != 0 ? leftValue / rightValue : leftValue; break;
+      case LogicActionOperator.assign: result = rightValue; break;
       default: result = leftValue;
     }
     _variables[variableId] = result;
@@ -539,7 +564,7 @@ class SurveyWidgetState extends State<SurveyWidget> {
           (q) => q.id == targetId,
       orElse: () => survey.questions.firstWhere(
             (q) => q.id == _variables.keys.firstWhere((k) => _variables[k] == targetId, orElse: () => ""),
-        orElse: () => Question(id: '', type: '', headline: {}, required: false, logic: []),
+        orElse: () => Question(id: '', type: QuestionType.unSupportedType, headline: {}, required: false, logic: []),
       ),
     );
     if (targetQuestion.id.isNotEmpty) {

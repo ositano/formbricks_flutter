@@ -57,6 +57,9 @@ class ViewManager {
         data: buildTheme(context, formbricksFlutterConfig?.customTheme, survey),
         child: Scaffold(
           backgroundColor: Theme.of(context).cardColor,
+          appBar: AppBar(
+            automaticallyImplyLeading: false, // 👈 Hides the back button
+          ),
           body: widgetBody,
         ),
       );

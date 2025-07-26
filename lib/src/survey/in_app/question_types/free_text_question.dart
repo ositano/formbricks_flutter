@@ -95,6 +95,9 @@ class _FreeTextQuestionState extends State<FreeTextQuestion> {
               decoration: InputDecoration(
                 hintText: translate(question.placeholder, context) ?? AppLocalizations.of(context)!.type_answer_here,
                 labelStyle: theme.textTheme.bodyMedium,
+                hintStyle: TextStyle(
+                  color: theme.inputDecorationTheme.labelStyle?.color?.withAlpha(76), // Set your desired color here
+                )
               ),
               maxLines: question.longAnswer == true ? null : 1,
               minLines: question.longAnswer == true ? 3 : 1,

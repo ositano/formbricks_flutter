@@ -34,8 +34,7 @@ class _CTAQuestionState extends State<CTAQuestion> {
 
   Future<void> _openLink() async {
     final url = widget.question.buttonUrl!;
-    if (await canLaunch(url)) {
-      await launch(url);
+    if (await launchUrl(Uri.parse(url))) {
       setState(() {
         performedAction = true;
         widget.onResponse(widget.question.id, performedAction ? "clicked" : "dismissed");

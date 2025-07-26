@@ -8,7 +8,7 @@ part of 'question.dart';
 
 Question _$QuestionFromJson(Map<String, dynamic> json) => Question(
   id: json['id'] as String,
-  type: json['type'] as String,
+  type: $enumDecode(_$QuestionTypeEnumMap, json['type']),
   headline: Map<String, String>.from(json['headline'] as Map),
   html: (json['html'] as Map<String, dynamic>?)?.map(
     (k, e) => MapEntry(k, e as String),
@@ -83,7 +83,7 @@ Question _$QuestionFromJson(Map<String, dynamic> json) => Question(
 
 Map<String, dynamic> _$QuestionToJson(Question instance) => <String, dynamic>{
   'id': instance.id,
-  'type': instance.type,
+  'type': _$QuestionTypeEnumMap[instance.type]!,
   'headline': instance.headline,
   'html': instance.html,
   'subheader': instance.subheader,
@@ -127,4 +127,24 @@ Map<String, dynamic> _$QuestionToJson(Question instance) => <String, dynamic>{
   'buttonUrl': instance.buttonUrl,
   'range': instance.range,
   'scale': instance.scale,
+};
+
+const _$QuestionTypeEnumMap = {
+  QuestionType.freeText: 'freeText',
+  QuestionType.openText: 'openText',
+  QuestionType.multipleChoiceSingle: 'multipleChoiceSingle',
+  QuestionType.multipleChoiceMulti: 'multipleChoiceMulti',
+  QuestionType.pictureSelection: 'pictureSelection',
+  QuestionType.rating: 'rating',
+  QuestionType.nps: 'nps',
+  QuestionType.ranking: 'ranking',
+  QuestionType.matrix: 'matrix',
+  QuestionType.consent: 'consent',
+  QuestionType.fileUpload: 'fileUpload',
+  QuestionType.date: 'date',
+  QuestionType.cal: 'cal',
+  QuestionType.address: 'address',
+  QuestionType.contactInfo: 'contactInfo',
+  QuestionType.cta: 'cta',
+  QuestionType.unSupportedType: 'unSupportedType',
 };

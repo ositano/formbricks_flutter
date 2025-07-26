@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../formbricks_flutter.dart';
@@ -19,6 +20,7 @@ import 'view_manager.dart';
 class SurveyManager {
   static const _refreshStateOnErrorTimeoutInMinutes = 10;
   static const _prefFormbricksDataHolder = 'formbricksDataHolder';
+  static const _prefUnSyncUserResponse = 'formbricksUnSyncUserResponse';
 
   final FormbricksClient client;
   late SurveyDisplayMode surveyDisplayMode;
@@ -104,6 +106,21 @@ class SurveyManager {
     _saveEnvironmentDataHolder(value);
   }
 
+  /// Cached user response received from no internet exception.
+  Future<void> setUnSyncUserResponse(Map<String, dynamic> userResponse) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_prefUnSyncUserResponse, jsonEncode(userResponse));
+  }
+
+  /// Retrieve user response from memory
+  Future<Map<String, dynamic>?> get unSyncUserResponse async{
+    final prefs = await SharedPreferences.getInstance();
+    final jsonStr = prefs.getString(_prefUnSyncUserResponse);
+    if (jsonStr == null) return null;
+    final decoded = jsonDecode(jsonStr) as Map<String, dynamic>;
+    return decoded;
+  }
+
   /// Refreshes the environment from the backend if expired or forced.
   Future<void> refreshEnvironmentIfNeeded({bool force = false}) async {
     final holder = await environmentDataHolder;
@@ -180,6 +197,18 @@ class SurveyManager {
       return;
     }
 
+    bool result = await InternetConnection().hasInternetAccess;
+    if(!result){
+      Log.instance.e(SDKError.instance.connectionIsNotAvailable);
+      return;
+    }
+
+    final unSyncResponse= await unSyncUserResponse;
+    if(unSyncResponse != null && unSyncResponse.isNotEmpty){
+        FormbricksClient.instance.reSubmitResponse(body: unSyncResponse, onComplete: (){
+          setUnSyncUserResponse({});
+        });
+    }
     final timeout = (targetSurvey.delay ?? 0).toDouble();
 
     isShowingSurvey = true;
@@ -312,7 +341,7 @@ class SurveyManager {
   int calculateEstimatedTime(List<Question> questions) {
     int total = 0;
     for (final q in questions) {
-      total += (q.type == 'nps' || q.type == 'rating') ? 5 : 10;
+      total += (q.type == QuestionType.nps || q.type == QuestionType.rating) ? 5 : 10;
       total += 5; // time to read and think
       if (q.required == true) total += 2; // extra time for mandatory
     }

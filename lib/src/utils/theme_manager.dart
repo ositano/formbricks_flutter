@@ -32,7 +32,7 @@ ThemeData buildTheme(BuildContext context, ThemeData? customTheme, Survey survey
     if (hex == null || hex.isEmpty) return fallback;
     hex = hex.replaceFirst('#', '');
     if (hex.length == 6) hex = 'FF$hex'; // Add alpha channel if missing
-    return Color(int.tryParse('0x$hex') ?? fallback.value);
+    return Color(int.tryParse('0x$hex') ?? fallback.toARGB32());
   }
 
   /// Utility function to get a color from styling config based on brightness mode.

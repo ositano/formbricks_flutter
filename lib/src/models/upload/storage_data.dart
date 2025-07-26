@@ -6,14 +6,14 @@ part 'storage_data.g.dart';
 class StorageData {
   final String signedUrl;
   final SigningData? signingData;
-  final String updatedFileName;
+  final String? updatedFileName;
   final String fileUrl;
   final Map<String, dynamic>? presignedFields;
 
   StorageData({
     required this.signedUrl,
     required this.signingData,
-    required this.updatedFileName,
+    this.updatedFileName,
     required this.fileUrl,
     required this.presignedFields
   });

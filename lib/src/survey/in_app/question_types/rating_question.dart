@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_pannable_rating_bar/flutter_pannable_rating_bar.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 import '../../../../formbricks_flutter.dart';
@@ -38,14 +38,11 @@ class _RatingQuestionState extends State<RatingQuestion> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final range =
-        int.tryParse(
-          widget.question.range?.toString() ?? '5',
-        ) ??
+        int.tryParse(widget.question.range?.toString() ?? '5') ??
         5; //3,4,6,7,10
-    final scale =
-        widget.question.scale ?? 'star'; // 'star', 'smiley', 'number'
+    final scale = widget.question.scale ?? 'star'; // 'star', 'smiley', 'number'
     bool isRequired = widget.question.required ?? false;
-    if(widget.requiredAnswerByLogicCondition){
+    if (widget.requiredAnswerByLogicCondition) {
       isRequired = widget.requiredAnswerByLogicCondition;
     }
 
@@ -115,20 +112,14 @@ class _RatingQuestionState extends State<RatingQuestion> {
         );
       }
 
-      // Use RatingBar for 'star' and 'smiley'
-      return RatingBar.builder(
-        initialRating: selectedRating ?? 0,
-        minRating: 1,
-        allowHalfRating: false,
-        itemCount: range,
-        itemSize: range > 6
-            ? range == 7
-                  ? 30
-                  : 25
-            : 40,
-        glowColor: Colors.amber,
-        itemPadding: EdgeInsets.symmetric(horizontal: range > 7 ? 2.0 : 4.0),
-        itemBuilder: (context, index) {
+      return PannableRatingBar(
+        rate: selectedRating ?? 0,
+        maxRating: range.toDouble(),
+        crossAxisAlignment: WrapCrossAlignment.center,
+        alignment: WrapAlignment.spaceEvenly,
+        spacing: 1,
+        minRating: 0,
+        items: List.generate(range, (index) {
           Color getSmileyColor(int index, int range) {
             final ratio = index / (range - 1);
             if (ratio < 0.4) {
@@ -136,24 +127,31 @@ class _RatingQuestionState extends State<RatingQuestion> {
             } else if (ratio < 0.6) {
               return Colors.grey.shade600;
             } else {
-              return Colors.amberAccent.shade100;
+              return Colors.amberAccent.shade700;
             }
           }
 
           if (scale == 'smiley') {
-            return Icon(
-              getSmileyIcon(index, range),
-              color: getSmileyColor(index, range),
-              size: range > 6
-                  ? range == 7
-                        ? 30
-                        : 25
-                  : 40,
+            return RatingWidget(
+              selectedColor: theme.primaryColor,
+              unSelectedColor: getSmileyColor(index, range),
+              child: Icon(
+                getSmileyIcon(index, range),
+                size: range > 6
+                    ? range == 7
+                          ? 32
+                          : 28
+                    : 40,
+              ),
             );
           }
-          return Icon(Icons.star, color: theme.primaryColor);
-        },
-        onRatingUpdate: (rating) {
+          return RatingWidget(
+            selectedColor: theme.primaryColor,
+            unSelectedColor: Colors.grey,
+            child: Icon(Icons.star, size: 40),
+          );
+        }),
+        onChanged: (rating) {
           setState(() => selectedRating = rating);
           field.didChange(rating);
           widget.onResponse(widget.question.id, rating.toInt());
@@ -171,9 +169,10 @@ class _RatingQuestionState extends State<RatingQuestion> {
 
     return FormField<double>(
       key: ValueKey(widget.question.id),
-      validator: (value) => isRequired && (selectedRating == null || selectedRating == 0)
-                ? AppLocalizations.of(context)!.please_select_rating
-                : null,
+      validator: (value) =>
+          isRequired && (selectedRating == null || selectedRating == 0)
+          ? AppLocalizations.of(context)!.please_select_rating
+          : null,
       builder: (FormFieldState<double> field) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.center,
