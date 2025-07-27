@@ -1,3 +1,7 @@
 ## 0.0.1
 
 * All features of Formbricks with supported question types. There is the option of inApp and Webview
+
+## 0.0.2
+
+* Renamed formbricks_flutter_config to formbricks_inapp_config

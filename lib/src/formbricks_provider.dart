@@ -31,7 +31,7 @@ class FormbricksProvider extends StatefulWidget {
   final String? language;
 
   /// Custom configuration including theming and question widget overrides.
-  final FormbricksFlutterConfig? formbricksFlutterConfig;
+  final FormbricksInAppConfig? formbricksInAppConfig;
 
   const FormbricksProvider({
     super.key,
@@ -42,13 +42,8 @@ class FormbricksProvider extends StatefulWidget {
     this.checkForNewSurveysOnRestart = false,
     this.userId,
     this.language = 'default',
-    this.formbricksFlutterConfig,
+    this.formbricksInAppConfig,
   });
-
-  /// Retrieves the state of the nearest [FormbricksProvider] above in the widget tree.
-  // static _FormbricksProviderState? of(BuildContext context) {
-  //   return context.findAncestorStateOfType<_FormbricksProviderState>();
-  // }
 
   @override
   State<FormbricksProvider> createState() => _FormbricksProviderState();
@@ -67,7 +62,7 @@ class _FormbricksProviderState extends State<FormbricksProvider> {
     _surveyManager = SurveyManager(
       client: widget.client,
       context: context,
-      formbricksFlutterConfig: widget.formbricksFlutterConfig,
+      formbricksInAppConfig: widget.formbricksInAppConfig,
     );
 
     /// Initialize and configure the user manager.
@@ -103,8 +98,8 @@ class _FormbricksProviderState extends State<FormbricksProvider> {
 
   @override
   void dispose() {
-    /// You can dispose surveyManager if needed in future to release resources.
-    _userManager.logout();
+    /// You can dispose surveyManager/userManager if needed in future to release resources.
+    //_userManager.logout();
     super.dispose();
   }
 

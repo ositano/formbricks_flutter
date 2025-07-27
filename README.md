@@ -1,17 +1,14 @@
 
 # Formbricks Flutter SDK
 [![Pub](https://img.shields.io/pub/v/formbricks_flutter.svg)](https://pub.dartlang.org/packages/formbricks_flutter)
-
-[//]: # ([![Build]&#40;https://img.shields.io/github/actions/workflow/status/wiredashio/wiredash-sdk/nightly.yaml?branch=stable&#41;]&#40;https://github.com/wiredashio/wiredash-sdk/actions&#41;)
 [![Pub Likes](https://img.shields.io/pub/likes/formbricks_flutter)](https://pub.dev/packages/formbricks_flutter/score)
 [![Popularity](https://img.shields.io/pub/popularity/formbricks_flutter)](https://pub.dev/packages/formbricks_flutter/score)
 [![Pub points](https://img.shields.io/pub/points/formbricks_flutter)](https://pub.dev/packages/formbricks_flutter/score)
 
-[//]: # ([![Website]&#40;https://img.shields.io/badge/website-wiredash.com-blue.svg&#41;]&#40;https://wiredash.com/&#41;)
 
-**Formbricks Flutter** lets you easily integrate beautiful, customizable, in-product formbricks **micro-surveys** directly into your Flutter apps. Collect user feedback where it matters most — inside your product. 💬📲
+**Formbricks Flutter** lets you easily integrate beautiful, customizable, in-product formbricks **micro-surveys** directly into your Flutter apps. Collect user feedback where it matters most — inside your product.
 
-Built on top of [Formbricks](https://formbricks.com) — the open-source experience management platform — this SDK offers all the flexibility you need to launch surveys, collect analytics, and adapt the UI to match your brand. 🎯
+Built on top of [Formbricks](https://formbricks.com) — the open-source experience, privacy-first management platform — this SDK offers all the flexibility you need to launch surveys, and adapt the UI to match your brand.
 
 ---
 
@@ -43,7 +40,7 @@ Add `formbricks_flutter` to your `pubspec.yaml`:
 dependencies:
   flutter:
     sdk: flutter
-  formbricks_flutter: ^0.0.1 #Replace with the latest version
+  formbricks_flutter: ^0.0.2 #Replace with the latest version
 ```
 
 ---
@@ -101,7 +98,7 @@ Note: custom theme works only if _overwriteThemeStyling_ property of the survey 
 FormbricksProvider(
     // required declarations
     ...
-    formbricksFlutterConfig: FormbricksFlutterConfig(
+    formbricksInAppConfig: FormbricksInAppConfig(
         customTheme: ThemeData(
             textTheme: TextTheme(
                 headlineMedium: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

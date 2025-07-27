@@ -10,6 +10,8 @@ import '../../formbricks_flutter.dart';
 /// - [onResponse] is the callback function to handle the user response.
 /// - [response] is the current response value, if any.
 /// - [requiredAnswerByLogicCondition] indicates whether the answer is required due to logic conditions.
+/// - [formbricksClient] optional formbricksClient to access network client
+/// - [surveyId] optional surveyId to access survey identifier
 typedef QuestionWidgetBuilder =
     Widget Function(
       Key? key,
@@ -39,7 +41,7 @@ void showFullScreenImage(BuildContext context, String imageUrl) {
         backgroundColor: Colors.black,
         body: Stack(
           children: [
-            // Centered image display
+            /// Centered image display
             Center(
               child: CachedNetworkImage(
                 imageUrl: imageUrl,
@@ -50,7 +52,7 @@ void showFullScreenImage(BuildContext context, String imageUrl) {
                     const Center(child: Icon(Icons.error)),
               ),
             ),
-            // Back button positioned at the top-left
+            /// Back button positioned at the top-left
             Positioned(
               top: 40,
               left: 10,

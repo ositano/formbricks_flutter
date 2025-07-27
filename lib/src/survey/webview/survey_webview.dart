@@ -68,7 +68,7 @@ class SurveyWebviewState extends State<SurveyWebview> {
           onProgress: (_) {
             Log.instance.d("progress....");
           },
-          onPageStarted: (url) => debugPrint('WebView started: $url'),
+          onPageStarted: (url) => Log.instance.d('WebView started: $url'),
           onHttpError: (error) {
             setState(() {
               hasHttpErrorLoadingWebview = true;
@@ -82,7 +82,7 @@ class SurveyWebviewState extends State<SurveyWebview> {
             setState(() {
               hasErrorLoadingWebview = true;
             });
-            debugPrint('WebView error: ${error.description}');
+            Log.instance.d('WebView error: ${error.description}');
             },
         ),
       )

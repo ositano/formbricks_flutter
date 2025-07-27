@@ -7,7 +7,7 @@ enum AppMode { dev, prod }
 /// Specifies the platform where the survey will be launched.
 ///
 /// - [inApp]: Surveys are displayed within the app interface using flutter classes.
-/// - [web]: Surveys are opened in a webview.
+/// - [webView]: Surveys are opened in a webview.
 enum SurveyPlatform { inApp, webView }
 
 /// Specifies how the survey UI is presented to the user.
