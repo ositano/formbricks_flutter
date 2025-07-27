@@ -23,7 +23,7 @@ void main() {
 
   test('should parse Survey correctly', () async {
     final survey = environmentDataHolder.data?.data.surveys?.first;
-    expect(survey?.name, 'Review Prompt');
+    expect(survey?.name, 'Start from scratch');
   });
 
 }
