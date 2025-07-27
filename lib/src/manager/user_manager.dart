@@ -10,7 +10,8 @@ import '../utils/logger.dart';
 /// A singleton class to manage the user's data and sync it with the server.
 /// Handles storage and retrieval using SharedPreferences.
 class UserManager {
-  // Keys for SharedPreferences storage
+
+  /// Keys for SharedPreferences storage
   static const _userIdKey = 'userId';
   static const _contactIdKey = 'contactId';
   static const _segmentsKey = 'segments';
@@ -22,11 +23,23 @@ class UserManager {
   static const _languageKey = 'language';
 
   // Singleton instance
-  static final UserManager _instance = UserManager._internal();
-  factory UserManager() => _instance;
+  static UserManager? _instance = UserManager._internal();
+
+  /// Factory constructor that always returns the same [UserManager] instance.
+  factory UserManager() {
+    _instance ??= UserManager._internal();
+    return _instance!;
+  }
+
+  /// Static getter to retrieve the existing [UserManager] instance.
+  static UserManager get instance {
+    _instance ??= UserManager._internal();
+    return _instance!;
+  }
+
   UserManager._internal();
 
-  // Internal fields
+  /// Internal fields
   SharedPreferences? _prefs;
   Timer? _syncTimer;
 
@@ -126,7 +139,8 @@ class UserManager {
   }
 
   String? get contactId => _contactId ?? _prefs?.getString(_contactIdKey);
-  List<String> get segments => _segments ?? _prefs?.getStringList(_segmentsKey) ?? [];
+  List<String> get segments =>
+      _segments ?? _prefs?.getStringList(_segmentsKey) ?? [];
 
   /// Get list of displayed surveys
   List<UserDisplay> get displays {
@@ -137,7 +151,8 @@ class UserManager {
     return decoded.map((e) => UserDisplay.fromJson(e)).toList();
   }
 
-  List<String> get responses => _responses ?? _prefs?.getStringList(_responsesKey) ?? [];
+  List<String> get responses =>
+      _responses ?? _prefs?.getStringList(_responsesKey) ?? [];
 
   /// Last time survey was shown to the user
   DateTime? get lastDisplayedAt {
@@ -153,16 +168,12 @@ class UserManager {
     return millis != null ? DateTime.fromMillisecondsSinceEpoch(millis) : null;
   }
 
-  // -------------------------------
-  // STATE MODIFIERS
-  // -------------------------------
-
   /// Call when a survey is displayed to the user
   Future<void> onDisplay(String surveyId) async {
     final now = DateTime.now();
     final updated = [
       ...displays,
-      UserDisplay(surveyId: surveyId, createdAt: now.toIso8601String())
+      UserDisplay(surveyId: surveyId, createdAt: now.toIso8601String()),
     ];
     await setDisplays(updated);
     await setLastDisplayedAt(now);
@@ -185,9 +196,15 @@ class UserManager {
   }
 
   /// Force sync user with server (e.g., after update)
-  Future<void> syncUser(String userId, [Map<String, String>? attributes]) async {
+  Future<void> syncUser(
+    String userId, [
+    Map<String, String>? attributes,
+  ]) async {
     try {
-      final result = await FormbricksClient.instance.createUser(userId, attributes: attributes);
+      final result = await FormbricksClient.instance.createUser(
+        userId,
+        attributes: attributes,
+      );
       final data = result?.state.data;
       if (data == null) return;
 

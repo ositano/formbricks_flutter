@@ -4,25 +4,25 @@ import '../../formbricks_flutter.dart';
 
 /// Builds a custom [ThemeData] for Formbricks surveys based on optional styling overrides.
 ///
-/// It supports both light and dark mode. The `survey.styling` configuration can include separate
+/// Supports both light and dark mode. The `survey.styling` configuration can include separate
 /// values for `light` and `dark` modes for each color property.
 ///
 /// If the survey does not specify `overwriteThemeStyling: true`, the provided `customTheme` or
 /// the current `Theme.of(context)` is returned unchanged.
 ThemeData buildTheme(BuildContext context, ThemeData? customTheme, Survey survey) {
-  // Use customTheme if provided, otherwise use the theme from context
+  /// Use customTheme if provided, otherwise use the theme from context
   final parentTheme = Theme.of(context);
   final baseTheme = customTheme ?? parentTheme;
 
-  // Check for styling overrides in the survey config
+  /// Check for styling overrides in the survey config
   final formBricksStyling = survey.styling;
 
-  // If overwriteThemeStyling is false or not set, return base theme unchanged
+  /// If overwriteThemeStyling is false or not set, return base theme unchanged
   if (!(formBricksStyling != null && formBricksStyling.overwriteThemeStyling == true)) {
     return baseTheme;
   }
 
-  // Determine whether we are currently in dark mode
+  /// Determine whether we are currently in dark mode
   final brightness = baseTheme.brightness;
   final isDarkMode = brightness == Brightness.dark;
 
@@ -43,7 +43,7 @@ ThemeData buildTheme(BuildContext context, ThemeData? customTheme, Survey survey
     );
   }
 
-  // Extract style values, using theme fallbacks where applicable
+  /// Extract style values, using theme fallbacks where applicable
   final brandColor = themedColor(
     formBricksStyling.brandColor,
     fallback: baseTheme.primaryColor,
@@ -86,13 +86,13 @@ ThemeData buildTheme(BuildContext context, ThemeData? customTheme, Survey survey
 
   final roundness = double.tryParse('${formBricksStyling.roundness}') ?? 8.0;
 
-  // Build and return the custom ThemeData
+  /// Build and return the custom ThemeData
   return baseTheme.copyWith(
     primaryColor: brandColor,
     scaffoldBackgroundColor: cardBackgroundColor,
     cardColor: cardBackgroundColor,
 
-    // Card appearance
+    /// Card appearance
     cardTheme: baseTheme.cardTheme.copyWith(
       color: cardBackgroundColor,
       shadowColor: cardShadowColor,
@@ -102,7 +102,7 @@ ThemeData buildTheme(BuildContext context, ThemeData? customTheme, Survey survey
       ),
     ),
 
-    // Input decoration (text fields, dropdowns, etc.)
+    /// Input decoration (text fields, dropdowns, etc.)
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: inputColor,
@@ -120,7 +120,7 @@ ThemeData buildTheme(BuildContext context, ThemeData? customTheme, Survey survey
       ),
     ),
 
-    // Text styles (for questions, etc.)
+    /// Text styles (for questions, etc.)
     textTheme: baseTheme.textTheme.copyWith(
       headlineMedium: baseTheme.textTheme.headlineMedium?.copyWith(color: questionColor, fontSize: 18, fontWeight: FontWeight.bold),
       titleMedium: baseTheme.textTheme.titleMedium?.copyWith(color: questionColor, fontWeight: FontWeight.w300),
@@ -128,12 +128,12 @@ ThemeData buildTheme(BuildContext context, ThemeData? customTheme, Survey survey
       bodySmall: baseTheme.textTheme.bodySmall?.copyWith(color: questionColor),
     ),
 
-    // Radio buttons
+    /// Radio buttons
     radioTheme: baseTheme.radioTheme.copyWith(
       fillColor: WidgetStateProperty.all(brandColor),
     ),
 
-    // Elevated button style
+    /// Elevated button style
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
         backgroundColor: WidgetStateProperty.all(brandColor),
@@ -146,7 +146,7 @@ ThemeData buildTheme(BuildContext context, ThemeData? customTheme, Survey survey
       ),
     ),
 
-    // Outlined button style
+    /// Outlined button style
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: ButtonStyle(
         foregroundColor: WidgetStateProperty.all(brandColor),
@@ -160,12 +160,12 @@ ThemeData buildTheme(BuildContext context, ThemeData? customTheme, Survey survey
       ),
     ),
 
-    // Progress indicators (like loading spinners)
+    /// Progress indicators (like loading spinners)
     progressIndicatorTheme: ProgressIndicatorThemeData(
       color: brandColor,
     ),
 
-    // Custom theme extension for roundness
+    /// Custom theme extension for roundness
     extensions: <ThemeExtension<dynamic>>[
       MyCustomTheme(styleRoundness: roundness),
     ],
@@ -173,7 +173,7 @@ ThemeData buildTheme(BuildContext context, ThemeData? customTheme, Survey survey
 }
 
 /// Custom [ThemeExtension] to support reading additional styling properties from the theme.
-/// This allows you to access `MyCustomTheme.of(context)?.styleRoundness` anywhere in the app.
+/// This allows us to access `MyCustomTheme.of(context)?.styleRoundness` anywhere in the app.
 @immutable
 class MyCustomTheme extends ThemeExtension<MyCustomTheme> {
   final double? styleRoundness;

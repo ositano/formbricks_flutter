@@ -9,7 +9,7 @@ import '../models/upload/fetch_storage_url_response.dart';
 import '../models/user/user_response_data.dart';
 import '_base_request.dart';
 
-/// A singleton client for interacting with the Formbricks Public & Management API.
+/// A singleton client for interacting with the Formbricks API.
 class FormbricksClient {
   final String appUrl;
   final String environmentId;

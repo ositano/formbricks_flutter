@@ -8,11 +8,12 @@ import 'utils/helper.dart';
 ///
 /// This configuration is intended to be passed to the `FormbricksFlutter` provider wrapper
 /// and provides centralized control over how questions and themes are rendered.
-class FormbricksFlutterConfig {
+class FormbricksInAppConfig {
   /// Custom [ThemeData] to be applied across all survey screens and widgets.
   ///
   /// If not provided, the default app theme will be used.
   /// NB: if overwriteThemeStyling is set to true, it will prioritize the survey config theme
+  /// over app theme or custom theme
   final ThemeData? customTheme;
 
   /// Builder for custom Address question widgets.
@@ -60,11 +61,11 @@ class FormbricksFlutterConfig {
   /// Builder for custom Rating question widgets.
   final QuestionWidgetBuilder? ratingQuestionBuilder;
 
-  /// Creates a [FormbricksFlutterConfig] instance with optional custom widget builders and theming.
+  /// Creates a [FormbricksInAppConfig] instance with optional custom widget builders and theming.
   ///
   /// All fields are optional; any question type left unconfigured will fall back
   /// to its default implementation.
-  FormbricksFlutterConfig({
+  FormbricksInAppConfig({
     this.customTheme,
     this.addressQuestionBuilder,
     this.calQuestionBuilder,

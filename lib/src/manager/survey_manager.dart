@@ -26,7 +26,7 @@ class SurveyManager {
   late SurveyDisplayMode surveyDisplayMode;
   late SurveyPlatform surveyPlatform;
   final BuildContext context;
-  final FormbricksFlutterConfig? formbricksFlutterConfig;
+  final FormbricksInAppConfig? formbricksInAppConfig;
 
   static SurveyManager? _instance;
 
@@ -34,12 +34,12 @@ class SurveyManager {
   factory SurveyManager({
     required FormbricksClient client,
     required BuildContext context,
-    FormbricksFlutterConfig? formbricksFlutterConfig,
+    FormbricksInAppConfig? formbricksInAppConfig,
   }) {
     _instance ??= SurveyManager._internal(
       context: context,
       client: client,
-      formbricksFlutterConfig: formbricksFlutterConfig,
+      formbricksInAppConfig: formbricksInAppConfig,
     );
     return _instance!;
   }
@@ -55,7 +55,7 @@ class SurveyManager {
   SurveyManager._internal({
     required this.client,
     required this.context,
-    this.formbricksFlutterConfig,
+    this.formbricksInAppConfig,
   });
 
   Timer? _refreshTimer;
@@ -153,14 +153,14 @@ class SurveyManager {
     if (holder == null) return;
 
     final surveys = holder.data?.data.surveys ?? [];
-    final displays = UserManager().displays;
-    final responses = UserManager().responses;
-    final segments = UserManager().segments;
+    final displays = UserManager.instance.displays;
+    final responses = UserManager.instance.responses;
+    final segments = UserManager.instance.segments;
 
     List<Survey> result = _filterSurveysBasedOnDisplayType(surveys, displays, responses);
     result = _filterSurveysBasedOnRecontactDays(result, holder.data?.data.project.recontactDays?.toInt());
 
-    if (UserManager().userId != null) {
+    if (UserManager.instance.userId != null) {
       if (segments.isEmpty) {
         filteredSurveys.clear();
         return;
@@ -205,7 +205,7 @@ class SurveyManager {
 
     final unSyncResponse= await unSyncUserResponse;
     if(unSyncResponse != null && unSyncResponse.isNotEmpty){
-        FormbricksClient.instance.reSubmitResponse(body: unSyncResponse, onComplete: (){
+        client.reSubmitResponse(body: unSyncResponse, onComplete: (){
           setUnSyncUserResponse({});
         });
     }
@@ -219,11 +219,11 @@ class SurveyManager {
         ViewManager.showSurveyInApp(
           context,
           client,
-          UserManager().userId!,
+          UserManager.instance.userId!,
           targetSurvey,
           surveyDisplayMode,
           estimatedTimeInSecs,
-          formbricksFlutterConfig: formbricksFlutterConfig,
+          formbricksInAppConfig: formbricksInAppConfig,
         );
       } else {
         String platform = Platform.isIOS ? "ios" : "android";
@@ -231,7 +231,7 @@ class SurveyManager {
         ViewManager.showSurveyWeb(
           context,
           client,
-          UserManager().userId!,
+          UserManager.instance.userId!,
           targetSurvey,
           "",
           platform,
@@ -247,7 +247,7 @@ class SurveyManager {
       Log.instance.e(SDKError.instance.missingSurveyId);
       return;
     }
-    UserManager().onResponse(surveyId);
+    UserManager.instance.onResponse(surveyId);
   }
 
   /// Records that a survey was shown to the user.
@@ -256,7 +256,7 @@ class SurveyManager {
       Log.instance.e(SDKError.instance.missingSurveyId);
       return;
     }
-    UserManager().onDisplay(surveyId);
+    UserManager.instance.onDisplay(surveyId);
   }
 
   /// Starts a timer to refresh environment data before expiration.
@@ -311,7 +311,7 @@ class SurveyManager {
       int? defaultRecontactDays,
       ) {
     return surveys.where((survey) {
-      final lastDisplayedAt = UserManager().lastDisplayedAt;
+      final lastDisplayedAt = UserManager.instance.lastDisplayedAt;
       if (lastDisplayedAt == null) return true;
 
       final recontactDays = survey.recontactDays ?? defaultRecontactDays;

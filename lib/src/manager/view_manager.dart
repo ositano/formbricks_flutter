@@ -18,7 +18,7 @@ class ViewManager {
       Survey survey,
       SurveyDisplayMode surveyDisplayMode,
       int estimatedTimeInSecs, {
-        FormbricksFlutterConfig? formbricksFlutterConfig,
+        FormbricksInAppConfig? formbricksInAppConfig,
       }) {
 
     /// Build the actual survey widget using registered question builders.
@@ -29,32 +29,32 @@ class ViewManager {
       estimatedTimeInSecs,
       surveyDisplayMode,
       survey.projectOverwrites?['clickOutsideClose'] ?? false,
-      addressQuestionBuilder: formbricksFlutterConfig?.addressQuestionBuilder,
-      calQuestionBuilder: formbricksFlutterConfig?.calQuestionBuilder,
-      consentQuestionBuilder: formbricksFlutterConfig?.consentQuestionBuilder,
+      addressQuestionBuilder: formbricksInAppConfig?.addressQuestionBuilder,
+      calQuestionBuilder: formbricksInAppConfig?.calQuestionBuilder,
+      consentQuestionBuilder: formbricksInAppConfig?.consentQuestionBuilder,
       contactInfoQuestionBuilder:
-      formbricksFlutterConfig?.contactInfoQuestionBuilder,
-      ctaQuestionBuilder: formbricksFlutterConfig?.ctaQuestionBuilder,
-      dateQuestionBuilder: formbricksFlutterConfig?.dateQuestionBuilder,
+      formbricksInAppConfig?.contactInfoQuestionBuilder,
+      ctaQuestionBuilder: formbricksInAppConfig?.ctaQuestionBuilder,
+      dateQuestionBuilder: formbricksInAppConfig?.dateQuestionBuilder,
       fileUploadQuestionBuilder:
-      formbricksFlutterConfig?.fileUploadQuestionBuilder,
-      freeTextQuestionBuilder: formbricksFlutterConfig?.freeTextQuestionBuilder,
-      matrixQuestionBuilder: formbricksFlutterConfig?.matrixQuestionBuilder,
+      formbricksInAppConfig?.fileUploadQuestionBuilder,
+      freeTextQuestionBuilder: formbricksInAppConfig?.freeTextQuestionBuilder,
+      matrixQuestionBuilder: formbricksInAppConfig?.matrixQuestionBuilder,
       multipleChoiceMultiQuestionBuilder:
-      formbricksFlutterConfig?.multipleChoiceMultiQuestionBuilder,
+      formbricksInAppConfig?.multipleChoiceMultiQuestionBuilder,
       multipleChoiceSingleQuestionBuilder:
-      formbricksFlutterConfig?.multipleChoiceSingleQuestionBuilder,
-      npsQuestionBuilder: formbricksFlutterConfig?.npsQuestionBuilder,
+      formbricksInAppConfig?.multipleChoiceSingleQuestionBuilder,
+      npsQuestionBuilder: formbricksInAppConfig?.npsQuestionBuilder,
       pictureSelectionQuestionBuilder:
-      formbricksFlutterConfig?.pictureSelectionQuestionBuilder,
-      rankingQuestionBuilder: formbricksFlutterConfig?.rankingQuestionBuilder,
-      ratingQuestionBuilder: formbricksFlutterConfig?.ratingQuestionBuilder,
+      formbricksInAppConfig?.pictureSelectionQuestionBuilder,
+      rankingQuestionBuilder: formbricksInAppConfig?.rankingQuestionBuilder,
+      ratingQuestionBuilder: formbricksInAppConfig?.ratingQuestionBuilder,
     );
 
     /// Render survey as full screen page.
     if (surveyDisplayMode == SurveyDisplayMode.fullScreen) {
       final widget = Theme(
-        data: buildTheme(context, formbricksFlutterConfig?.customTheme, survey),
+        data: buildTheme(context, formbricksInAppConfig?.customTheme, survey),
         child: Scaffold(
           backgroundColor: Theme.of(context).cardColor,
           appBar: AppBar(
@@ -73,7 +73,7 @@ class ViewManager {
     /// Render survey as an alert dialog.
     else if (surveyDisplayMode == SurveyDisplayMode.dialog) {
       final widget = Theme(
-        data: buildTheme(context, formbricksFlutterConfig?.customTheme, survey),
+        data: buildTheme(context, formbricksInAppConfig?.customTheme, survey),
         child: widgetBody,
       );
       showDialog(
@@ -92,7 +92,7 @@ class ViewManager {
     /// Render survey as a modal bottom sheet.
     else {
       final widget = Theme(
-        data: buildTheme(context, formbricksFlutterConfig?.customTheme, survey),
+        data: buildTheme(context, formbricksInAppConfig?.customTheme, survey),
         child: widgetBody,
       );
       showModalBottomSheet(

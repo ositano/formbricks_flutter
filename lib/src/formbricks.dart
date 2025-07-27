@@ -11,6 +11,8 @@ import 'utils/sdk_error.dart';
 /// - User management (setting user ID and attributes)
 /// - Survey tracking
 /// - Locale/language control
+/// - Set the survey platform
+/// - Set the survey display mode
 /// - Logout functionality
 class Formbricks {
   /// Flag to indicate whether the SDK has been initialized.
@@ -30,10 +32,11 @@ class Formbricks {
   /// Throws an exception if the instance hasn't been initialized.
   static Formbricks get instance {
     if (_instance == null) {
-      throw Exception("Formbricks has not been initialized.");
+      throw SDKError.instance.sdkIsNotInitialized;
     }
     return _instance!;
   }
+
   /// Private constructor to prevent external instantiation.
   Formbricks._internal();
 
@@ -45,7 +48,7 @@ class Formbricks {
 
   /// Initializes the Formbricks SDK with a [UserManager] and [SurveyManager].
   ///
-  /// This must be called **once** before using other methods.
+  /// This is called **once** before using other methods.
   /// [checkForNewSurveysOnRestart] determines whether to force-refresh environment data at startup.
   void init(UserManager userManager, SurveyManager surveyManager, bool checkForNewSurveysOnRestart) {
     if (isInitialized) {
@@ -75,8 +78,6 @@ class Formbricks {
   }
 
   /// Sets the current user’s unique identifier (e.g., user ID or email).
-  ///
-  /// You must call this method before setting user attributes.
   /// If a user ID is already set, you must call [logout] before setting a new one.
   void setUserId(String userId) {
     if (!isInitialized) {
@@ -101,7 +102,7 @@ class Formbricks {
   ///
   /// Example:
   /// ```dart
-  /// setAttribute({"name": "Green Onyeji", "role": "Senior Flutter Engineer"});
+  /// setAttributes({"name": "Green Onyeji", "role": "Senior Flutter Engineer"});
   /// ```
   void setAttributes(Map<String, String> attributes) {
     if (!isInitialized) {
