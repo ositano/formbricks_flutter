@@ -68,13 +68,13 @@ class _NPSQuestionState extends State<NPSQuestion> {
                   BorderRadius borderRadius = BorderRadius.zero;
                   if (index == 0) {
                     borderRadius = BorderRadius.only(
-                      topLeft: Radius.circular(theme.extension<MyCustomTheme>()!.styleRoundness!),
-                      bottomLeft: Radius.circular(theme.extension<MyCustomTheme>()!.styleRoundness!),
+                      topLeft: Radius.circular(theme.extension<MyCustomTheme>()?.styleRoundness ?? 8.0),
+                      bottomLeft: Radius.circular(theme.extension<MyCustomTheme>()?.styleRoundness ?? 8.0),
                     );
                   } else if (index == 10) {
                     borderRadius = BorderRadius.only(
-                      topRight: Radius.circular(theme.extension<MyCustomTheme>()!.styleRoundness!),
-                      bottomRight: Radius.circular(theme.extension<MyCustomTheme>()!.styleRoundness!),
+                      topRight: Radius.circular(theme.extension<MyCustomTheme>()?.styleRoundness ?? 8.0),
+                      bottomRight: Radius.circular(theme.extension<MyCustomTheme>()?.styleRoundness ?? 8.0),
                     );
                   }
 

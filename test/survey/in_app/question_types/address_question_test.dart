@@ -43,4 +43,45 @@ void main() {
     expect(find.text('City'), findsOneWidget);
   });
 
+  testWidgets('Zip', (
+      WidgetTester tester,
+      ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: const [Locale('en')],
+        home: Scaffold(
+          body: AddressQuestion(
+            question: question!,
+            onResponse: (questionId, response){},
+            response: null,
+            requiredAnswerByLogicCondition: false,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Zip'), findsOneWidget);
+  });
+
+  testWidgets('State (Required)', (
+      WidgetTester tester,
+      ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: const [Locale('en')],
+        home: Scaffold(
+          body: AddressQuestion(
+            question: question!,
+            onResponse: (questionId, response){},
+            response: null,
+            requiredAnswerByLogicCondition: false,
+          ),
+        ),
+      ),
+    );
+    expect(find.text('State *'), findsOneWidget);
+  });
+
 }

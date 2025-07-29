@@ -76,10 +76,10 @@ class _MultipleChoiceMultiQuestionState extends State<MultipleChoiceMultiQuestio
                     border: Border.all(
                       color: isSelected
                           ? theme.primaryColor
-                          : theme.inputDecorationTheme.enabledBorder!.borderSide.color,
+                          : theme.inputDecorationTheme.enabledBorder != null ? theme.inputDecorationTheme.enabledBorder!.borderSide.color : theme.unselectedWidgetColor,
                       width: 2,
                     ),
-                    borderRadius: BorderRadius.circular(theme.extension<MyCustomTheme>()!.styleRoundness!),
+                    borderRadius: BorderRadius.circular(theme.extension<MyCustomTheme>()?.styleRoundness ?? 8.0),
                     color: theme.inputDecorationTheme.fillColor,
                   ),
                   child: Row(

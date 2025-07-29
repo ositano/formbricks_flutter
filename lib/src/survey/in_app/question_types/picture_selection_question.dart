@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../../formbricks_flutter.dart';
 import '../../../utils/helper.dart';
+import '../../../utils/theme_manager.dart';
 import '../components/custom_heading.dart';
 
 class PictureSelectionQuestion extends StatefulWidget {
@@ -84,17 +85,17 @@ class _PictureSelectionQuestionState extends State<PictureSelectionQuestion> {
                           border: Border.all(
                             color: isSelected
                                 ? theme.primaryColor
-                                : theme
+                                : theme.inputDecorationTheme.enabledBorder != null ? theme
                                       .inputDecorationTheme
                                       .enabledBorder!
                                       .borderSide
-                                      .color,
+                                      .color : theme.unselectedWidgetColor,
                             width: isSelected ? 3 : 0,
                           ),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(theme.extension<MyCustomTheme>()?.styleRoundness ?? 8.0),
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: BorderRadius.circular(theme.extension<MyCustomTheme>()?.styleRoundness ?? 8.0),
                           child: CachedNetworkImage(
                             imageUrl: imageUrl,
                             width: 100,
