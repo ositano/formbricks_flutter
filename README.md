@@ -2,9 +2,6 @@
 # Formbricks Flutter SDK
 [![Pub](https://img.shields.io/pub/v/formbricks_flutter.svg)](https://pub.dartlang.org/packages/formbricks_flutter)
 [![Pub Likes](https://img.shields.io/pub/likes/formbricks_flutter)](https://pub.dev/packages/formbricks_flutter/score)
-[![Pub Version](https://img.shields.io/pub/v/formbricks_flutter?logo=flutter&style=for-the-badge)](https://pub.dev/packages/formbricks_flutter)
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ositano/formbricks_flutter/base.yaml?branch=main&logo=github&style=for-the-badge)](https://github.com/ositano/formbricks_flutter/actions/workflows/dart.yml)
-[![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/ositano/formbricks_flutter?logo=codefactor&style=for-the-badge)](https://www.codefactor.io/repository/github/ositano/formbricks_flutter)
 [![Pub points](https://img.shields.io/pub/points/formbricks_flutter)](https://pub.dev/packages/formbricks_flutter/score)
 
 
