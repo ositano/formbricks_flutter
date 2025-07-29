@@ -2,7 +2,9 @@
 # Formbricks Flutter SDK
 [![Pub](https://img.shields.io/pub/v/formbricks_flutter.svg)](https://pub.dartlang.org/packages/formbricks_flutter)
 [![Pub Likes](https://img.shields.io/pub/likes/formbricks_flutter)](https://pub.dev/packages/formbricks_flutter/score)
-[![Popularity](https://img.shields.io/pub/popularity/formbricks_flutter)](https://pub.dev/packages/formbricks_flutter/score)
+[![Pub Version](https://img.shields.io/pub/v/formbricks_flutter?logo=flutter&style=for-the-badge)](https://pub.dev/packages/formbricks_flutter)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ositano/formbricks_flutter/base.yaml?branch=main&logo=github&style=for-the-badge)](https://github.com/ositano/formbricks_flutter/actions/workflows/dart.yml)
+[![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/ositano/formbricks_flutter?logo=codefactor&style=for-the-badge)](https://www.codefactor.io/repository/github/ositano/formbricks_flutter)
 [![Pub points](https://img.shields.io/pub/points/formbricks_flutter)](https://pub.dev/packages/formbricks_flutter/score)
 
 
@@ -16,19 +18,20 @@ Built on top of [Formbricks](https://formbricks.com) — the open-source experie
 
 ## ✨ Features
 
-| Feature                          | Description                                                                                                              |
-|----------------------------------|--------------------------------------------------------------------------------------------------------------------------|
-| 💬 **In-App Micro-Surveys**      | Display beautiful, embeddable surveys inside your app using flutter implementation.                                      |
-| 💬 **Webview Micro-Surveys**     | Display beautiful, embeddable surveys inside your app using formbricks browser.                                          |
-| 🌐 **Localization Support**      | Built-in support for multiple languages: `en`, `es`, `de`, `fr`, `ja`, `ar`, `pt`, `sw`, `zh`.                           |
-| ⚡ **Custom Triggers**            | Trigger surveys based on app events.                                                                                     |
-| 🎨 **Theme Customization**       | Use Formbricks styling or fallback to Style surveys using your app’s `ThemeData`. or use a different custom theme for it |
-| 🙋‍♂️ **User Targeting**         | Pass `userId` and `userAttributes` to personalize surveys.                                                               |
-| 🪟 **Multiple Display Modes**    | Show In-App surveys in `fullScreen`, `dialog`, or `bottomSheet` views.                                                   |
-| 🧱 **Custom Question Widgets**   | Override default widgets with your own beautiful UI.                                                                     |
-| ⏱ **Estimated Completion Time**  | Automatically calculated time to inform users.                                                                           |
-| 🔐 **Secure API Integration**    | Connect with the Formbricks API using your API key and environment ID.                                                   |
-| 🧪 **Dev Mode Toggle**           | Enable/disable development mode for previewing surveys.                                                                  |
+| Feature                         | Description                                                                                                              |
+|---------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| 💬 **In-App Micro-Surveys**     | Display beautiful, embeddable surveys inside your app using flutter implementation.                                      |
+| 💬 **Webview Micro-Surveys**    | Display beautiful, embeddable surveys inside your app using formbricks browser.                                          |
+| 🌐 **Localization Support**     | Built-in support for multiple languages: `en`, `es`, `de`, `fr`, `ja`, `ar`, `pt`, `sw`, `zh`.                           |
+| ⚡ **Custom Triggers**           | Trigger surveys based on app events.                                                                                     |
+| 🎨 **Theme Customization**      | Use Formbricks styling or fallback to Style surveys using your app’s `ThemeData`. or use a different custom theme for it |
+| 🙋‍♂️ **User Targeting**        | Pass `userId` and `userAttributes` to personalize surveys.                                                               |
+| 🪟 **Multiple Display Modes**   | Show In-App surveys in `fullScreen`, `dialog`, or `bottomSheet` views.                                                   |
+| 🧱 **Custom Question Widgets**  | Override default widgets with your own beautiful UI.                                                                     |
+| ⏱ **Estimated Completion Time** | Automatically calculated time to inform users.                                                                           |
+| 🔐 **Secure API Integration**   | Connect with the Formbricks API using your API key and environment ID.                                                   |
+| 🧪 **Dev Mode Toggle**          | Enable/disable development mode for previewing surveys.                                                                  |
+| 🧪 **v2 Mode Toggle**           | Decide which version of the APIs you want to use                                                                         |
 
 ---
 

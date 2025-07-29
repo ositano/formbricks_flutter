@@ -58,7 +58,7 @@ class _ConsentQuestionState extends State<ConsentQuestion> {
                 padding: const EdgeInsets.symmetric(horizontal: 12,),
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: theme.inputDecorationTheme.enabledBorder!.borderSide.color,
+                    color: theme.inputDecorationTheme.enabledBorder != null ? theme.inputDecorationTheme.enabledBorder!.borderSide.color : theme.unselectedWidgetColor,
                     width: 2.0,
                   ),
                   borderRadius: BorderRadius.circular(8),

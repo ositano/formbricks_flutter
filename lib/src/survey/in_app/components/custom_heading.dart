@@ -51,7 +51,7 @@ class CustomHeading extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 16.0),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(
-                theme.extension<MyCustomTheme>()!.styleRoundness!,
+                theme.extension<MyCustomTheme>()?.styleRoundness ?? 8.0,
               ),
               child: FormbricksVideoPlayer(videoUrl: question.videoUrl!),
             ),

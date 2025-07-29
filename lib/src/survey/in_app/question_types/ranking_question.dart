@@ -83,7 +83,7 @@ class _RankingQuestionState extends State<RankingQuestion> {
                   margin: const EdgeInsets.only(bottom: 12),
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   decoration: BoxDecoration(
-                    border: Border.all(color: theme.inputDecorationTheme.enabledBorder!.borderSide.color, width: 2),
+                    border: Border.all(color: theme.inputDecorationTheme.enabledBorder != null ? theme.inputDecorationTheme.enabledBorder!.borderSide.color : theme.unselectedWidgetColor, width: 2),
                     borderRadius: BorderRadius.circular(10),
                     color: theme.inputDecorationTheme.fillColor
                   ),
