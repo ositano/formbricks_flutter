@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_pannable_rating_bar/flutter_pannable_rating_bar.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:formbricks_flutter/formbricks_flutter.dart';
 import 'package:formbricks_flutter/src/models/environment/environment_data_holder.dart';
@@ -27,23 +26,22 @@ void main() {
     );
   });
 
-  // testWidgets('Rating question', (WidgetTester tester) async {
-  //   await tester.pumpWidget(
-  //     MaterialApp(
-  //       localizationsDelegates: AppLocalizations.localizationsDelegates,
-  //       supportedLocales: const [Locale('en')],
-  //       home: Scaffold(
-  //         body: RatingQuestion(
-  //           question: question!,
-  //           onResponse: (questionId, response) {},
-  //           response: null,
-  //           requiredAnswerByLogicCondition: false,
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  //   //expect(find.byType(RatingWidget), findsOneWidget);
-  //   expect(find.text("Very good"), findsOneWidget);
-  //   expect(find.text("Not good"), findsOneWidget);
-  // });
+  testWidgets('Rating question', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: const [Locale('en')],
+        home: Scaffold(
+          body: RatingQuestion(
+            question: question!,
+            onResponse: (questionId, response) {},
+            response: null,
+            requiredAnswerByLogicCondition: false,
+          ),
+        ),
+      ),
+    );
+    expect(find.text("Very good"), findsOneWidget);
+    expect(find.text("Not good"), findsOneWidget);
+  });
 }

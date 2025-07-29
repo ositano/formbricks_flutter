@@ -78,7 +78,7 @@
               },
               "imageUrl": "",
               "required": true,
-              "videoUrl": "https://www.youtube.com/embed/A30ni82gX6Q",
+              "videoUrl": "",
               "lowerLabel": {
                 "default": "Not good"
               },
