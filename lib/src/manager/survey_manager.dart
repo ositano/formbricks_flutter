@@ -175,6 +175,15 @@ class SurveyManager {
 
   /// Triggers a survey based on a tracked action if all filters pass.
   Future<void> track(String action) async {
+    if(UserManager.instance.userId == null){
+      var error = Exception(
+          "A userId is not set - "
+              "please call setUserId with a value"
+      );
+      Log.instance.e(error);
+      return;
+    }
+
     final holder = await environmentDataHolder;
     final actionClasses = holder?.data?.data.actionClasses ?? [];
 
@@ -209,6 +218,7 @@ class SurveyManager {
           setUnSyncUserResponse({});
         });
     }
+
     final timeout = (targetSurvey.delay ?? 0).toDouble();
 
     isShowingSurvey = true;
