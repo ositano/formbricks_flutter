@@ -10,3 +10,7 @@
 ## 0.0.3
 
 * Added optional build context for track
+
+## 0.0.4
+
+* fixed screenshot image not showing on pub.dev
