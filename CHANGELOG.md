@@ -14,3 +14,7 @@
 ## 0.0.4
 
 * fixed screenshot image not showing on pub.dev
+
+## 0.0.5
+
+* fixed on ranking question translation
