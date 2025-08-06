@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import '../formbricks_flutter.dart';
 import 'manager/survey_manager.dart';
 import 'manager/user_manager.dart';
@@ -164,14 +166,14 @@ class Formbricks {
   /// Note that this SDK works with [code] actionType
   ///
   /// Triggers any surveys associated with that action.
-  void track({required String action}) {
+  void track({required String action, BuildContext? buildContext}) {
     if (!isInitialized) {
       var error = SDKError.instance.sdkIsNotInitialized;
       Log.instance.e(error);
       return;
     }
 
-    _surveyManager.track(action);
+    _surveyManager.track(action, buildContext: buildContext);
   }
 
   /// Sets the survey platform (e.g., inApp, webview)
