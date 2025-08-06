@@ -174,7 +174,7 @@ class SurveyManager {
   }
 
   /// Triggers a survey based on a tracked action if all filters pass.
-  Future<void> track(String action) async {
+  Future<void> track(String action, {BuildContext? buildContext}) async {
     if(UserManager.instance.userId == null){
       var error = Exception(
           "A userId is not set - "
@@ -227,7 +227,7 @@ class SurveyManager {
       if (surveyPlatform == SurveyPlatform.inApp) {
         int estimatedTimeInSecs = calculateEstimatedTime(targetSurvey.questions);
         ViewManager.showSurveyInApp(
-          context,
+          buildContext ?? context,
           client,
           UserManager.instance.userId!,
           targetSurvey,
@@ -239,7 +239,7 @@ class SurveyManager {
         String platform = Platform.isIOS ? "ios" : "android";
         var environmentData = holder?.originalResponseMap['data']['data'] ?? {};
         ViewManager.showSurveyWeb(
-          context,
+          buildContext ?? context,
           client,
           UserManager.instance.userId!,
           targetSurvey,

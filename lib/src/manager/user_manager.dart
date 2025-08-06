@@ -37,7 +37,9 @@ class UserManager {
     return _instance!;
   }
 
-  UserManager._internal();
+  UserManager._internal(){
+    _init();
+  }
 
   /// Internal fields
   SharedPreferences? _prefs;
@@ -54,7 +56,7 @@ class UserManager {
   DateTime? _expiresAt;
 
   /// Initialize SharedPreferences
-  Future<void> init() async {
+  Future<void> _init() async {
     _prefs ??= await SharedPreferences.getInstance();
   }
 

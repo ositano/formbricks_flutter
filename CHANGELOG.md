@@ -5,3 +5,8 @@
 ## 0.0.2
 
 * Renamed formbricks_flutter_config to formbricks_inapp_config
+
+
+## 0.0.3
+
+* Added optional build context for track
