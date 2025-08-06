@@ -96,6 +96,7 @@ class Formbricks {
     }
 
     _userManager.setUserId(userId);
+    _userManager.syncUserIfNeeded();
   }
 
   /// Sets or replaces the user’s attributes for segment filtering and targeting.

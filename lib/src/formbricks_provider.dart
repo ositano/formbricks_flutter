@@ -83,7 +83,6 @@ class _FormbricksProviderState extends State<FormbricksProvider> {
 
     Formbricks.instance.setSurveyPlatform(widget.surveyPlatform);
     Formbricks.instance.setSurveyDisplayMode(widget.surveyDisplayMode);
-
   }
 
   @override
