@@ -11,7 +11,7 @@ Built on top of [Formbricks](https://formbricks.com) — the open-source experie
 
 ---
 
-<img width="830" alt="Formbricks_flutter_screenshot" src="https://github.com/ositano/formbricks_flutter/blob/master/screenshot.png">
+![Screenshot](screenshot.png)
 
 ## ✨ Features
 
@@ -131,7 +131,7 @@ Adds or updates specific user attributes without replacing existing ones.
 
 Trigger any survey associated with that action
 ```dart
-  Formbricks.instance.track(action: "download_button");
+  Formbricks.instance.track(action: "download_button", buildContext: context);
 ```
 
 Sets the language code for surveys (e.g., "en", "de", "fr").
