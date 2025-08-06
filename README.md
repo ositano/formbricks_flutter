@@ -40,7 +40,7 @@ Add `formbricks_flutter` to your `pubspec.yaml`:
 dependencies:
   flutter:
     sdk: flutter
-  formbricks_flutter: ^0.0.4 #Replace with the latest version
+  formbricks_flutter: ^0.0.5 #Replace with the latest version
 ```
 
 ---
