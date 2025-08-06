@@ -30,8 +30,13 @@ class _RankingQuestionState extends State<RankingQuestion> {
   void initState() {
     super.initState();
     choices = widget.question.choices ?? [];
-    List<String> choiceInList = choices.map((c) => translate(c['label'], context) ?? '').toList();
-    rankedChoices = widget.response as List<String>? ?? choiceInList;
+    rankedChoices = [];
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      List<String> choiceInList = choices.map((c) => translate(c['label'], context) ?? '').toList();
+      setState(() {
+        rankedChoices = widget.response as List<String>? ?? choiceInList;
+      });
+    });
   }
 
   void _onReorder(int oldIndex, int newIndex) {
