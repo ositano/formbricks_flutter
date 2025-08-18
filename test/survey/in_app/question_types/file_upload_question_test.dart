@@ -35,7 +35,7 @@ void main() {
             onResponse: (questionId, response){},
             response: null,
             requiredAnswerByLogicCondition: false,
-            client: FormbricksClient(appUrl: '', environmentId: '', apiKey: ''),
+            client: FormbricksClient(appUrl: '', environmentId: ''),
             surveyId: '',
           ),
         ),

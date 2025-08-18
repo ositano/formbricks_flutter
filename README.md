@@ -40,7 +40,7 @@ Add `formbricks_flutter` to your `pubspec.yaml`:
 dependencies:
   flutter:
     sdk: flutter
-  formbricks_flutter: ^0.0.5 #Replace with the latest version
+  formbricks_flutter: ^0.0.6 #Replace with the latest version
 ```
 
 ---
@@ -54,8 +54,6 @@ FormbricksProvider(
   client: FormbricksClient(
     appUrl: 'https://app.formbricks.com',
     environmentId: 'your-env-id',
-    apiKey: 'your-api-key',
-    isDev: false,
     useV2: false
   ),
   userId: 'user-123',
@@ -75,8 +73,6 @@ FormbricksProvider(
         client: FormbricksClient(
             appUrl: 'https://app.formbricks.com',
             environmentId: 'your-env-id',
-            apiKey: 'your-api-key',
-            isDev: false,
             useV2: false
         ),
         userId: 'user-123',
@@ -198,8 +194,6 @@ class MyApp extends StatelessWidget {
         client: FormbricksClient(
             appUrl: 'https://app.formbricks.com',
             environmentId: 'your-env-id',
-            apiKey: 'your-api-key',
-            isDev: false,
             useV2: false
         ),
         userId: 'gideonvideon',
@@ -263,7 +257,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-
 ```
 
 ## 📜 License

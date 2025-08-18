@@ -127,7 +127,7 @@ class SurveyContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           /// Show inactivity countdown progress bar only if user hasn't interacted
-          hasUserInteracted
+          hasUserInteracted || survey.autoClose == null
               ? SizedBox.shrink()
               : SurveyProgress(progress: inactivityProgress, inactivitySecs: survey.autoClose,),
 
