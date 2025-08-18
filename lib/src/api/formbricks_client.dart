@@ -13,8 +13,6 @@ import '_base_request.dart';
 class FormbricksClient {
   final String appUrl;
   final String environmentId;
-  final String apiKey;
-  final bool isDev;
   final bool useV2;
 
   String? _userId;
@@ -26,8 +24,6 @@ class FormbricksClient {
   FormbricksClient._internal({
     required this.appUrl,
     required this.environmentId,
-    required this.apiKey,
-    this.isDev = true,
     this.useV2 = false,
   });
 
@@ -35,15 +31,11 @@ class FormbricksClient {
   factory FormbricksClient({
     required String appUrl,
     required String environmentId,
-    required String apiKey,
-    bool isDev = true,
     bool useV2 = false,
   }) {
     _instance ??= FormbricksClient._internal(
       appUrl: appUrl,
       environmentId: environmentId,
-      apiKey: apiKey,
-      isDev: isDev,
       useV2: useV2,
     );
     return _instance!;
@@ -57,8 +49,8 @@ class FormbricksClient {
     return _instance!;
   }
 
-  /// Builds the base API URL depending on the environment (dev or prod).
-  String get baseUrl => isDev ? '$appUrl/dev' : appUrl;
+  /// Builds the base API URL
+  String get baseUrl => appUrl;
 
   /// Selects the API version (v1 or v2).
   String get version => useV2 ? 'v2' : 'v1';
@@ -73,7 +65,6 @@ class FormbricksClient {
     final response = await baseRequest.post(
       url,
       headers: {
-        'Authorization': 'Bearer $apiKey',
         'Content-Type': 'application/json',
       },
       body: jsonEncode({'userId': _userId , 'attributes': _userAttributes}),
@@ -90,7 +81,6 @@ class FormbricksClient {
     final url = Uri.parse('$baseUrl/api/$version/client/$environmentId/environment');
     final response = await baseRequest.get(
       url,
-      headers: {'x-api-key': apiKey},
     );
 
     if (response.statusCode >= 200 && response.statusCode < 300){
@@ -120,7 +110,6 @@ class FormbricksClient {
       url,
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
       },
       body: jsonEncode(body),
     );
@@ -150,7 +139,6 @@ class FormbricksClient {
       url,
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
       },
       body: jsonEncode(body),
     );
@@ -169,7 +157,6 @@ class FormbricksClient {
       url,
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,
       },
       body: jsonEncode(body),
     );

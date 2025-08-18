@@ -24,6 +24,8 @@ class ContactInfoQuestion extends StatefulWidget {
 }
 
 class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
+  List<String> responses = List.filled(5, "");
+
   late final _firstNameController = TextEditingController();
   late final _lastNameController = TextEditingController();
   late final _emailController = TextEditingController();
@@ -34,33 +36,33 @@ class _ContactInfoQuestionState extends State<ContactInfoQuestion> {
   @override
   void initState() {
     super.initState();
-    _populateFields(widget.response as Map<String, dynamic>? ?? {});
+    _populateFields(widget.response as List<String>? ?? responses);
   }
 
   @override
   void didUpdateWidget(covariant ContactInfoQuestion oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.response != oldWidget.response) {
-      _populateFields(widget.response as Map<String, dynamic>? ?? {});
+      _populateFields(widget.response as List<String>? ?? responses);
     }
   }
 
-  void _populateFields(Map<String, dynamic> response) {
-    _firstNameController.text = response['firstName'] ?? '';
-    _lastNameController.text = response['lastName'] ?? '';
-    _emailController.text = response['email'] ?? '';
-    _phoneController.text = response['phone'] ?? '';
-    _companyController.text = response['company'] ?? '';
+  void _populateFields(List<String> response) {
+    _firstNameController.text = response[0];
+    _lastNameController.text = response[1];
+    _emailController.text = response[2];
+    _phoneController.text = response[3];
+    _companyController.text = response[4];
   }
 
   void _updateResponse() {
-    final data = {
-      'firstName': _firstNameController.text,
-      'lastName': _lastNameController.text,
-      'email': _emailController.text,
-      'phone': _phoneController.text,
-      'company': _companyController.text,
-    };
+    final data = [
+      _firstNameController.text,
+      _lastNameController.text,
+      _emailController.text,
+      _phoneController.text,
+      _companyController.text,
+    ];
     widget.onResponse(widget.question.id, data);
   }
 

@@ -18,3 +18,7 @@
 ## 0.0.5
 
 * fixed on ranking question translation
+
+## 0.0.6
+
+* removed api key as its not required. Fix for sending contact data

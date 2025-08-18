@@ -23,6 +23,8 @@ class AddressQuestion extends StatefulWidget {
 }
 
 class _AddressQuestionState extends State<AddressQuestion> {
+List<String> responses = List.filled(6, "");
+
   late final _addressLine1Controller = TextEditingController();
   late final _addressLine2Controller = TextEditingController();
   late final _cityController = TextEditingController();
@@ -30,39 +32,38 @@ class _AddressQuestionState extends State<AddressQuestion> {
   late final _zipController = TextEditingController();
   late final _countryController = TextEditingController();
 
-
   @override
   void initState() {
     super.initState();
-    _populateFields(widget.response as Map<String, dynamic>? ?? {});
+    _populateFields(widget.response as List<String>? ?? responses);
   }
 
   @override
   void didUpdateWidget(covariant AddressQuestion oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.response != oldWidget.response) {
-      _populateFields(widget.response as Map<String, dynamic>? ?? {});
+      _populateFields(widget.response as List<String>? ?? responses);
     }
   }
 
-  void _populateFields(Map<String, dynamic> response) {
-    _addressLine1Controller.text = response['addressLine1'] ?? '';
-    _addressLine2Controller.text = response['addressLine2'] ?? '';
-    _cityController.text = response['city'] ?? '';
-    _stateController.text = response['state'] ?? '';
-    _zipController.text = response['zipCode'] ?? '';
-    _countryController.text = response['country'] ?? '';
+  void _populateFields(List<String> response) {
+    _addressLine1Controller.text = response[0];
+    _addressLine2Controller.text = response[1];
+    _cityController.text = response[2];
+    _stateController.text = response[3];
+    _zipController.text = response[4];
+    _countryController.text = response[5];
   }
 
   void _updateResponse() {
-    final data = {
-      'addressLine1': _addressLine1Controller.text,
-      'addressLine2': _addressLine2Controller.text,
-      'city': _cityController.text,
-      'state': _stateController.text,
-      'zipCode': _zipController.text,
-      'country': _countryController.text,
-    };
+    final data = [
+      _addressLine1Controller.text,
+      _addressLine2Controller.text,
+      _cityController.text,
+      _stateController.text,
+      _zipController.text,
+      _countryController.text,
+    ];
     widget.onResponse(widget.question.id, data);
   }
 
