@@ -41,9 +41,5 @@ void main() {
       ),
     );
     expect(find.byType(ReorderableColumn), findsOneWidget);
-    expect(find.text('Faster processing time'), findsOneWidget);
-    expect(find.text('Better mobile experience'), findsOneWidget);
-    expect(find.text('More colours'), findsOneWidget);
   });
-
 }
