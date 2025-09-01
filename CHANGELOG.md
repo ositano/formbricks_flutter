@@ -22,3 +22,7 @@
 ## 0.0.6
 
 * removed api key as its not required. Fix for sending contact data
+
+## 0.0.7
+
+* Fixed a renderflex issue on copyright
