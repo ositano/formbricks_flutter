@@ -12,7 +12,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^1.4.0
+  http: ^1.5.0
   http_parser: ^4.1.2
   flutter_pannable_rating_bar: ^2.7.2+1
   file_picker: ^10.2.0 #For file uploads
@@ -24,14 +24,14 @@ dependencies:
   reorderables: ^0.6.0 #For ranking questions
   url_launcher: ^6.3.2
   shared_preferences: ^2.5.3
-  flutter_widget_from_html: ^0.16.0
+  flutter_widget_from_html: ^0.17.1
   pretty_http_logger: ^1.0.5
   chewie: ^1.12.1
   video_player: ^2.10.0
   dotted_border: ^3.1.0
   line_awesome_flutter: ^3.0.1
   mime_type: ^1.0.1
-  youtube_player_flutter: ^9.1.1
+  youtube_player_flutter: ^9.1.2
   webview_flutter: ^4.13.0
   logger: ^2.6.1
   json_annotation: ^4.9.0

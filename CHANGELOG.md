@@ -25,4 +25,4 @@
 
 ## 0.0.7
 
-* Fixed a renderflex issue on copyright
+* Updated dependencies

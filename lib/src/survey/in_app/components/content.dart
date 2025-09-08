@@ -222,7 +222,7 @@ class SurveyContent extends StatelessWidget {
                 /// Show formbricks logo/copyright [powered by Formbricks] unless hidden
                 survey.styling?.isLogoHidden == true
                     ? SizedBox.shrink()
-                    : Expanded(child: SurveyCopyright()),
+                    : SurveyCopyright(),
 
                 /// Show progress bar (except on welcome or if disabled)
                 (currentStep == -1 && survey.welcomeCard?['enabled'] == true) ||
